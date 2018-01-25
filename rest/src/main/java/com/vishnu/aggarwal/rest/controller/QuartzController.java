@@ -1,5 +1,8 @@
 package com.vishnu.aggarwal.rest.controller;
 
+import com.vishnu.aggarwal.core.dto.QuartzDTO;
+import com.vishnu.aggarwal.core.enums.JobType;
+import com.vishnu.aggarwal.core.enums.ScheduleType;
 import com.vishnu.aggarwal.core.co.JobDetailsCO;
 import com.vishnu.aggarwal.core.co.QuartzDetailsCO;
 import com.vishnu.aggarwal.core.co.TriggerDetailsCO;
@@ -8,6 +11,7 @@ import com.vishnu.aggarwal.core.vo.DataTableVO;
 import com.vishnu.aggarwal.core.vo.RestResponseVO;
 import com.vishnu.aggarwal.rest.service.QuartzService;
 import lombok.extern.apachecommons.CommonsLog;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
