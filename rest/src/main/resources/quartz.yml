@@ -1,0 +1,16 @@
+org:
+  quartz:
+    scheduler:
+      instanceName: quartz-job-scheduler
+      instanceId: AUTO
+      skipUpdateCheck: true
+    threadPool:
+      threadCount: 5
+    jobStore:
+      class: org.quartz.impl.jdbcjobstore.JobStoreTX
+      driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+      useProperties: true
+      misfireThreshold: 60000
+      tablePrefix: QRTZ_
+      isClustered: true
+      clusterCheckinInterval: 20000
