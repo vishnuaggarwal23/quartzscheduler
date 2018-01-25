@@ -12,4 +12,6 @@ public class APIJobDataCO {
     private HttpMethod requestType;
     private String requestUrl;
     private List<APIHeaderCO> requestHeaders;
+    private SimpleJobSchedulerDataCO simpleJobScheduler;
+    private CronJobSchedulerDataCO cronJobScheduler;
 }

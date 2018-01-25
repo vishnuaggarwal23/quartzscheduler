@@ -6,23 +6,14 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CronJobSchedulerDataCO {
-    private String triggerKeyName;
-    private String triggerGroupName;
-    private String triggerDescription;
-
-    private Integer second;
-
-    private Integer minute;
-
-    private Integer hour;
-
-    private Integer dayOfMonth;
-
-    private Integer month;
-
-    private Integer dayOfWeek;
-
-    private Integer year;
+    private TriggerCO trigger;
+    private String second;
+    private String minute;
+    private String hour;
+    private String dayOfMonth;
+    private String month;
+    private String dayOfWeek;
+    private String year;
 
     public String getCronExpression() {
         return second + " " + minute + " " + hour + " " + dayOfMonth + " " + month + " " + dayOfWeek + " " + year;
