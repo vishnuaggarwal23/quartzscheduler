@@ -1,10 +1,12 @@
 package com.vishnu.aggarwal.rest.interceptor;
 
 import lombok.extern.apachecommons.CommonsLog;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+@Component
 @CommonsLog
 public class RequestInterceptor extends com.vishnu.aggarwal.core.interceptor.RequestInterceptor {
     @Override
