@@ -3,8 +3,6 @@ server:
 bootstrap:
   enabled: true
 spring:
-  session:
-    store-type: jdbc
   devtools:
     livereload:
       enabled: true # misc tuning
@@ -21,12 +19,6 @@ logging:
         aggarwal: info
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
-security:
-  ignored: /**
-management:
-  context-path: /manage
-  security:
-    enabled: true
 rest:
   application:
     url: "${REST_APPLICATION_URL:http://localhost:8080}"
