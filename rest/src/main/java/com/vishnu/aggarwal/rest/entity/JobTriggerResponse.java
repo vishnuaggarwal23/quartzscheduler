@@ -18,10 +18,14 @@ public class JobTriggerResponse implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String triggerName;
-    private String jobName;
+    private String triggerKeyName;
+    private String triggerGroupName;
+    private String jobKeyName;
+    private String jobGroupName;
     private Integer responseCode;
+    @Column(length = Integer.MAX_VALUE, columnDefinition = "LONGTEXT")
     private String responseHeader;
+    @Column(length = Integer.MAX_VALUE, columnDefinition = "LONGTEXT")
     private String responseBody;
     private Date fireTime;
 

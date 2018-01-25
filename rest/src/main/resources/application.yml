@@ -11,17 +11,17 @@ spring:
         dialect: org.hibernate.dialect.MySQL5Dialect
         show_sql: true
         format_sql: true
-        sql: INFO
-        type: INFO
+        sql: info
+        type: info
         use_sql_comments: true
         naming:
           implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
         hbm2ddl:
-          auto: update
+          auto: create
     database: mysql
     generate-ddl: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
       naming:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
@@ -32,7 +32,7 @@ spring:
     jmxExport: true
     driverClassName: com.mysql.jdbc.Driver
     dialect: org.hibernate.dialect.MySQL5Dialect
-    dbCreate: update
+    dbCreate: create
     logSql: true
     testWhileIdle: true
     validationQuery: SELECT 1
@@ -73,12 +73,12 @@ hibernate:
   dialect: org.hibernate.dialect.MySQL5Dialect
   show_sql: true
   format_sql: true
-  sql: INFO
-  type: INFO
+  sql: info
+  type: info
   use_sql_comments: true
   hbm2ddl:
-    auto: update
-  ddl-auto: update
+    auto: create
+  ddl-auto: create
   naming:
     implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
     physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
@@ -86,17 +86,17 @@ hibernate:
 logging:
   level:
     org:
-      quartz: INFO
+      quartz: info
       springframework:
-        web: INFO
+        web: info
       hibernate:
-        sql: INFO
-        type: INFO
+        tool:
+          hbm2ddl: info
+        sql: info
+        type: info
     com:
       vishnu:
-        aggarwal:
-          core: INFO
-          rest: INFO
+        aggarwal: info
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
 security:

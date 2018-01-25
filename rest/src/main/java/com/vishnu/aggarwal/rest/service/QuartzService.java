@@ -8,6 +8,7 @@ import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -109,10 +110,12 @@ public class QuartzService {
 
     private Map<String, String> createJobDataMap(JobDTO jobDTO) {
         Map<String, String> jobData = new HashMap<String, String>();
-        if(Objects.nonNull(jobDTO) && Objects.nonNull(jobDTO.getApiJobData()) && Objects.nonNull(jobDTO.getApiJobData().getRequestHeaders())){
-            jobDTO.getApiJobData().getRequestHeaders().stream().filter(Objects::nonNull).forEach(it -> {
-                jobData.put("header_" + it.getKey(), it.getValue());
-            });
+        if(Objects.nonNull(jobDTO) && Objects.nonNull(jobDTO.getApiJobData())){
+            if(!CollectionUtils.isEmpty(jobDTO.getApiJobData().getRequestHeaders())){
+                jobDTO.getApiJobData().getRequestHeaders().stream().filter(Objects::nonNull).forEach(it -> {
+                    jobData.put("header_" + it.getKey(), it.getValue());
+                });
+            }
             jobData.put("request-url", jobDTO.getApiJobData().getRequestUrl());
         }
         return jobData;

@@ -38,8 +38,10 @@ public class JobTriggerResponseService {
     public void save(JobTriggerResponseDTO jobTriggerResponseDTO) {
         if(Objects.nonNull(jobTriggerResponseDTO)){
             JobTriggerResponse jobTriggerResponse = new JobTriggerResponse();
-            jobTriggerResponse.setTriggerName(jobTriggerResponseDTO.getTriggerName());
-            jobTriggerResponse.setJobName(jobTriggerResponseDTO.getJobName());
+            jobTriggerResponse.setTriggerKeyName(jobTriggerResponseDTO.getTriggerKeyName());
+            jobTriggerResponse.setTriggerGroupName(jobTriggerResponseDTO.getTriggerGroupName());
+            jobTriggerResponse.setJobKeyName(jobTriggerResponseDTO.getJobKeyName());
+            jobTriggerResponse.setJobGroupName(jobTriggerResponseDTO.getJobGroupName());
             jobTriggerResponse.setResponseCode(jobTriggerResponseDTO.getResponseCode());
             jobTriggerResponse.setResponseHeader(jobTriggerResponseDTO.getResponseHeader());
             jobTriggerResponse.setResponseBody(jobTriggerResponseDTO.getResponseBody());
@@ -60,15 +62,15 @@ public class JobTriggerResponseService {
     }
 
     private Criterion getRestrictionQuery(JobTriggerResponseDTO jobTriggerResponseDTO){
-        if(StringUtils.isNotEmpty(jobTriggerResponseDTO.getJobName()) && StringUtils.isNotEmpty(jobTriggerResponseDTO.getTriggerName())){
+        if(StringUtils.isNotEmpty(jobTriggerResponseDTO.getJobKeyName()) && StringUtils.isNotEmpty(jobTriggerResponseDTO.getTriggerKeyName())){
             return Restrictions.and(
-                    Restrictions.ilike("jobName", jobTriggerResponseDTO.getJobName()),
-                    Restrictions.ilike("triggerName", jobTriggerResponseDTO.getTriggerName())
+                    Restrictions.ilike("jobName", jobTriggerResponseDTO.getJobKeyName()),
+                    Restrictions.ilike("triggerName", jobTriggerResponseDTO.getTriggerKeyName())
             );
-        } else if(StringUtils.isNotEmpty(jobTriggerResponseDTO.getJobName())){
-            return Restrictions.ilike("jobName", jobTriggerResponseDTO.getJobName());
-        } else if(StringUtils.isNotEmpty(jobTriggerResponseDTO.getTriggerName())){
-            return Restrictions.ilike("triggerName", jobTriggerResponseDTO.getTriggerName());
+        } else if(StringUtils.isNotEmpty(jobTriggerResponseDTO.getJobKeyName())){
+            return Restrictions.ilike("jobName", jobTriggerResponseDTO.getJobKeyName());
+        } else if(StringUtils.isNotEmpty(jobTriggerResponseDTO.getTriggerKeyName())){
+            return Restrictions.ilike("triggerName", jobTriggerResponseDTO.getTriggerKeyName());
         }
         return Restrictions.isNotNull("id");
     }
