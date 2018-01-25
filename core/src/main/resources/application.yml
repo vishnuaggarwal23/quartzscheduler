@@ -11,8 +11,8 @@
 #        dialect: org.hibernate.dialect.MySQL5Dialect
 #        show_sql: true
 #        format_sql: true
-#        sql: INFO
-#        type: INFO
+#        sql: info
+#        type: info
 #        use_sql_comments: true
 #        naming:
 #          implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
@@ -72,8 +72,8 @@
 #  dialect: org.hibernate.dialect.MySQL5Dialect
 #  show_sql: true
 #  format_sql: true
-#  sql: INFO
-#  type: INFO
+#  sql: info
+#  type: info
 #  use_sql_comments: true
 #  hbm2ddl:
 #    auto: update
@@ -82,20 +82,19 @@
 #    implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
 #    physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 #    strategy: org.hibernate.cfg.ImprovedNamingStrategy
-#logging:
-#  level:
-#    org:
-#      springframework:
-#        web: INFO
-#      hibernate:
-#        sql: INFO
-#        type: INFO
-#    com:
-#      vishnu:
-#        aggarwal:
-#          core: INFO
-#  pattern:
-#    console: "%d{yyyy-MM-dd HH:mm:ss} -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
+logging:
+  level:
+    org:
+      springframework:
+        web: info
+      hibernate:
+        sql: info
+        type: info
+    com:
+      vishnu:
+        aggarwal: info
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
 #security:
 #  ignored: /**
 #management:
