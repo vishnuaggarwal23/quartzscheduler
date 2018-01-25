@@ -14,4 +14,13 @@ public enum JobExecutorClass {
         this.packageName = packageName;
         this.className = className;
     }
+
+    public static JobExecutorClass findJobExecutorClassByValue(Class clazz) {
+        for (JobExecutorClass jobExecutorClass : values()) {
+            if (jobExecutorClass.getClassName().equalsIgnoreCase(clazz.getSimpleName()) || jobExecutorClass.getPackageName().equalsIgnoreCase(clazz.toString())) {
+                return jobExecutorClass;
+            }
+        }
+        return null;
+    }
 }

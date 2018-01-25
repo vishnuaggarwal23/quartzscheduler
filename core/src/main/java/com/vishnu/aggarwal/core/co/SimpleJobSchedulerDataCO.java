@@ -9,10 +9,7 @@ import java.util.Date;
 @Getter
 @Setter
 public class SimpleJobSchedulerDataCO {
-    private String triggerKeyName;
-    private String triggerGroupName;
-    private String triggerDescription;
-    private Date startTime;
+    private TriggerCO trigger;
     private RepeatType repeatType;
     private RepeatIntervalCO repeatInterval;
 }

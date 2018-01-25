@@ -1,5 +1,9 @@
 org:
   quartz:
+    plugin:
+      triggerHistory:
+        class: org.quartz.plugins.history.LoggingTriggerHistoryPlugin
+        triggerFiredMessage: "Trigger ----- \{1\}.\{0\} fired job \{6\}.\{5\} at: \{4, date, HH:mm:ss MM/dd/yyyy}"
     scheduler:
       instanceName: quartz-job-scheduler
       instanceId: AUTO
