@@ -4,7 +4,6 @@ import com.vishnu.aggarwal.core.co.JobDetailsCO;
 import com.vishnu.aggarwal.core.co.QuartzDetailsCO;
 import com.vishnu.aggarwal.core.co.TriggerDetailsCO;
 import com.vishnu.aggarwal.core.dto.QuartzDTO;
-import com.vishnu.aggarwal.core.dto.QuartzDTO;
 import com.vishnu.aggarwal.core.enums.JobExecutorClass;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.BooleanUtils;
