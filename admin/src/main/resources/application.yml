@@ -3,6 +3,14 @@ server:
 bootstrap:
   enabled: true
 spring:
+  thymeleaf:
+    cache: false
+    check-template-location: true
+    enabled: true
+    mode: HTML5
+    suffix: .html
+    prefix: classpath:/templates/
+    check-template: true
   devtools:
     livereload:
       enabled: true # misc tuning
