@@ -5,6 +5,7 @@ import com.vishnu.aggarwal.core.co.QuartzDetailsCO;
 import com.vishnu.aggarwal.core.co.TriggerDetailsCO;
 import com.vishnu.aggarwal.core.dto.QuartzDTO;
 import com.vishnu.aggarwal.core.enums.JobExecutorClass;
+import com.vishnu.aggarwal.core.exceptions.*;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.BooleanUtils;
 import org.quartz.*;
@@ -16,8 +17,11 @@ import java.util.*;
 
 import static com.vishnu.aggarwal.core.enums.ScheduleType.CRON;
 import static com.vishnu.aggarwal.core.enums.ScheduleType.SIMPLE;
+import static java.lang.Boolean.FALSE;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
@@ -46,8 +50,6 @@ public class QuartzService {
      */
     @Autowired
     Scheduler quartzScheduler;
-
-    private Trigger trigger;
 
     /**
      * Create new unscheduled api job.
@@ -81,7 +83,7 @@ public class QuartzService {
      * @throws ClassNotFoundException the class not found exception
      * @throws SchedulerException     the scheduler exception
      */
-    public void createNewScheduledApiSimpleJob(QuartzDTO quartzDTO) throws ClassNotFoundException, SchedulerException {
+    public Date createNewScheduledApiSimpleJob(QuartzDTO quartzDTO) throws ClassNotFoundException, SchedulerException, JobNotScheduledException {
         JobKey jobKey = new JobKey(quartzDTO.getJob().getKeyName(), quartzDTO.getJob().getGroupName());
         JobDataMap jobDataMap = new JobDataMap(createJobDataMap(quartzDTO));
         JobBuilder jobBuilder = newJob((Class<? extends Job>) getExecutorClass(quartzDTO.getExecutorClass()))
@@ -119,7 +121,13 @@ public class QuartzService {
                 }
                 break;
         }
-        quartzScheduler.scheduleJob(jobDetail, triggerBuilder.build());
+        Date scheduledDate = quartzScheduler.scheduleJob(jobDetail, triggerBuilder.build());
+
+        if (isNull(scheduledDate)) {
+            throw new JobNotScheduledException();
+        }
+
+        return scheduledDate;
     }
 
     /**
@@ -129,7 +137,7 @@ public class QuartzService {
      * @throws ClassNotFoundException the class not found exception
      * @throws SchedulerException     the scheduler exception
      */
-    public void createNewScheduledApiCronJob(QuartzDTO quartzDTO) throws ClassNotFoundException, SchedulerException {
+    public Date createNewScheduledApiCronJob(QuartzDTO quartzDTO) throws ClassNotFoundException, SchedulerException, JobNotScheduledException {
         JobDataMap jobDataMap = new JobDataMap(createJobDataMap(quartzDTO));
         JobBuilder jobBuilder = newJob((Class<? extends Job>) getExecutorClass(quartzDTO.getExecutorClass()))
                 .withIdentity(new JobKey(quartzDTO.getJob().getKeyName(), quartzDTO.getJob().getGroupName()))
@@ -150,7 +158,13 @@ public class QuartzService {
             triggerBuilder = triggerBuilder.startAt(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getStartTime());
         }
 
-        quartzScheduler.scheduleJob(jobDetail, triggerBuilder.build());
+        Date scheduledDate = quartzScheduler.scheduleJob(jobDetail, triggerBuilder.build());
+
+        if (isNull(scheduledDate)) {
+            throw new JobNotScheduledException();
+        }
+
+        return scheduledDate;
     }
 
     /**
@@ -159,7 +173,7 @@ public class QuartzService {
      * @param quartzDTO the quartz dto
      * @throws SchedulerException the scheduler exception
      */
-    public void createNewSimpleTriggerForJob(QuartzDTO quartzDTO) throws SchedulerException {
+    public Date createNewSimpleTriggerForJob(QuartzDTO quartzDTO) throws SchedulerException, TriggerNotScheduledException {
         JobKey jobKey = new JobKey(quartzDTO.getJob().getKeyName(), quartzDTO.getJob().getGroupName());
         JobDetail jobDetail = quartzScheduler.getJobDetail(jobKey);
         TriggerBuilder triggerBuilder = newTrigger()
@@ -190,7 +204,14 @@ public class QuartzService {
                 }
                 break;
         }
-        quartzScheduler.scheduleJob(triggerBuilder.build());
+
+        Date scheduledDate = quartzScheduler.scheduleJob(triggerBuilder.build());
+
+        if (isNull(scheduledDate)) {
+            throw new TriggerNotScheduledException();
+        }
+
+        return scheduledDate;
     }
 
     /**
@@ -199,7 +220,7 @@ public class QuartzService {
      * @param quartzDTO the quartz dto
      * @throws SchedulerException the scheduler exception
      */
-    public void createNewCronTriggerForJob(QuartzDTO quartzDTO) throws SchedulerException {
+    public Date createNewCronTriggerForJob(QuartzDTO quartzDTO) throws SchedulerException, TriggerNotScheduledException {
         JobKey jobKey = new JobKey(quartzDTO.getJob().getKeyName(), quartzDTO.getJob().getGroupName());
         JobDetail jobDetail = quartzScheduler.getJobDetail(jobKey);
         TriggerBuilder triggerBuilder = newTrigger()
@@ -214,7 +235,13 @@ public class QuartzService {
             triggerBuilder = triggerBuilder.startAt(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getStartTime());
         }
 
-        quartzScheduler.scheduleJob(triggerBuilder.build());
+        Date scheduledDate = quartzScheduler.scheduleJob(triggerBuilder.build());
+
+        if (isNull(scheduledDate)) {
+            throw new TriggerNotScheduledException();
+        }
+
+        return scheduledDate;
     }
 
     /**
@@ -224,13 +251,17 @@ public class QuartzService {
      * @return the list
      * @throws SchedulerException the scheduler exception
      */
-    public List<JobDetailsCO> fetchJobDetailsByGroupName(String groupName) throws SchedulerException {
+    public List<JobDetailsCO> fetchJobDetailsByGroupName(String groupName) throws SchedulerException, JobDetailNotFoundException {
         Set<JobKey> jobKeys = quartzScheduler.getJobKeys(jobGroupEquals(groupName));
-        List<JobDetailsCO> jobDetails = null;
-        if (!isEmpty(jobKeys)) {
-            jobDetails = new ArrayList<JobDetailsCO>();
-            for (JobKey jobKey : jobKeys) {
-                JobDetail jobDetail = quartzScheduler.getJobDetail(jobKey);
+
+        if (isEmpty(jobKeys)) {
+            throw new JobDetailNotFoundException();
+        }
+
+        List<JobDetailsCO> jobDetails = new ArrayList<JobDetailsCO>();
+        for (JobKey jobKey : jobKeys) {
+            JobDetail jobDetail = quartzScheduler.getJobDetail(jobKey);
+            if (nonNull(jobDetail)) {
                 jobDetails.add(new JobDetailsCO(
                         jobKey.getName(),
                         jobKey.getGroup(),
@@ -244,6 +275,12 @@ public class QuartzService {
                         jobDetail.isConcurrentExectionDisallowed()));
             }
         }
+
+        if (isEmpty(jobDetails)) {
+            throw new JobDetailNotFoundException();
+        }
+
+        jobDetails.sort((o1, o2) -> o1.getKeyName().compareToIgnoreCase(o2.getKeyName()));
         return jobDetails;
     }
 
@@ -255,40 +292,49 @@ public class QuartzService {
      * @return the list
      * @throws SchedulerException the scheduler exception
      */
-    public List<TriggerDetailsCO> fetchTriggerDetailsByJobKeyNameAndGroupName(String jobKeyName, String groupName) throws SchedulerException {
+    @SuppressWarnings("unchecked")
+    public List<TriggerDetailsCO> fetchTriggerDetailsByJobKeyNameAndGroupName(String jobKeyName, String groupName) throws SchedulerException, TriggerDetailNotFoundException {
         List<Trigger> triggers = (List<Trigger>) quartzScheduler.getTriggersOfJob(new JobKey(jobKeyName, groupName));
-        List<TriggerDetailsCO> triggerDetails = null;
-        if (!isEmpty(triggers)) {
-            triggerDetails = new ArrayList<TriggerDetailsCO>();
-            for (Trigger trigger : triggers) {
-                TriggerDetailsCO triggerDetail = new TriggerDetailsCO(
-                        trigger.getKey().getName(),
-                        trigger.getKey().getGroup(),
-                        trigger.getDescription(),
-                        trigger.getStartTime(),
-                        trigger.getNextFireTime(),
-                        trigger.getPreviousFireTime(),
-                        trigger.getEndTime(),
-                        trigger.getFinalFireTime(),
-                        trigger.getPriority(),
-                        quartzScheduler.getTriggerState(TriggerKey.triggerKey(trigger.getKey().getName(), trigger.getKey().getGroup())).toString());
-                triggerDetails.add(triggerDetail);
 
-                if (trigger instanceof SimpleTrigger) {
-                    triggerDetail.setType(SIMPLE);
-                    TriggerDetailsCO.SimpleTriggerDetails simpleTriggerDetails = triggerDetail.new SimpleTriggerDetails();
-                    simpleTriggerDetails.setCountTriggered(((SimpleTrigger) trigger).getTimesTriggered());
-                    simpleTriggerDetails.setRepeatCount(((SimpleTrigger) trigger).getRepeatCount());
-                    simpleTriggerDetails.setRepeatInterval(((SimpleTrigger) trigger).getRepeatInterval());
-                } else if (trigger instanceof CronTrigger) {
-                    triggerDetail.setType(CRON);
-                    TriggerDetailsCO.CronTriggerDetails cronTriggerDetails = triggerDetail.new CronTriggerDetails();
-                    cronTriggerDetails.setCronExpression(((CronTrigger) trigger).getCronExpression());
-                    cronTriggerDetails.setExpressionSummary(((CronTrigger) trigger).getExpressionSummary());
-                    cronTriggerDetails.setTimeZone(((CronTrigger) trigger).getTimeZone());
-                }
+        if (isEmpty(triggers)) {
+            throw new TriggerDetailNotFoundException();
+        }
+
+        List<TriggerDetailsCO> triggerDetails = new ArrayList<TriggerDetailsCO>();
+        for (Trigger trigger : triggers) {
+            TriggerDetailsCO triggerDetail = new TriggerDetailsCO(
+                    trigger.getKey().getName(),
+                    trigger.getKey().getGroup(),
+                    trigger.getDescription(),
+                    trigger.getStartTime(),
+                    trigger.getNextFireTime(),
+                    trigger.getPreviousFireTime(),
+                    trigger.getEndTime(),
+                    trigger.getFinalFireTime(),
+                    trigger.getPriority(),
+                    quartzScheduler.getTriggerState(TriggerKey.triggerKey(trigger.getKey().getName(), trigger.getKey().getGroup())).toString());
+            triggerDetails.add(triggerDetail);
+
+            if (trigger instanceof SimpleTrigger) {
+                triggerDetail.setType(SIMPLE);
+                TriggerDetailsCO.SimpleTriggerDetails simpleTriggerDetails = triggerDetail.new SimpleTriggerDetails();
+                simpleTriggerDetails.setCountTriggered(((SimpleTrigger) trigger).getTimesTriggered());
+                simpleTriggerDetails.setRepeatCount(((SimpleTrigger) trigger).getRepeatCount());
+                simpleTriggerDetails.setRepeatInterval(((SimpleTrigger) trigger).getRepeatInterval());
+            } else if (trigger instanceof CronTrigger) {
+                triggerDetail.setType(CRON);
+                TriggerDetailsCO.CronTriggerDetails cronTriggerDetails = triggerDetail.new CronTriggerDetails();
+                cronTriggerDetails.setCronExpression(((CronTrigger) trigger).getCronExpression());
+                cronTriggerDetails.setExpressionSummary(((CronTrigger) trigger).getExpressionSummary());
+                cronTriggerDetails.setTimeZone(((CronTrigger) trigger).getTimeZone());
             }
         }
+
+        if (isEmpty(triggerDetails)) {
+            throw new TriggerDetailNotFoundException();
+        }
+
+        triggerDetails.sort(((o1, o2) -> o1.getKeyName().compareToIgnoreCase(o2.getKeyName())));
         return triggerDetails;
     }
 
@@ -299,17 +345,25 @@ public class QuartzService {
      * @return the list
      * @throws SchedulerException the scheduler exception
      */
-    public List<QuartzDetailsCO> fetchQuartzDetailsForAGroupName(String groupName) throws SchedulerException {
+    public List<QuartzDetailsCO> fetchQuartzDetailsForAGroupName(String groupName) throws SchedulerException, JobDetailNotFoundException, QuartzDetailNotFoundException, TriggerDetailNotFoundException {
         List<JobDetailsCO> jobDetails = fetchJobDetailsByGroupName(groupName);
-        List<QuartzDetailsCO> quartzDetails = null;
-        if (!isEmpty(jobDetails)) {
-            quartzDetails = new ArrayList<QuartzDetailsCO>();
-            for (JobDetailsCO jobDetail : jobDetails) {
-                QuartzDetailsCO quartzDetail = new QuartzDetailsCO();
-                quartzDetail.setJobDetails(jobDetail);
-                quartzDetail.setTriggerDetails(fetchTriggerDetailsByJobKeyNameAndGroupName(jobDetail.getKeyName(), jobDetail.getGroupName()));
-            }
+
+        if (isEmpty(jobDetails)) {
+            throw new QuartzDetailNotFoundException();
         }
+
+        List<QuartzDetailsCO> quartzDetails = new ArrayList<QuartzDetailsCO>();
+        for (JobDetailsCO jobDetail : jobDetails) {
+            QuartzDetailsCO quartzDetail = new QuartzDetailsCO();
+            quartzDetail.setJobDetails(jobDetail);
+            quartzDetail.setTriggerDetails(fetchTriggerDetailsByJobKeyNameAndGroupName(jobDetail.getKeyName(), jobDetail.getGroupName()));
+        }
+
+        if (isEmpty(quartzDetails)) {
+            throw new QuartzDetailNotFoundException();
+        }
+
+        quartzDetails.sort(((o1, o2) -> o1.getJobDetails().getKeyName().compareToIgnoreCase(o2.getJobDetails().getKeyName())));
         return quartzDetails;
     }
 
@@ -381,12 +435,19 @@ public class QuartzService {
      * @return the boolean
      * @throws SchedulerException the scheduler exception
      */
-    public Boolean deleteJobs(String keyName, String groupName) throws SchedulerException {
+    public Boolean deleteJobs(String keyName, String groupName) throws SchedulerException, JobDeleteFailureException {
+        Boolean deleted = FALSE;
         if (isNotEmpty(keyName)) {
-            return quartzScheduler.deleteJob(new JobKey(keyName, groupName));
+            deleted = quartzScheduler.deleteJob(new JobKey(keyName, groupName));
         } else {
-            return quartzScheduler.deleteJobs(quartzScheduler.getJobKeys(jobGroupEquals(groupName)).stream().filter(Objects::nonNull).collect(toList()));
+            deleted = quartzScheduler.deleteJobs(quartzScheduler.getJobKeys(jobGroupEquals(groupName)).stream().filter(Objects::nonNull).collect(toList()));
         }
+
+        if (isFalse(deleted)) {
+            throw new JobDeleteFailureException();
+        }
+
+        return deleted;
     }
 
     /**
@@ -397,12 +458,19 @@ public class QuartzService {
      * @return the boolean
      * @throws SchedulerException the scheduler exception
      */
-    public Boolean deleteTriggers(String keyName, String groupName) throws SchedulerException {
+    public Boolean deleteTriggers(String keyName, String groupName) throws SchedulerException, TriggerDeleteFailureException {
+        Boolean deleted = FALSE;
         if (isNotEmpty(keyName)) {
-            return quartzScheduler.unscheduleJob(new TriggerKey(keyName, groupName));
+            deleted = quartzScheduler.unscheduleJob(new TriggerKey(keyName, groupName));
         } else {
-            return quartzScheduler.unscheduleJobs(quartzScheduler.getTriggerKeys(triggerGroupEquals(groupName)).stream().filter(Objects::nonNull).collect(toList()));
+            deleted = quartzScheduler.unscheduleJobs(quartzScheduler.getTriggerKeys(triggerGroupEquals(groupName)).stream().filter(Objects::nonNull).collect(toList()));
         }
+
+        if (isFalse(deleted)) {
+            throw new TriggerDeleteFailureException();
+        }
+
+        return deleted;
     }
 
     private Integer countTriggersOfJob(JobKey jobKey) throws SchedulerException {

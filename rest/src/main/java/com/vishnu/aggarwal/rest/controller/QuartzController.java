@@ -10,6 +10,7 @@ import com.vishnu.aggarwal.core.vo.DataTableVO;
 import com.vishnu.aggarwal.core.vo.RestResponseVO;
 import com.vishnu.aggarwal.rest.service.QuartzService;
 import lombok.extern.apachecommons.CommonsLog;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 import java.util.List;
 
 import static com.vishnu.aggarwal.core.enums.JobType.API;
@@ -29,7 +31,6 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.HttpStatus.valueOf;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
-import static org.springframework.util.CollectionUtils.isEmpty;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 /**
@@ -59,14 +60,15 @@ public class QuartzController extends BaseController {
     public ResponseEntity<RestResponseVO<String>> createNewJob(@RequestBody QuartzDTO quartzDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         RestResponseVO<String> restResponseVO = new RestResponseVO<String>(null, BAD_REQUEST.value(), EMPTY);
         try {
+            Date scheduledJobDate = null;
             if (quartzDTO.getJob().getType().equals(API)) {
                 if (isTrue(quartzDTO.getJob().getScheduled())) {
                     if (quartzDTO.getScheduleType().equals(SIMPLE)) {
-                        quartzService.createNewScheduledApiSimpleJob(quartzDTO);
-                        setRestResponseVO(restResponseVO, null, ACCEPTED, "quartz.job.created.and.scheduled");
+                        scheduledJobDate = quartzService.createNewScheduledApiSimpleJob(quartzDTO);
+                        setRestResponseVO(restResponseVO, "Job created & scheduled at " + scheduledJobDate, ACCEPTED, "quartz.job.created.and.scheduled");
                     } else if (quartzDTO.getScheduleType().equals(CRON)) {
-                        quartzService.createNewScheduledApiCronJob(quartzDTO);
-                        setRestResponseVO(restResponseVO, null, ACCEPTED, "quartz.job.created.and.scheduled");
+                        scheduledJobDate = quartzService.createNewScheduledApiCronJob(quartzDTO);
+                        setRestResponseVO(restResponseVO, "Job created & scheduled at " + scheduledJobDate, ACCEPTED, "quartz.job.created.and.scheduled");
                     } else {
                         throw new ScheduleTypeNotFoundException();
                     }
@@ -77,6 +79,10 @@ public class QuartzController extends BaseController {
             } else {
                 throw new JobTypeNotFoundException();
             }
+        } catch (JobNotScheduledException | ClassNotFoundException | SchedulerException | JobTypeNotFoundException | ScheduleTypeNotFoundException e) {
+            log.error("********* Error while creating a new job ********** \n", e);
+            e.printStackTrace();
+            restResponseVO.setMessage(e.getLocalizedMessage());
         } catch (Exception e) {
             log.error("********* Error while creating a new job ********** \n", e);
             e.printStackTrace();
@@ -98,15 +104,20 @@ public class QuartzController extends BaseController {
     public ResponseEntity<RestResponseVO<String>> createNewTrigger(@RequestBody QuartzDTO quartzDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         RestResponseVO<String> restResponseVO = new RestResponseVO<String>(null, BAD_REQUEST.value(), EMPTY);
         try {
+            Date scheduledTriggerDate = null;
             if (quartzDTO.getScheduleType().equals(SIMPLE)) {
-                quartzService.createNewSimpleTriggerForJob(quartzDTO);
-                setRestResponseVO(restResponseVO, null, ACCEPTED, "quartz.trigger.created.and.scheduled");
+                scheduledTriggerDate = quartzService.createNewSimpleTriggerForJob(quartzDTO);
+                setRestResponseVO(restResponseVO, "Trigger created and scheduled at " + scheduledTriggerDate, ACCEPTED, "quartz.trigger.created.and.scheduled");
             } else if (quartzDTO.getScheduleType().equals(CRON)) {
-                quartzService.createNewCronTriggerForJob(quartzDTO);
-                setRestResponseVO(restResponseVO, null, ACCEPTED, "quartz.trigger.created.and.scheduled");
+                scheduledTriggerDate = quartzService.createNewCronTriggerForJob(quartzDTO);
+                setRestResponseVO(restResponseVO, "Trigger created and scheduled at " + scheduledTriggerDate, ACCEPTED, "quartz.trigger.created.and.scheduled");
             } else {
                 throw new ScheduleTypeNotFoundException();
             }
+        } catch (ScheduleTypeNotFoundException | TriggerNotScheduledException | SchedulerException e) {
+            log.error("********* Error while creating a new trigger ********** \n", e);
+            e.printStackTrace();
+            restResponseVO.setMessage(e.getLocalizedMessage());
         } catch (Exception e) {
             log.error("********* Error while creating a new trigger ********** \n", e);
             e.printStackTrace();
@@ -128,13 +139,11 @@ public class QuartzController extends BaseController {
         HttpStatus httpStatus = BAD_REQUEST;
         try {
             List<JobDetailsCO> jobDetails = quartzService.fetchJobDetailsByGroupName(groupName);
-            if (!isEmpty(jobDetails)) {
-                jobDetails.sort((o1, o2) -> o1.getKeyName().compareToIgnoreCase(o2.getKeyName()));
-                setDataTableVO(jobDetailsCODataTableVO, jobDetails.size(), jobDetails.size(), jobDetails.size(), jobDetails);
-                httpStatus = ACCEPTED;
-            } else {
-                throw new JobDetailNotFoundException();
-            }
+            setDataTableVO(jobDetailsCODataTableVO, jobDetails.size(), jobDetails.size(), jobDetails.size(), jobDetails);
+            httpStatus = ACCEPTED;
+        } catch (JobDetailNotFoundException | SchedulerException e) {
+            log.error("********** Error while fetching jobs by group name ********** \n", e);
+            e.printStackTrace();
         } catch (Exception e) {
             log.error("********** Error while fetching jobs by group name ********** \n", e);
             e.printStackTrace();
@@ -156,13 +165,11 @@ public class QuartzController extends BaseController {
         HttpStatus httpStatus = BAD_REQUEST;
         try {
             List<TriggerDetailsCO> triggerDetails = quartzService.fetchTriggerDetailsByJobKeyNameAndGroupName(jobKeyName, groupName);
-            if (!isEmpty(triggerDetails)) {
-                triggerDetails.sort(((o1, o2) -> o1.getKeyName().compareToIgnoreCase(o2.getKeyName())));
-                setDataTableVO(triggerDetailsCODataTableVO, triggerDetails.size(), triggerDetails.size(), triggerDetails.size(), triggerDetails);
-                httpStatus = ACCEPTED;
-            } else {
-                throw new TriggerDetailNotFoundException();
-            }
+            setDataTableVO(triggerDetailsCODataTableVO, triggerDetails.size(), triggerDetails.size(), triggerDetails.size(), triggerDetails);
+            httpStatus = ACCEPTED;
+        } catch (TriggerDetailNotFoundException | SchedulerException e) {
+            log.error("*********** Error while fetching triggers by job key and group name", e);
+            e.printStackTrace();
         } catch (Exception e) {
             log.error("*********** Error while fetching triggers by job key and group name", e);
             e.printStackTrace();
@@ -183,13 +190,11 @@ public class QuartzController extends BaseController {
         HttpStatus httpStatus = BAD_REQUEST;
         try {
             List<QuartzDetailsCO> quartzDetails = quartzService.fetchQuartzDetailsForAGroupName(groupName);
-            if (!isEmpty(quartzDetails)) {
-                quartzDetails.sort(((o1, o2) -> o1.getJobDetails().getKeyName().compareToIgnoreCase(o2.getJobDetails().getKeyName())));
-                setDataTableVO(quartzDetailsCODataTableVO, quartzDetails.size(), quartzDetails.size(), quartzDetails.size(), quartzDetails);
-                httpStatus = ACCEPTED;
-            } else {
-                throw new QuartzDetailNotFoundException();
-            }
+            setDataTableVO(quartzDetailsCODataTableVO, quartzDetails.size(), quartzDetails.size(), quartzDetails.size(), quartzDetails);
+            httpStatus = ACCEPTED;
+        } catch (QuartzDetailNotFoundException | TriggerDetailNotFoundException | JobDetailNotFoundException | SchedulerException e) {
+            log.error("************* Error while fetching quartz details by group name", e);
+            e.printStackTrace();
         } catch (Exception e) {
             log.error("************* Error while fetching quartz details by group name", e);
             e.printStackTrace();
@@ -210,6 +215,10 @@ public class QuartzController extends BaseController {
         try {
             quartzService.resumeJobs(jobKeyGroupNameDTO.getKeyName(), jobKeyGroupNameDTO.getGroupName());
             setRestResponseVO(restResponseVO, TRUE, ACCEPTED, "quartz.jobs.resume.success");
+        } catch (SchedulerException e) {
+            log.error("************* Error while resuming job ************ \n", e);
+            e.printStackTrace();
+            restResponseVO.setMessage(e.getLocalizedMessage());
         } catch (Exception e) {
             log.error("************* Error while resuming job ************ \n", e);
             e.printStackTrace();
@@ -231,6 +240,9 @@ public class QuartzController extends BaseController {
         try {
             quartzService.pauseJobs(jobKeyGroupNameDTO.getKeyName(), jobKeyGroupNameDTO.getGroupName());
             setRestResponseVO(restResponseVO, TRUE, ACCEPTED, "quartz.jobs.pause.success");
+        } catch (SchedulerException e) {
+            e.printStackTrace();
+            restResponseVO.setMessage(e.getLocalizedMessage());
         } catch (Exception e) {
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
@@ -251,6 +263,10 @@ public class QuartzController extends BaseController {
         try {
             quartzService.resumeTriggers(triggerKeyGroupNameDTO.getKeyName(), triggerKeyGroupNameDTO.getGroupName());
             setRestResponseVO(restResponseVO, TRUE, ACCEPTED, "quartz.triggers.resume.success");
+        } catch (SchedulerException e) {
+            log.error("************** Error while resuming trigger(s) ********** \n", e);
+            e.printStackTrace();
+            restResponseVO.setMessage(e.getLocalizedMessage());
         } catch (Exception e) {
             log.error("************** Error while resuming trigger(s) ********** \n", e);
             e.printStackTrace();
@@ -272,6 +288,10 @@ public class QuartzController extends BaseController {
         try {
             quartzService.pauseTriggers(triggerKeyGroupNameDTO.getKeyName(), triggerKeyGroupNameDTO.getGroupName());
             setRestResponseVO(restResponseVO, TRUE, ACCEPTED, "quartz.triggers.pause.success");
+        } catch (SchedulerException e) {
+            log.error("************ Error while pausing trigger(s) ************* \n", e);
+            e.printStackTrace();
+            restResponseVO.setMessage(e.getLocalizedMessage());
         } catch (Exception e) {
             log.error("************ Error while pausing trigger(s) ************* \n", e);
             e.printStackTrace();
@@ -291,11 +311,12 @@ public class QuartzController extends BaseController {
     public ResponseEntity<RestResponseVO<Boolean>> deleteJobs(@RequestBody KeyGroupNameDTO jobKeyGroupNameDTO) {
         RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, BAD_REQUEST.value(), EMPTY);
         try {
-            if (quartzService.deleteJobs(jobKeyGroupNameDTO.getKeyName(), jobKeyGroupNameDTO.getGroupName())) {
-                setRestResponseVO(restResponseVO, TRUE, ACCEPTED, "quartz.jobs.delete.success");
-            } else {
-                throw new JobDeleteFailureException();
-            }
+            Boolean deleted = quartzService.deleteJobs(jobKeyGroupNameDTO.getKeyName(), jobKeyGroupNameDTO.getGroupName());
+            setRestResponseVO(restResponseVO, deleted, ACCEPTED, "quartz.jobs.delete.success");
+        } catch (SchedulerException | JobDeleteFailureException e) {
+            log.error("************ Error while deleting job(s) *************** \n", e);
+            e.printStackTrace();
+            restResponseVO.setMessage(e.getLocalizedMessage());
         } catch (Exception e) {
             log.error("************ Error while deleting job(s) *************** \n", e);
             e.printStackTrace();
@@ -315,11 +336,12 @@ public class QuartzController extends BaseController {
     public ResponseEntity<RestResponseVO<Boolean>> deleteTriggers(@RequestBody KeyGroupNameDTO triggerKeyGroupNameDTO) {
         RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, BAD_REQUEST.value(), EMPTY);
         try {
-            if (quartzService.deleteTriggers(triggerKeyGroupNameDTO.getKeyName(), triggerKeyGroupNameDTO.getGroupName())) {
-                setRestResponseVO(restResponseVO, TRUE, ACCEPTED, "quartz.triggers.delete.success");
-            } else {
-                throw new TriggerDeleteFailureException();
-            }
+            Boolean deleted = quartzService.deleteTriggers(triggerKeyGroupNameDTO.getKeyName(), triggerKeyGroupNameDTO.getGroupName());
+            setRestResponseVO(restResponseVO, deleted, ACCEPTED, "quartz.triggers.delete.success");
+        } catch (SchedulerException | TriggerDeleteFailureException e) {
+            log.error("************* Error while deleting trigger(s) *************** \n", e);
+            e.printStackTrace();
+            restResponseVO.setMessage(e.getLocalizedMessage());
         } catch (Exception e) {
             log.error("************* Error while deleting trigger(s) *************** \n", e);
             e.printStackTrace();
