@@ -779,3 +779,5 @@ sysinfo.txt
 /.project
 .project
 .classpath
+/src/main/resources/application-*.yml
+application-*.yml
