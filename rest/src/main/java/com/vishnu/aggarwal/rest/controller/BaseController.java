@@ -1,0 +1,51 @@
+package com.vishnu.aggarwal.rest.controller;
+
+/*
+Created by vishnu on 28/2/18 1:26 PM
+*/
+
+import com.vishnu.aggarwal.core.vo.DataTableVO;
+import com.vishnu.aggarwal.core.vo.RestResponseVO;
+import lombok.extern.apachecommons.CommonsLog;
+import org.springframework.http.HttpStatus;
+
+import java.util.List;
+
+/**
+ * The type Base controller.
+ */
+@CommonsLog
+public class BaseController {
+
+    /**
+     * Set rest response vo.
+     *
+     * @param restResponseVO the rest response vo
+     * @param data           the data
+     * @param httpStatus     the http status
+     * @param message        the message
+     */
+    @SuppressWarnings("unchecked")
+    static void setRestResponseVO(RestResponseVO restResponseVO, Object data, HttpStatus httpStatus, String message) {
+        restResponseVO.setData(data);
+        restResponseVO.setResponseCode(httpStatus.value());
+        restResponseVO.setMessage(message);
+    }
+
+    /**
+     * Set data table vo.
+     *
+     * @param dataTableVO     the data table vo
+     * @param count           the count
+     * @param recordsTotal    the records total
+     * @param recordsFiltered the records filtered
+     * @param data            the data
+     */
+    @SuppressWarnings("unchecked")
+    static void setDataTableVO(DataTableVO dataTableVO, Integer count, Integer recordsTotal, Integer recordsFiltered, List data) {
+        dataTableVO.setCount(count);
+        dataTableVO.setRecordsTotal(recordsTotal);
+        dataTableVO.setRecordsFiltered(recordsFiltered);
+        dataTableVO.setData(data);
+    }
+}
