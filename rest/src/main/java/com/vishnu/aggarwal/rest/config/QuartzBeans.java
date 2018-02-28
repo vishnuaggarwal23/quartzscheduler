@@ -21,7 +21,7 @@ import java.util.Properties;
 public class QuartzBeans {
 
     @Bean(value = "jobFactory")
-    public JobFactory jobFactory(ApplicationContext applicationContext){
+    public JobFactory jobFactory(ApplicationContext applicationContext) {
         AutowiringSpringBeanJobFactory autowiringSpringBeanJobFactory = new AutowiringSpringBeanJobFactory();
         autowiringSpringBeanJobFactory.setApplicationContext(applicationContext);
         return autowiringSpringBeanJobFactory;

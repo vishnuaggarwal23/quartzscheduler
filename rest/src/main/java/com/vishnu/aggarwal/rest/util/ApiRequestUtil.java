@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 @CommonsLog
-abstract class ApiRequestUtil{
+abstract class ApiRequestUtil {
 
     String url;
     RestTemplate restTemplate;

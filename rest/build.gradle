@@ -1,14 +1,14 @@
 buildscript {
-	ext {
-		springBootVersion = '1.5.9.RELEASE'
-	}
-	repositories {
-		mavenCentral()
-	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-		classpath 'org.springframework:springloaded:1.2.6.RELEASE'
-	}
+    ext {
+        springBootVersion = '1.5.9.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath 'org.springframework:springloaded:1.2.6.RELEASE'
+    }
 }
 
 apply plugin: 'java'
@@ -23,31 +23,31 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 configurations {
-	providedRuntime
+    providedRuntime
 }
 
 dependencies {
     compile group: 'org.quartz-scheduler', name: 'quartz', version: '2.3.0'
-	compile group: 'com.cronutils', name: 'cron-utils', version: '7.0.1'
+    compile group: 'com.cronutils', name: 'cron-utils', version: '7.0.1'
     runtime('mysql:mysql-connector-java')
     compile('org.springframework.boot:spring-boot-starter-jdbc')
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
     compile('org.springframework.boot:spring-boot-starter-data-rest')
-	compile('org.springframework.boot:spring-boot-starter-cache')
-	compile('org.springframework.boot:spring-boot-starter-security')
-	compile('org.springframework.session:spring-session')
-	testCompile('org.springframework.security:spring-security-test')
+    compile('org.springframework.boot:spring-boot-starter-cache')
+    compile('org.springframework.boot:spring-boot-starter-security')
+    compile('org.springframework.session:spring-session')
+    testCompile('org.springframework.security:spring-security-test')
 //    compile('org.springframework.data:spring-data-rest-hal-browser')
-	compile project(':core')
+    compile project(':core')
 }
 
 bootRun {
-	addResources = false // We can set it to true if we would like to reload src/main/resources
-	jvmArgs = [
-			"-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5006",
-	]
+    addResources = false // We can set it to true if we would like to reload src/main/resources
+    jvmArgs = [
+            "-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5006",
+    ]
 }

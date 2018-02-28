@@ -4,8 +4,6 @@ import com.vishnu.aggarwal.core.enums.RepeatType;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
-
 @Getter
 @Setter
 public class SimpleJobSchedulerDataCO {

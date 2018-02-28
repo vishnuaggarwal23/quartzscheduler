@@ -36,7 +36,7 @@ public class JobTriggerResponseService {
     }
 
     public void save(JobTriggerResponseDTO jobTriggerResponseDTO) {
-        if(Objects.nonNull(jobTriggerResponseDTO)){
+        if (Objects.nonNull(jobTriggerResponseDTO)) {
             JobTriggerResponse jobTriggerResponse = new JobTriggerResponse();
             jobTriggerResponse.setTriggerKeyName(jobTriggerResponseDTO.getTriggerKeyName());
             jobTriggerResponse.setTriggerGroupName(jobTriggerResponseDTO.getTriggerGroupName());
@@ -52,31 +52,31 @@ public class JobTriggerResponseService {
 
     public List<JobTriggerResponseDTO> fetch(JobTriggerResponseDTO jobTriggerResponseDTO) {
         return (List<JobTriggerResponseDTO>) getSession().createCriteria(JobTriggerResponse.class)
-        .addOrder(getCriteriaOrder(jobTriggerResponseDTO))
-        .setReadOnly(Boolean.TRUE)
-        .setFirstResult(jobTriggerResponseDTO.getOffset())
-        .setMaxResults(jobTriggerResponseDTO.getMax())
-        .add(
-                getRestrictionQuery(jobTriggerResponseDTO)
-        ).setResultTransformer(Transformers.aliasToBean(JobTriggerResponseDTO.class)).list();
+                .addOrder(getCriteriaOrder(jobTriggerResponseDTO))
+                .setReadOnly(Boolean.TRUE)
+                .setFirstResult(jobTriggerResponseDTO.getOffset())
+                .setMaxResults(jobTriggerResponseDTO.getMax())
+                .add(
+                        getRestrictionQuery(jobTriggerResponseDTO)
+                ).setResultTransformer(Transformers.aliasToBean(JobTriggerResponseDTO.class)).list();
     }
 
-    private Criterion getRestrictionQuery(JobTriggerResponseDTO jobTriggerResponseDTO){
-        if(StringUtils.isNotEmpty(jobTriggerResponseDTO.getJobKeyName()) && StringUtils.isNotEmpty(jobTriggerResponseDTO.getTriggerKeyName())){
+    private Criterion getRestrictionQuery(JobTriggerResponseDTO jobTriggerResponseDTO) {
+        if (StringUtils.isNotEmpty(jobTriggerResponseDTO.getJobKeyName()) && StringUtils.isNotEmpty(jobTriggerResponseDTO.getTriggerKeyName())) {
             return Restrictions.and(
                     Restrictions.ilike("jobName", jobTriggerResponseDTO.getJobKeyName()),
                     Restrictions.ilike("triggerName", jobTriggerResponseDTO.getTriggerKeyName())
             );
-        } else if(StringUtils.isNotEmpty(jobTriggerResponseDTO.getJobKeyName())){
+        } else if (StringUtils.isNotEmpty(jobTriggerResponseDTO.getJobKeyName())) {
             return Restrictions.ilike("jobName", jobTriggerResponseDTO.getJobKeyName());
-        } else if(StringUtils.isNotEmpty(jobTriggerResponseDTO.getTriggerKeyName())){
+        } else if (StringUtils.isNotEmpty(jobTriggerResponseDTO.getTriggerKeyName())) {
             return Restrictions.ilike("triggerName", jobTriggerResponseDTO.getTriggerKeyName());
         }
         return Restrictions.isNotNull("id");
     }
 
-    private Order getCriteriaOrder(DataTableCO dataTableCO){
-        if(dataTableCO.getOrderBy().equalsIgnoreCase("desc")){
+    private Order getCriteriaOrder(DataTableCO dataTableCO) {
+        if (dataTableCO.getOrderBy().equalsIgnoreCase("desc")) {
             return Order.desc(StringUtils.isEmpty(dataTableCO.getSortBy()) ? "id" : dataTableCO.getSortBy());
         } else {
             return Order.asc(StringUtils.isEmpty(dataTableCO.getSortBy()) ? "id" : dataTableCO.getSortBy());
