@@ -8,6 +8,7 @@ import com.vishnu.aggarwal.core.enums.JobExecutorClass;
 import com.vishnu.aggarwal.core.exceptions.*;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
@@ -18,6 +19,7 @@ import java.util.*;
 import static com.vishnu.aggarwal.core.enums.ScheduleType.CRON;
 import static com.vishnu.aggarwal.core.enums.ScheduleType.SIMPLE;
 import static java.lang.Boolean.FALSE;
+import static java.lang.Class.forName;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
@@ -61,7 +63,7 @@ public class QuartzService {
     public void createNewUnscheduledApiJob(QuartzDTO quartzDTO) throws ClassNotFoundException, SchedulerException {
         JobKey jobKey = new JobKey(quartzDTO.getJob().getKeyName(), quartzDTO.getJob().getGroupName());
         JobDataMap jobDataMap = new JobDataMap(createJobDataMap(quartzDTO));
-        JobBuilder jobBuilder = newJob((Class<? extends Job>) getExecutorClass(quartzDTO.getExecutorClass()))
+        JobBuilder jobBuilder = newJob(getExecutorClass(quartzDTO.getExecutorClass()))
                 .requestRecovery(quartzDTO.getJob().getRecover())
                 .storeDurably(quartzDTO.getJob().getDurability())
                 .withIdentity(jobKey)
@@ -88,7 +90,7 @@ public class QuartzService {
     public Date createNewScheduledApiSimpleJob(QuartzDTO quartzDTO) throws ClassNotFoundException, SchedulerException, JobNotScheduledException {
         JobKey jobKey = new JobKey(quartzDTO.getJob().getKeyName(), quartzDTO.getJob().getGroupName());
         JobDataMap jobDataMap = new JobDataMap(createJobDataMap(quartzDTO));
-        JobBuilder jobBuilder = newJob((Class<? extends Job>) getExecutorClass(quartzDTO.getExecutorClass()))
+        JobBuilder jobBuilder = newJob(getExecutorClass(quartzDTO.getExecutorClass()))
                 .withIdentity(jobKey)
                 .requestRecovery(quartzDTO.getJob().getRecover())
                 .withDescription(quartzDTO.getJob().getDescription())
@@ -143,7 +145,7 @@ public class QuartzService {
      */
     public Date createNewScheduledApiCronJob(QuartzDTO quartzDTO) throws ClassNotFoundException, SchedulerException, JobNotScheduledException {
         JobDataMap jobDataMap = new JobDataMap(createJobDataMap(quartzDTO));
-        JobBuilder jobBuilder = newJob((Class<? extends Job>) getExecutorClass(quartzDTO.getExecutorClass()))
+        JobBuilder jobBuilder = newJob(getExecutorClass(quartzDTO.getExecutorClass()))
                 .withIdentity(new JobKey(quartzDTO.getJob().getKeyName(), quartzDTO.getJob().getGroupName()))
                 .requestRecovery(quartzDTO.getJob().getRecover())
                 .withDescription(quartzDTO.getJob().getDescription())
@@ -261,6 +263,10 @@ public class QuartzService {
      * @throws JobDetailNotFoundException the job detail not found exception
      */
     public List<JobDetailsCO> fetchJobDetailsByGroupName(String groupName) throws SchedulerException, JobDetailNotFoundException {
+        if (StringUtils.isEmpty(groupName)) {
+            throw new JobDetailNotFoundException();
+        }
+
         Set<JobKey> jobKeys = quartzScheduler.getJobKeys(jobGroupEquals(groupName));
 
         if (isEmpty(jobKeys)) {
@@ -304,6 +310,10 @@ public class QuartzService {
      */
     @SuppressWarnings("unchecked")
     public List<TriggerDetailsCO> fetchTriggerDetailsByJobKeyNameAndGroupName(String jobKeyName, String groupName) throws SchedulerException, TriggerDetailNotFoundException {
+        if (StringUtils.isEmpty(groupName)) {
+            throw new TriggerDetailNotFoundException();
+        }
+
         List<Trigger> triggers = (List<Trigger>) quartzScheduler.getTriggersOfJob(new JobKey(jobKeyName, groupName));
 
         if (isEmpty(triggers)) {
@@ -359,6 +369,10 @@ public class QuartzService {
      * @throws TriggerDetailNotFoundException the trigger detail not found exception
      */
     public List<QuartzDetailsCO> fetchQuartzDetailsForAGroupName(String groupName) throws SchedulerException, JobDetailNotFoundException, QuartzDetailNotFoundException, TriggerDetailNotFoundException {
+        if (StringUtils.isEmpty(groupName)) {
+            throw new QuartzDetailNotFoundException();
+        }
+
         List<JobDetailsCO> jobDetails = fetchJobDetailsByGroupName(groupName);
 
         if (isEmpty(jobDetails)) {
@@ -387,7 +401,11 @@ public class QuartzService {
      * @param groupName the group name
      * @throws SchedulerException the scheduler exception
      */
-    public void resumeTriggers(String keyName, String groupName) throws SchedulerException {
+    public void resumeTriggers(String keyName, String groupName) throws SchedulerException, ResumeTriggerFailureException {
+        if (StringUtils.isEmpty(groupName)) {
+            throw new ResumeTriggerFailureException();
+        }
+
         if (isNotEmpty(keyName)) {
             quartzScheduler.resumeTrigger(new TriggerKey(keyName, groupName));
         } else {
@@ -402,7 +420,11 @@ public class QuartzService {
      * @param groupName the group name
      * @throws SchedulerException the scheduler exception
      */
-    public void pauseTriggers(String keyName, String groupName) throws SchedulerException {
+    public void pauseTriggers(String keyName, String groupName) throws SchedulerException, PauseTriggerFailureException {
+        if (StringUtils.isEmpty(groupName)) {
+            throw new PauseTriggerFailureException();
+        }
+
         if (isNotEmpty(keyName)) {
             quartzScheduler.pauseTrigger(new TriggerKey(keyName, groupName));
         } else {
@@ -417,7 +439,11 @@ public class QuartzService {
      * @param groupName the group name
      * @throws SchedulerException the scheduler exception
      */
-    public void resumeJobs(String keyName, String groupName) throws SchedulerException {
+    public void resumeJobs(String keyName, String groupName) throws SchedulerException, ResumeJobFailureException {
+        if (StringUtils.isEmpty(groupName)) {
+            throw new ResumeJobFailureException();
+        }
+
         if (isNotEmpty(keyName)) {
             quartzScheduler.resumeJob(new JobKey(keyName, groupName));
         } else {
@@ -432,7 +458,11 @@ public class QuartzService {
      * @param groupName the group name
      * @throws SchedulerException the scheduler exception
      */
-    public void pauseJobs(String keyName, String groupName) throws SchedulerException {
+    public void pauseJobs(String keyName, String groupName) throws SchedulerException, PauseJobFailureException {
+        if (StringUtils.isEmpty(groupName)) {
+            throw new PauseJobFailureException();
+        }
+
         if (isNotEmpty(keyName)) {
             quartzScheduler.pauseJob(new JobKey(keyName, groupName));
         } else {
@@ -450,6 +480,11 @@ public class QuartzService {
      * @throws JobDeleteFailureException the job delete failure exception
      */
     public Boolean deleteJobs(String keyName, String groupName) throws SchedulerException, JobDeleteFailureException {
+
+        if (StringUtils.isEmpty(groupName)) {
+            throw new JobDeleteFailureException();
+        }
+
         Boolean deleted = FALSE;
         if (isNotEmpty(keyName)) {
             deleted = quartzScheduler.deleteJob(new JobKey(keyName, groupName));
@@ -474,6 +509,11 @@ public class QuartzService {
      * @throws TriggerDeleteFailureException the trigger delete failure exception
      */
     public Boolean deleteTriggers(String keyName, String groupName) throws SchedulerException, TriggerDeleteFailureException {
+
+        if (StringUtils.isEmpty(groupName)) {
+            throw new TriggerDeleteFailureException();
+        }
+
         Boolean deleted = FALSE;
         if (isNotEmpty(keyName)) {
             deleted = quartzScheduler.unscheduleJob(new TriggerKey(keyName, groupName));
@@ -489,7 +529,8 @@ public class QuartzService {
     }
 
     private Integer countTriggersOfJob(JobKey jobKey) throws SchedulerException {
-        return quartzScheduler.getTriggersOfJob(jobKey).size();
+        List<? extends Trigger> triggersOfAJob = quartzScheduler.getTriggersOfJob(jobKey);
+        return isEmpty(triggersOfAJob) ? 0 : triggersOfAJob.size();
     }
 
     private Map<String, String> createJobDataMap(QuartzDTO quartzDTO) {
@@ -513,7 +554,8 @@ public class QuartzService {
         return map;
     }
 
-    private Class<?> getExecutorClass(JobExecutorClass jobExecutorClass) throws ClassNotFoundException {
-        return Class.forName(jobExecutorClass.getPackageName());
+    @SuppressWarnings("unchecked")
+    private Class<? extends Job> getExecutorClass(JobExecutorClass jobExecutorClass) throws ClassNotFoundException {
+        return (Class<? extends Job>) forName(jobExecutorClass.getPackageName());
     }
 }

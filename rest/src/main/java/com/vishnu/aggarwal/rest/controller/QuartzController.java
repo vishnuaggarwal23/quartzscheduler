@@ -223,7 +223,7 @@ public class QuartzController extends BaseController {
         try {
             quartzService.resumeJobs(jobKeyGroupNameDTO.getKeyName(), jobKeyGroupNameDTO.getGroupName());
             setRestResponseVO(restResponseVO, TRUE, ACCEPTED, "quartz.jobs.resume.success");
-        } catch (SchedulerException e) {
+        } catch (SchedulerException | ResumeJobFailureException e) {
             log.error("************* Error while resuming job ************ \n", e);
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
@@ -250,7 +250,7 @@ public class QuartzController extends BaseController {
         try {
             quartzService.pauseJobs(jobKeyGroupNameDTO.getKeyName(), jobKeyGroupNameDTO.getGroupName());
             setRestResponseVO(restResponseVO, TRUE, ACCEPTED, "quartz.jobs.pause.success");
-        } catch (SchedulerException e) {
+        } catch (SchedulerException | PauseJobFailureException e) {
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
         } catch (Exception e) {
@@ -275,7 +275,7 @@ public class QuartzController extends BaseController {
         try {
             quartzService.resumeTriggers(triggerKeyGroupNameDTO.getKeyName(), triggerKeyGroupNameDTO.getGroupName());
             setRestResponseVO(restResponseVO, TRUE, ACCEPTED, "quartz.triggers.resume.success");
-        } catch (SchedulerException e) {
+        } catch (SchedulerException | ResumeTriggerFailureException e) {
             log.error("************** Error while resuming trigger(s) ********** \n", e);
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
@@ -302,7 +302,7 @@ public class QuartzController extends BaseController {
         try {
             quartzService.pauseTriggers(triggerKeyGroupNameDTO.getKeyName(), triggerKeyGroupNameDTO.getGroupName());
             setRestResponseVO(restResponseVO, TRUE, ACCEPTED, "quartz.triggers.pause.success");
-        } catch (SchedulerException e) {
+        } catch (SchedulerException | PauseTriggerFailureException e) {
             log.error("************ Error while pausing trigger(s) ************* \n", e);
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
