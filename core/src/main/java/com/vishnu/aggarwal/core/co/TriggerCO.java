@@ -5,6 +5,9 @@ import lombok.Setter;
 
 import java.util.Date;
 
+/**
+ * The type Trigger co.
+ */
 @Getter
 @Setter
 public class TriggerCO {

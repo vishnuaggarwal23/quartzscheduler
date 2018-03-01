@@ -6,6 +6,9 @@ import org.springframework.http.HttpMethod;
 
 import java.util.List;
 
+/**
+ * The type Api job data co.
+ */
 @Getter
 @Setter
 public class APIJobDataCO {

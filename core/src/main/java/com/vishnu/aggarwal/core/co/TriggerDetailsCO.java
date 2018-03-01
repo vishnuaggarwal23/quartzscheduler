@@ -8,6 +8,9 @@ import lombok.Setter;
 import java.util.Date;
 import java.util.TimeZone;
 
+/**
+ * The type Trigger details co.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,6 +27,20 @@ public class TriggerDetailsCO {
     private ScheduleType type;
     private String state;
 
+    /**
+     * Instantiates a new Trigger details co.
+     *
+     * @param keyName          the key name
+     * @param groupName        the group name
+     * @param description      the description
+     * @param startTime        the start time
+     * @param nextFireTime     the next fire time
+     * @param previousFireTime the previous fire time
+     * @param endTime          the end time
+     * @param finalFireTime    the final fire time
+     * @param priority         the priority
+     * @param state            the state
+     */
     public TriggerDetailsCO(String keyName, String groupName, String description, Date startTime, Date nextFireTime, Date previousFireTime, Date endTime, Date finalFireTime, Integer priority, String state) {
         this.keyName = keyName;
         this.groupName = groupName;
@@ -37,6 +54,9 @@ public class TriggerDetailsCO {
         this.state = state;
     }
 
+    /**
+     * The type Simple trigger details.
+     */
     @Getter
     @Setter
     @NoArgsConstructor
@@ -46,6 +66,9 @@ public class TriggerDetailsCO {
         private Long repeatInterval;
     }
 
+    /**
+     * The type Cron trigger details.
+     */
     @Getter
     @Setter
     @NoArgsConstructor

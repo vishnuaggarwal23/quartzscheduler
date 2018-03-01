@@ -20,11 +20,17 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * The type Job trigger response service.
+ */
 @Service
 @Transactional
 @CommonsLog
 public class JobTriggerResponseService {
 
+    /**
+     * The Job trigger response repository.
+     */
     @Autowired
     JobTriggerResponseRepository jobTriggerResponseRepository;
 
@@ -35,6 +41,11 @@ public class JobTriggerResponseService {
         return entityManager.unwrap(Session.class);
     }
 
+    /**
+     * Save.
+     *
+     * @param jobTriggerResponseDTO the job trigger response dto
+     */
     public void save(JobTriggerResponseDTO jobTriggerResponseDTO) {
         if (Objects.nonNull(jobTriggerResponseDTO)) {
             JobTriggerResponse jobTriggerResponse = new JobTriggerResponse();
@@ -50,6 +61,12 @@ public class JobTriggerResponseService {
         }
     }
 
+    /**
+     * Fetch list.
+     *
+     * @param jobTriggerResponseDTO the job trigger response dto
+     * @return the list
+     */
     public List<JobTriggerResponseDTO> fetch(JobTriggerResponseDTO jobTriggerResponseDTO) {
         return (List<JobTriggerResponseDTO>) getSession().createCriteria(JobTriggerResponse.class)
                 .addOrder(getCriteriaOrder(jobTriggerResponseDTO))

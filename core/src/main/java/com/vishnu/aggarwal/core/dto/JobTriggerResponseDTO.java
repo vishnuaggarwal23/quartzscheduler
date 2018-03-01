@@ -6,6 +6,9 @@ import lombok.Setter;
 
 import java.util.Date;
 
+/**
+ * The type Job trigger response dto.
+ */
 @Getter
 @Setter
 public class JobTriggerResponseDTO extends DataTableCO {

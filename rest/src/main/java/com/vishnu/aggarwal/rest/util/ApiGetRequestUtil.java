@@ -15,6 +15,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The type Api get request util.
+ */
 @CommonsLog
 public class ApiGetRequestUtil extends ApiRequestUtil implements Job {
 

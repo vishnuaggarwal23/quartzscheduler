@@ -11,13 +11,28 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * The type Api request util.
+ */
 @CommonsLog
 abstract class ApiRequestUtil {
 
+    /**
+     * The Url.
+     */
     String url;
+    /**
+     * The Rest template.
+     */
     RestTemplate restTemplate;
+    /**
+     * The Http headers.
+     */
     HttpHeaders httpHeaders;
 
+    /**
+     * The Job trigger response service.
+     */
     @Autowired
     JobTriggerResponseService jobTriggerResponseService;
 
@@ -30,6 +45,13 @@ abstract class ApiRequestUtil {
         }
     }
 
+    /**
+     * Construct job trigger response dto job trigger response dto.
+     *
+     * @param responseEntity      the response entity
+     * @param jobExecutionContext the job execution context
+     * @return the job trigger response dto
+     */
     JobTriggerResponseDTO constructJobTriggerResponseDTO(ResponseEntity<String> responseEntity, JobExecutionContext jobExecutionContext) {
         JobTriggerResponseDTO jobTriggerResponseDTO = new JobTriggerResponseDTO();
         jobTriggerResponseDTO.setResponseCode(responseEntity.getStatusCode().value());

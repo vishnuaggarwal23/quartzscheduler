@@ -4,6 +4,9 @@ import com.vishnu.aggarwal.core.enums.JobType;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * The type Job co.
+ */
 @Getter
 @Setter
 public class JobCO {

@@ -8,6 +8,9 @@ import lombok.Setter;
 
 import java.util.Map;
 
+/**
+ * The type Job details co.
+ */
 @Getter
 @Setter
 @NoArgsConstructor

@@ -5,6 +5,9 @@ import lombok.Setter;
 
 import java.util.List;
 
+/**
+ * The type Quartz details co.
+ */
 @Getter
 @Setter
 public class QuartzDetailsCO {

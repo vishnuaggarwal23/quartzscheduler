@@ -12,6 +12,9 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The type Request interceptor.
+ */
 @CommonsLog
 public abstract class RequestInterceptor implements HandlerInterceptor {
     @Override

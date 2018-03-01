@@ -4,6 +4,9 @@ import com.vishnu.aggarwal.core.enums.RepeatType;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * The type Simple job scheduler data co.
+ */
 @Getter
 @Setter
 public class SimpleJobSchedulerDataCO {

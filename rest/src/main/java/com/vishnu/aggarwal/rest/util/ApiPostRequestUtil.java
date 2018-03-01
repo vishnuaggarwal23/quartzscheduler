@@ -15,6 +15,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The type Api post request util.
+ */
 @CommonsLog
 public class ApiPostRequestUtil extends ApiRequestUtil implements Job {
     @Override

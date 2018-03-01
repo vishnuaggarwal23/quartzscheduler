@@ -7,9 +7,15 @@ Created by vishnu on 28/2/18 4:01 PM
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * The type Job not scheduled exception.
+ */
 @Getter
 @Setter
 public class JobNotScheduledException extends Exception {
+    /**
+     * Instantiates a new Job not scheduled exception.
+     */
     public JobNotScheduledException() {
         super("quartz.job.scheduling.exception");
     }

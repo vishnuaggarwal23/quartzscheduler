@@ -80,8 +80,10 @@ public class QuartzService {
      * Create new scheduled api simple job.
      *
      * @param quartzDTO the quartz dto
-     * @throws ClassNotFoundException the class not found exception
-     * @throws SchedulerException     the scheduler exception
+     * @return the date
+     * @throws ClassNotFoundException   the class not found exception
+     * @throws SchedulerException       the scheduler exception
+     * @throws JobNotScheduledException the job not scheduled exception
      */
     public Date createNewScheduledApiSimpleJob(QuartzDTO quartzDTO) throws ClassNotFoundException, SchedulerException, JobNotScheduledException {
         JobKey jobKey = new JobKey(quartzDTO.getJob().getKeyName(), quartzDTO.getJob().getGroupName());
@@ -134,8 +136,10 @@ public class QuartzService {
      * Create new scheduled api cron job.
      *
      * @param quartzDTO the quartz dto
-     * @throws ClassNotFoundException the class not found exception
-     * @throws SchedulerException     the scheduler exception
+     * @return the date
+     * @throws ClassNotFoundException   the class not found exception
+     * @throws SchedulerException       the scheduler exception
+     * @throws JobNotScheduledException the job not scheduled exception
      */
     public Date createNewScheduledApiCronJob(QuartzDTO quartzDTO) throws ClassNotFoundException, SchedulerException, JobNotScheduledException {
         JobDataMap jobDataMap = new JobDataMap(createJobDataMap(quartzDTO));
@@ -171,7 +175,9 @@ public class QuartzService {
      * Create new simple trigger for job.
      *
      * @param quartzDTO the quartz dto
-     * @throws SchedulerException the scheduler exception
+     * @return the date
+     * @throws SchedulerException           the scheduler exception
+     * @throws TriggerNotScheduledException the trigger not scheduled exception
      */
     public Date createNewSimpleTriggerForJob(QuartzDTO quartzDTO) throws SchedulerException, TriggerNotScheduledException {
         JobKey jobKey = new JobKey(quartzDTO.getJob().getKeyName(), quartzDTO.getJob().getGroupName());
@@ -218,7 +224,9 @@ public class QuartzService {
      * Create new cron trigger for job.
      *
      * @param quartzDTO the quartz dto
-     * @throws SchedulerException the scheduler exception
+     * @return the date
+     * @throws SchedulerException           the scheduler exception
+     * @throws TriggerNotScheduledException the trigger not scheduled exception
      */
     public Date createNewCronTriggerForJob(QuartzDTO quartzDTO) throws SchedulerException, TriggerNotScheduledException {
         JobKey jobKey = new JobKey(quartzDTO.getJob().getKeyName(), quartzDTO.getJob().getGroupName());
@@ -249,7 +257,8 @@ public class QuartzService {
      *
      * @param groupName the group name
      * @return the list
-     * @throws SchedulerException the scheduler exception
+     * @throws SchedulerException         the scheduler exception
+     * @throws JobDetailNotFoundException the job detail not found exception
      */
     public List<JobDetailsCO> fetchJobDetailsByGroupName(String groupName) throws SchedulerException, JobDetailNotFoundException {
         Set<JobKey> jobKeys = quartzScheduler.getJobKeys(jobGroupEquals(groupName));
@@ -290,7 +299,8 @@ public class QuartzService {
      * @param jobKeyName the job key name
      * @param groupName  the group name
      * @return the list
-     * @throws SchedulerException the scheduler exception
+     * @throws SchedulerException             the scheduler exception
+     * @throws TriggerDetailNotFoundException the trigger detail not found exception
      */
     @SuppressWarnings("unchecked")
     public List<TriggerDetailsCO> fetchTriggerDetailsByJobKeyNameAndGroupName(String jobKeyName, String groupName) throws SchedulerException, TriggerDetailNotFoundException {
@@ -343,7 +353,10 @@ public class QuartzService {
      *
      * @param groupName the group name
      * @return the list
-     * @throws SchedulerException the scheduler exception
+     * @throws SchedulerException             the scheduler exception
+     * @throws JobDetailNotFoundException     the job detail not found exception
+     * @throws QuartzDetailNotFoundException  the quartz detail not found exception
+     * @throws TriggerDetailNotFoundException the trigger detail not found exception
      */
     public List<QuartzDetailsCO> fetchQuartzDetailsForAGroupName(String groupName) throws SchedulerException, JobDetailNotFoundException, QuartzDetailNotFoundException, TriggerDetailNotFoundException {
         List<JobDetailsCO> jobDetails = fetchJobDetailsByGroupName(groupName);
@@ -433,7 +446,8 @@ public class QuartzService {
      * @param keyName   the key name
      * @param groupName the group name
      * @return the boolean
-     * @throws SchedulerException the scheduler exception
+     * @throws SchedulerException        the scheduler exception
+     * @throws JobDeleteFailureException the job delete failure exception
      */
     public Boolean deleteJobs(String keyName, String groupName) throws SchedulerException, JobDeleteFailureException {
         Boolean deleted = FALSE;
@@ -456,7 +470,8 @@ public class QuartzService {
      * @param keyName   the key name
      * @param groupName the group name
      * @return the boolean
-     * @throws SchedulerException the scheduler exception
+     * @throws SchedulerException            the scheduler exception
+     * @throws TriggerDeleteFailureException the trigger delete failure exception
      */
     public Boolean deleteTriggers(String keyName, String groupName) throws SchedulerException, TriggerDeleteFailureException {
         Boolean deleted = FALSE;

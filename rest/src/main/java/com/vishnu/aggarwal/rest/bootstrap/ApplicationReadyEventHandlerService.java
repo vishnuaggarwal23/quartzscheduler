@@ -4,6 +4,9 @@ import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.stereotype.Component;
 
+/**
+ * The type Application ready event handler service.
+ */
 @Component
 @CommonsLog
 public class ApplicationReadyEventHandlerService extends com.vishnu.aggarwal.core.bootstrap.ApplicationReadyEventHandlerService {

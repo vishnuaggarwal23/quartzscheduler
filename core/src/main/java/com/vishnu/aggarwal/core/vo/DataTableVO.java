@@ -7,6 +7,11 @@ import lombok.Setter;
 
 import java.util.List;
 
+/**
+ * The type Data table vo.
+ *
+ * @param <T> the type parameter
+ */
 @Getter
 @Setter
 @AllArgsConstructor
