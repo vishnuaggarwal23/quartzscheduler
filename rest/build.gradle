@@ -1,6 +1,10 @@
 buildscript {
     ext {
         springBootVersion = '1.5.9.RELEASE'
+        projectVersion = '0.0.1-SNAPSHOT'
+        projectGroup = 'com.vishnu.aggarwal.rest'
+        jdkSource = 1.8
+        jdkTarget = 1.8
     }
     repositories {
         mavenCentral()
@@ -18,9 +22,20 @@ apply plugin: 'war'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 
-group = 'com.vishnu.aggarwal'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = 1.8
+group = projectGroup
+version = projectVersion
+sourceCompatibility = jdkSource
+targetCompatibility = jdkTarget
+
+group = projectVersion
+version = projectVersion
+sourceCompatibility = jdkSource
+targetCompatibility = jdkTarget
+
+war {
+    baseName = 'quartz-rest'
+    version = projectVersion
+}
 
 repositories {
     mavenCentral()
@@ -42,7 +57,7 @@ dependencies {
     compile('org.springframework.session:spring-session')
     testCompile('org.springframework.security:spring-security-test')
 //    compile('org.springframework.data:spring-data-rest-hal-browser')
-    compile project(':core')
+    compile project(path : ':core')
 }
 
 bootRun {

@@ -1,6 +1,10 @@
 buildscript {
     ext {
         springBootVersion = '1.5.9.RELEASE'
+        projectVersion = '0.0.1-SNAPSHOT'
+        projectGroup = 'com.vishnu.aggarwal.core'
+        jdkSource = 1.8
+        jdkTarget = 1.8
     }
     repositories {
         mavenCentral()
@@ -18,9 +22,15 @@ apply plugin: 'war'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 
-group = 'com.vishnu.aggarwal'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = 1.8
+group = projectGroup
+version = projectVersion
+sourceCompatibility = jdkSource
+targetCompatibility = jdkTarget
+
+war {
+    baseName = 'quartz-core'
+    version = projectVersion
+}
 
 repositories {
     mavenCentral()
