@@ -38,7 +38,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
  */
 @RestController
 @CommonsLog
-@RequestMapping("/api")
+@RequestMapping("/api/quartz")
 public class QuartzController extends BaseController {
 
     /**
@@ -55,7 +55,7 @@ public class QuartzController extends BaseController {
      * @param httpServletResponse the http servlet response
      * @return the response entity
      */
-    @RequestMapping(value = "/quartz/job", method = POST, consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/job", method = POST, consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     public ResponseEntity<RestResponseVO<String>> createNewJob(@RequestBody QuartzDTO quartzDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         RestResponseVO<String> restResponseVO = new RestResponseVO<String>(null, BAD_REQUEST.value(), EMPTY);
@@ -99,7 +99,7 @@ public class QuartzController extends BaseController {
      * @param httpServletResponse the http servlet response
      * @return the response entity
      */
-    @RequestMapping(value = "/quartz/trigger", method = POST, consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/trigger", method = POST, consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     public ResponseEntity<RestResponseVO<String>> createNewTrigger(@RequestBody QuartzDTO quartzDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         RestResponseVO<String> restResponseVO = new RestResponseVO<String>(null, BAD_REQUEST.value(), EMPTY);
@@ -129,12 +129,14 @@ public class QuartzController extends BaseController {
     /**
      * Fetch jobs by group name response entity.
      *
-     * @param groupName the group name
+     * @param groupName           the group name
+     * @param httpServletRequest  the http servlet request
+     * @param httpServletResponse the http servlet response
      * @return the response entity
      */
-    @RequestMapping(value = "/quartz/job/{groupName}", method = GET, consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/job/{groupName}", method = GET, consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public ResponseEntity<DataTableVO<JobDetailsCO>> fetchJobsByGroupName(@PathVariable("groupName") String groupName) {
+    public ResponseEntity<DataTableVO<JobDetailsCO>> fetchJobsByGroupName(@PathVariable("groupName") String groupName, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         DataTableVO<JobDetailsCO> jobDetailsCODataTableVO = new DataTableVO<JobDetailsCO>(0, 0, 0, null);
         HttpStatus httpStatus = BAD_REQUEST;
         try {
@@ -154,13 +156,15 @@ public class QuartzController extends BaseController {
     /**
      * Fetch triggers by job key name and group name response entity.
      *
-     * @param jobKeyName the job key name
-     * @param groupName  the group name
+     * @param jobKeyName          the job key name
+     * @param groupName           the group name
+     * @param httpServletRequest  the http servlet request
+     * @param httpServletResponse the http servlet response
      * @return the response entity
      */
-    @RequestMapping(value = "/quartz/trigger/{jobKeyName}/{groupName}", method = GET, consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/trigger/{jobKeyName}/{groupName}", method = GET, consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public ResponseEntity<DataTableVO<TriggerDetailsCO>> fetchTriggersByJobKeyNameAndGroupName(@PathVariable("jobKeyName") String jobKeyName, @PathVariable("groupName") String groupName) {
+    public ResponseEntity<DataTableVO<TriggerDetailsCO>> fetchTriggersByJobKeyNameAndGroupName(@PathVariable("jobKeyName") String jobKeyName, @PathVariable("groupName") String groupName, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         DataTableVO<TriggerDetailsCO> triggerDetailsCODataTableVO = new DataTableVO<TriggerDetailsCO>(0, 0, 0, null);
         HttpStatus httpStatus = BAD_REQUEST;
         try {
@@ -180,12 +184,14 @@ public class QuartzController extends BaseController {
     /**
      * Fetch quartz details for group name response entity.
      *
-     * @param groupName the group name
+     * @param groupName           the group name
+     * @param httpServletRequest  the http servlet request
+     * @param httpServletResponse the http servlet response
      * @return the response entity
      */
-    @RequestMapping(value = "/quartz/details/{groupName}", method = GET, consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/details/{groupName}", method = GET, consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public ResponseEntity<DataTableVO<QuartzDetailsCO>> fetchQuartzDetailsForGroupName(@PathVariable("groupName") String groupName) {
+    public ResponseEntity<DataTableVO<QuartzDetailsCO>> fetchQuartzDetailsForGroupName(@PathVariable("groupName") String groupName, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         DataTableVO<QuartzDetailsCO> quartzDetailsCODataTableVO = new DataTableVO<QuartzDetailsCO>(0, 0, 0, null);
         HttpStatus httpStatus = BAD_REQUEST;
         try {
@@ -205,12 +211,14 @@ public class QuartzController extends BaseController {
     /**
      * Resume jobs response entity.
      *
-     * @param jobKeyGroupNameDTO the job key group name dto
+     * @param jobKeyGroupNameDTO  the job key group name dto
+     * @param httpServletRequest  the http servlet request
+     * @param httpServletResponse the http servlet response
      * @return the response entity
      */
-    @RequestMapping(value = "/quartz/resume/jobs", method = {POST, PUT, PATCH}, consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/resume/jobs", method = {POST, PUT, PATCH}, consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public ResponseEntity<RestResponseVO<Boolean>> resumeJobs(@RequestBody KeyGroupNameDTO jobKeyGroupNameDTO) {
+    public ResponseEntity<RestResponseVO<Boolean>> resumeJobs(@RequestBody KeyGroupNameDTO jobKeyGroupNameDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, BAD_REQUEST.value(), EMPTY);
         try {
             quartzService.resumeJobs(jobKeyGroupNameDTO.getKeyName(), jobKeyGroupNameDTO.getGroupName());
@@ -230,12 +238,14 @@ public class QuartzController extends BaseController {
     /**
      * Pause jobs response entity.
      *
-     * @param jobKeyGroupNameDTO the job key group name dto
+     * @param jobKeyGroupNameDTO  the job key group name dto
+     * @param httpServletRequest  the http servlet request
+     * @param httpServletResponse the http servlet response
      * @return the response entity
      */
-    @RequestMapping(value = "/quartz/pause/jobs", method = {POST, PUT, PATCH}, consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/pause/jobs", method = {POST, PUT, PATCH}, consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public ResponseEntity<RestResponseVO<Boolean>> pauseJobs(@RequestBody KeyGroupNameDTO jobKeyGroupNameDTO) {
+    public ResponseEntity<RestResponseVO<Boolean>> pauseJobs(@RequestBody KeyGroupNameDTO jobKeyGroupNameDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, BAD_REQUEST.value(), EMPTY);
         try {
             quartzService.pauseJobs(jobKeyGroupNameDTO.getKeyName(), jobKeyGroupNameDTO.getGroupName());
@@ -254,11 +264,13 @@ public class QuartzController extends BaseController {
      * Resume triggers response entity.
      *
      * @param triggerKeyGroupNameDTO the trigger key group name dto
+     * @param httpServletRequest     the http servlet request
+     * @param httpServletResponse    the http servlet response
      * @return the response entity
      */
-    @RequestMapping(value = "/quartz/resume/triggers", method = {POST, PUT, PATCH}, consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/resume/triggers", method = {POST, PUT, PATCH}, consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public ResponseEntity<RestResponseVO<Boolean>> resumeTriggers(@RequestBody KeyGroupNameDTO triggerKeyGroupNameDTO) {
+    public ResponseEntity<RestResponseVO<Boolean>> resumeTriggers(@RequestBody KeyGroupNameDTO triggerKeyGroupNameDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, BAD_REQUEST.value(), EMPTY);
         try {
             quartzService.resumeTriggers(triggerKeyGroupNameDTO.getKeyName(), triggerKeyGroupNameDTO.getGroupName());
@@ -279,11 +291,13 @@ public class QuartzController extends BaseController {
      * Pause triggers response entity.
      *
      * @param triggerKeyGroupNameDTO the trigger key group name dto
+     * @param httpServletRequest     the http servlet request
+     * @param httpServletResponse    the http servlet response
      * @return the response entity
      */
-    @RequestMapping(value = "/quartz/pause/triggers", method = {POST, PUT, PATCH}, consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/pause/triggers", method = {POST, PUT, PATCH}, consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public ResponseEntity<RestResponseVO<Boolean>> pauseTriggers(@RequestBody KeyGroupNameDTO triggerKeyGroupNameDTO) {
+    public ResponseEntity<RestResponseVO<Boolean>> pauseTriggers(@RequestBody KeyGroupNameDTO triggerKeyGroupNameDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, BAD_REQUEST.value(), EMPTY);
         try {
             quartzService.pauseTriggers(triggerKeyGroupNameDTO.getKeyName(), triggerKeyGroupNameDTO.getGroupName());
@@ -303,12 +317,14 @@ public class QuartzController extends BaseController {
     /**
      * Delete jobs response entity.
      *
-     * @param jobKeyGroupNameDTO the job key group name dto
+     * @param jobKeyGroupNameDTO  the job key group name dto
+     * @param httpServletRequest  the http servlet request
+     * @param httpServletResponse the http servlet response
      * @return the response entity
      */
-    @RequestMapping(value = "/quartz/delete/jobs", method = DELETE, consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/delete/jobs", method = DELETE, consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public ResponseEntity<RestResponseVO<Boolean>> deleteJobs(@RequestBody KeyGroupNameDTO jobKeyGroupNameDTO) {
+    public ResponseEntity<RestResponseVO<Boolean>> deleteJobs(@RequestBody KeyGroupNameDTO jobKeyGroupNameDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, BAD_REQUEST.value(), EMPTY);
         try {
             Boolean deleted = quartzService.deleteJobs(jobKeyGroupNameDTO.getKeyName(), jobKeyGroupNameDTO.getGroupName());
@@ -329,11 +345,13 @@ public class QuartzController extends BaseController {
      * Delete triggers response entity.
      *
      * @param triggerKeyGroupNameDTO the trigger key group name dto
+     * @param httpServletRequest     the http servlet request
+     * @param httpServletResponse    the http servlet response
      * @return the response entity
      */
-    @RequestMapping(value = "/quartz/delete/triggers", method = DELETE, consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/delete/triggers", method = DELETE, consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public ResponseEntity<RestResponseVO<Boolean>> deleteTriggers(@RequestBody KeyGroupNameDTO triggerKeyGroupNameDTO) {
+    public ResponseEntity<RestResponseVO<Boolean>> deleteTriggers(@RequestBody KeyGroupNameDTO triggerKeyGroupNameDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, BAD_REQUEST.value(), EMPTY);
         try {
             Boolean deleted = quartzService.deleteTriggers(triggerKeyGroupNameDTO.getKeyName(), triggerKeyGroupNameDTO.getGroupName());
