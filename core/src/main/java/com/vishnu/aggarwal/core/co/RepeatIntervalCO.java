@@ -26,6 +26,11 @@ public class RepeatIntervalCO {
         return this.repeatForever;
     }
 
+    /**
+     * Gets repeat count.
+     *
+     * @return the repeat count
+     */
     public Integer getRepeatCount() {
         return isNull(this.repeatCount) || this.repeatCount < 1 ? 1 : this.repeatCount;
     }

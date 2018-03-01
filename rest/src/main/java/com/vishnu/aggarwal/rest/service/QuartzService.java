@@ -411,7 +411,8 @@ public class QuartzService {
      *
      * @param keyName   the key name
      * @param groupName the group name
-     * @throws SchedulerException the scheduler exception
+     * @throws SchedulerException            the scheduler exception
+     * @throws ResumeTriggerFailureException the resume trigger failure exception
      */
     public void resumeTriggers(String keyName, String groupName) throws SchedulerException, ResumeTriggerFailureException {
         if (StringUtils.isEmpty(groupName)) {
@@ -430,7 +431,8 @@ public class QuartzService {
      *
      * @param keyName   the key name
      * @param groupName the group name
-     * @throws SchedulerException the scheduler exception
+     * @throws SchedulerException           the scheduler exception
+     * @throws PauseTriggerFailureException the pause trigger failure exception
      */
     public void pauseTriggers(String keyName, String groupName) throws SchedulerException, PauseTriggerFailureException {
         if (StringUtils.isEmpty(groupName)) {
@@ -449,7 +451,8 @@ public class QuartzService {
      *
      * @param keyName   the key name
      * @param groupName the group name
-     * @throws SchedulerException the scheduler exception
+     * @throws SchedulerException        the scheduler exception
+     * @throws ResumeJobFailureException the resume job failure exception
      */
     public void resumeJobs(String keyName, String groupName) throws SchedulerException, ResumeJobFailureException {
         if (StringUtils.isEmpty(groupName)) {
@@ -468,7 +471,8 @@ public class QuartzService {
      *
      * @param keyName   the key name
      * @param groupName the group name
-     * @throws SchedulerException the scheduler exception
+     * @throws SchedulerException       the scheduler exception
+     * @throws PauseJobFailureException the pause job failure exception
      */
     public void pauseJobs(String keyName, String groupName) throws SchedulerException, PauseJobFailureException {
         if (StringUtils.isEmpty(groupName)) {
