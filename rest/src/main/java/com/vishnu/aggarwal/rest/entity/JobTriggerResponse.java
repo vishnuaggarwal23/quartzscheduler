@@ -3,6 +3,7 @@ package com.vishnu.aggarwal.rest.entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
@@ -18,7 +19,7 @@ import java.util.Date;
 @Setter
 @ToString
 @Where(clause = "isDeleted = false")
-
+@SQLDelete(sql = "update QRTZ_TRIGGERS_RESPONSE set isDeleted = true where id = ? and version = ?")
 public class JobTriggerResponse extends BaseEntity<Long> implements Serializable {
 
     private static final long serialVersionUID = -2248190721476487645L;

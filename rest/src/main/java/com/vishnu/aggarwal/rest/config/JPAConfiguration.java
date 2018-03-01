@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * The type Jpa configuration.
@@ -14,6 +15,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EntityScan("com.vishnu.aggarwal.rest.entity")
 @EnableJpaRepositories("com.vishnu.aggarwal.rest.repository")
 @EnableJpaAuditing(auditorAwareRef = "auditorAware")
+@EnableTransactionManagement
 public class JPAConfiguration {
 
     @Bean(value = "auditorAware")
