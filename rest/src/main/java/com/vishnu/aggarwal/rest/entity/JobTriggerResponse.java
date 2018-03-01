@@ -2,6 +2,8 @@ package com.vishnu.aggarwal.rest.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -14,7 +16,10 @@ import java.util.Date;
 @Table(name = "QRTZ_TRIGGERS_RESPONSE")
 @Getter
 @Setter
-public class JobTriggerResponse implements Serializable {
+@ToString
+@Where(clause = "isDeleted = false")
+
+public class JobTriggerResponse extends BaseEntity<Long> implements Serializable {
 
     private static final long serialVersionUID = -2248190721476487645L;
 

@@ -1,21 +1,17 @@
 package com.vishnu.aggarwal.rest.service;
 
-import com.vishnu.aggarwal.core.co.DataTableCO;
 import com.vishnu.aggarwal.core.dto.JobTriggerResponseDTO;
 import com.vishnu.aggarwal.rest.entity.JobTriggerResponse;
 import com.vishnu.aggarwal.rest.repository.JobTriggerResponseRepository;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
@@ -26,7 +22,7 @@ import java.util.Objects;
 @Service
 @Transactional
 @CommonsLog
-public class JobTriggerResponseService {
+public class JobTriggerResponseService extends BaseService<JobTriggerResponse, Long> {
 
     /**
      * The Job trigger response repository.
@@ -34,11 +30,14 @@ public class JobTriggerResponseService {
     @Autowired
     JobTriggerResponseRepository jobTriggerResponseRepository;
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    @Override
+    protected Class<JobTriggerResponse> getEntityClass() {
+        return JobTriggerResponse.class;
+    }
 
-    private Session getSession() {
-        return entityManager.unwrap(Session.class);
+    @Override
+    protected JpaRepository<JobTriggerResponse, Long> getJpaRepository() {
+        return jobTriggerResponseRepository;
     }
 
     /**
@@ -46,7 +45,7 @@ public class JobTriggerResponseService {
      *
      * @param jobTriggerResponseDTO the job trigger response dto
      */
-    public void save(JobTriggerResponseDTO jobTriggerResponseDTO) {
+    public JobTriggerResponse save(JobTriggerResponseDTO jobTriggerResponseDTO) {
         if (Objects.nonNull(jobTriggerResponseDTO)) {
             JobTriggerResponse jobTriggerResponse = new JobTriggerResponse();
             jobTriggerResponse.setTriggerKeyName(jobTriggerResponseDTO.getTriggerKeyName());
@@ -57,8 +56,9 @@ public class JobTriggerResponseService {
             jobTriggerResponse.setResponseHeader(jobTriggerResponseDTO.getResponseHeader());
             jobTriggerResponse.setResponseBody(jobTriggerResponseDTO.getResponseBody());
             jobTriggerResponse.setFireTime(jobTriggerResponseDTO.getFireTime());
-            jobTriggerResponseRepository.save(jobTriggerResponse);
+            return save(jobTriggerResponse);
         }
+        return null;
     }
 
     /**
@@ -67,15 +67,16 @@ public class JobTriggerResponseService {
      * @param jobTriggerResponseDTO the job trigger response dto
      * @return the list
      */
+    @SuppressWarnings("unchecked")
     public List<JobTriggerResponseDTO> fetch(JobTriggerResponseDTO jobTriggerResponseDTO) {
-        return (List<JobTriggerResponseDTO>) getSession().createCriteria(JobTriggerResponse.class)
+        return (List<JobTriggerResponseDTO>) getBaseCriteriaImpl()
                 .addOrder(getCriteriaOrder(jobTriggerResponseDTO))
                 .setReadOnly(Boolean.TRUE)
                 .setFirstResult(jobTriggerResponseDTO.getOffset())
                 .setMaxResults(jobTriggerResponseDTO.getMax())
-                .add(
-                        getRestrictionQuery(jobTriggerResponseDTO)
-                ).setResultTransformer(Transformers.aliasToBean(JobTriggerResponseDTO.class)).list();
+                .add(getRestrictionQuery(jobTriggerResponseDTO))
+                .setResultTransformer(Transformers.aliasToBean(JobTriggerResponseDTO.class))
+                .list();
     }
 
     private Criterion getRestrictionQuery(JobTriggerResponseDTO jobTriggerResponseDTO) {
@@ -90,13 +91,5 @@ public class JobTriggerResponseService {
             return Restrictions.ilike("triggerName", jobTriggerResponseDTO.getTriggerKeyName());
         }
         return Restrictions.isNotNull("id");
-    }
-
-    private Order getCriteriaOrder(DataTableCO dataTableCO) {
-        if (dataTableCO.getOrderBy().equalsIgnoreCase("desc")) {
-            return Order.desc(StringUtils.isEmpty(dataTableCO.getSortBy()) ? "id" : dataTableCO.getSortBy());
-        } else {
-            return Order.asc(StringUtils.isEmpty(dataTableCO.getSortBy()) ? "id" : dataTableCO.getSortBy());
-        }
     }
 }
