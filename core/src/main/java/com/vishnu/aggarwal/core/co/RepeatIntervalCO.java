@@ -4,6 +4,8 @@ import com.vishnu.aggarwal.core.enums.RepeatUnit;
 import lombok.Getter;
 import lombok.Setter;
 
+import static java.util.Objects.isNull;
+
 /**
  * The type Repeat interval co.
  */
@@ -21,6 +23,10 @@ public class RepeatIntervalCO {
      * @return the repeat forever
      */
     public Boolean getRepeatForever() {
-        return Boolean.TRUE;
+        return this.repeatForever;
+    }
+
+    public Integer getRepeatCount() {
+        return isNull(this.repeatCount) || this.repeatCount < 1 ? 1 : this.repeatCount;
     }
 }

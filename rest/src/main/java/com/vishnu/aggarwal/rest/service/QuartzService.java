@@ -27,7 +27,7 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
-import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
+import static org.quartz.SimpleScheduleBuilder.*;
 import static org.quartz.TriggerBuilder.newTrigger;
 import static org.quartz.impl.matchers.GroupMatcher.jobGroupEquals;
 import static org.quartz.impl.matchers.GroupMatcher.triggerGroupEquals;
@@ -111,17 +111,23 @@ public class QuartzService {
         switch (quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatType()) {
             case REPEAT_BY_SECOND:
                 if (quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatForever()) {
-                    triggerBuilder = triggerBuilder.withSchedule(simpleSchedule().withIntervalInSeconds(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()).repeatForever());
+                    triggerBuilder = triggerBuilder.withSchedule(repeatSecondlyForever(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()));
+                } else {
+                    triggerBuilder = triggerBuilder.withSchedule(repeatSecondlyForTotalCount(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatCount(), quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()));
                 }
                 break;
             case REPEAT_BY_MINUTE:
                 if (quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatForever()) {
-                    triggerBuilder = triggerBuilder.withSchedule(simpleSchedule().withIntervalInMinutes(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()).repeatForever());
+                    triggerBuilder = triggerBuilder.withSchedule(repeatMinutelyForever(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()));
+                } else {
+                    triggerBuilder = triggerBuilder.withSchedule(repeatMinutelyForTotalCount(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatCount(), quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()));
                 }
                 break;
             case REPEAT_BY_HOUR:
                 if (quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatForever()) {
-                    triggerBuilder = triggerBuilder.withSchedule(simpleSchedule().withIntervalInHours(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()).repeatForever());
+                    triggerBuilder = triggerBuilder.withSchedule(repeatHourlyForever(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()));
+                } else {
+                    triggerBuilder = triggerBuilder.withSchedule(repeatHourlyForTotalCount(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatCount(), quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()));
                 }
                 break;
         }
@@ -198,17 +204,23 @@ public class QuartzService {
         switch (quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatType()) {
             case REPEAT_BY_SECOND:
                 if (quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatForever()) {
-                    triggerBuilder = triggerBuilder.withSchedule(simpleSchedule().withIntervalInSeconds(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()).repeatForever());
+                    triggerBuilder = triggerBuilder.withSchedule(repeatSecondlyForever(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()));
+                } else {
+                    triggerBuilder = triggerBuilder.withSchedule(repeatSecondlyForTotalCount(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatCount(), quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()));
                 }
                 break;
             case REPEAT_BY_MINUTE:
                 if (quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatForever()) {
-                    triggerBuilder = triggerBuilder.withSchedule(simpleSchedule().withIntervalInMinutes(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()).repeatForever());
+                    triggerBuilder = triggerBuilder.withSchedule(repeatMinutelyForever(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()));
+                } else {
+                    triggerBuilder = triggerBuilder.withSchedule(repeatMinutelyForTotalCount(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatCount(), quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()));
                 }
                 break;
             case REPEAT_BY_HOUR:
                 if (quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatForever()) {
-                    triggerBuilder = triggerBuilder.withSchedule(simpleSchedule().withIntervalInHours(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()).repeatForever());
+                    triggerBuilder = triggerBuilder.withSchedule(repeatHourlyForever(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()));
+                } else {
+                    triggerBuilder = triggerBuilder.withSchedule(repeatHourlyForTotalCount(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatCount(), quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()));
                 }
                 break;
         }
