@@ -15,8 +15,10 @@ import lombok.Setter;
 public class TriggerDeleteFailureException extends Exception {
     /**
      * Instantiates a new Trigger delete failure exception.
+     *
+     * @param message the message
      */
-    public TriggerDeleteFailureException() {
-        super("quartz.triggers.delete.failure");
+    public TriggerDeleteFailureException(String message) {
+        super(message);
     }
 }

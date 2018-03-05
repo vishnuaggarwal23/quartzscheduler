@@ -38,8 +38,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
  */
 @Service
 @CommonsLog
-
-public class QuartzService {
+public class QuartzService extends BaseService {
 
     /**
      * The Scheduler factory bean.
@@ -134,7 +133,7 @@ public class QuartzService {
         Date scheduledDate = quartzScheduler.scheduleJob(jobDetail, triggerBuilder.build());
 
         if (isNull(scheduledDate)) {
-            throw new JobNotScheduledException();
+            throw new JobNotScheduledException(getMessage("quartz.job.scheduling.exception"));
         }
 
         return scheduledDate;
@@ -173,7 +172,7 @@ public class QuartzService {
         Date scheduledDate = quartzScheduler.scheduleJob(jobDetail, triggerBuilder.build());
 
         if (isNull(scheduledDate)) {
-            throw new JobNotScheduledException();
+            throw new JobNotScheduledException(getMessage("quartz.job.scheduling.exception"));
         }
 
         return scheduledDate;
@@ -228,7 +227,7 @@ public class QuartzService {
         Date scheduledDate = quartzScheduler.scheduleJob(triggerBuilder.build());
 
         if (isNull(scheduledDate)) {
-            throw new TriggerNotScheduledException();
+            throw new TriggerNotScheduledException(getMessage("quartz.trigger.scheduling.exception"));
         }
 
         return scheduledDate;
@@ -260,7 +259,7 @@ public class QuartzService {
         Date scheduledDate = quartzScheduler.scheduleJob(triggerBuilder.build());
 
         if (isNull(scheduledDate)) {
-            throw new TriggerNotScheduledException();
+            throw new TriggerNotScheduledException(getMessage("quartz.trigger.scheduling.exception"));
         }
 
         return scheduledDate;
@@ -276,13 +275,13 @@ public class QuartzService {
      */
     public List<JobDetailsCO> fetchJobDetailsByGroupName(String groupName) throws SchedulerException, JobDetailNotFoundException {
         if (StringUtils.isEmpty(groupName)) {
-            throw new JobDetailNotFoundException();
+            throw new JobDetailNotFoundException(getMessage("no.job.details.found"));
         }
 
         Set<JobKey> jobKeys = quartzScheduler.getJobKeys(jobGroupEquals(groupName));
 
         if (isEmpty(jobKeys)) {
-            throw new JobDetailNotFoundException();
+            throw new JobDetailNotFoundException(getMessage("no.job.details.found"));
         }
 
         List<JobDetailsCO> jobDetails = new ArrayList<JobDetailsCO>();
@@ -304,7 +303,7 @@ public class QuartzService {
         }
 
         if (isEmpty(jobDetails)) {
-            throw new JobDetailNotFoundException();
+            throw new JobDetailNotFoundException(getMessage("no.job.details.found"));
         }
 
         jobDetails.sort((o1, o2) -> o1.getKeyName().compareToIgnoreCase(o2.getKeyName()));
@@ -323,13 +322,13 @@ public class QuartzService {
     @SuppressWarnings("unchecked")
     public List<TriggerDetailsCO> fetchTriggerDetailsByJobKeyNameAndGroupName(String jobKeyName, String groupName) throws SchedulerException, TriggerDetailNotFoundException {
         if (StringUtils.isEmpty(groupName)) {
-            throw new TriggerDetailNotFoundException();
+            throw new TriggerDetailNotFoundException(getMessage("no.triggers.details.found"));
         }
 
         List<Trigger> triggers = (List<Trigger>) quartzScheduler.getTriggersOfJob(new JobKey(jobKeyName, groupName));
 
         if (isEmpty(triggers)) {
-            throw new TriggerDetailNotFoundException();
+            throw new TriggerDetailNotFoundException(getMessage("no.triggers.details.found"));
         }
 
         List<TriggerDetailsCO> triggerDetails = new ArrayList<TriggerDetailsCO>();
@@ -363,7 +362,7 @@ public class QuartzService {
         }
 
         if (isEmpty(triggerDetails)) {
-            throw new TriggerDetailNotFoundException();
+            throw new TriggerDetailNotFoundException(getMessage("no.triggers.details.found"));
         }
 
         triggerDetails.sort(((o1, o2) -> o1.getKeyName().compareToIgnoreCase(o2.getKeyName())));
@@ -382,13 +381,13 @@ public class QuartzService {
      */
     public List<QuartzDetailsCO> fetchQuartzDetailsForAGroupName(String groupName) throws SchedulerException, JobDetailNotFoundException, QuartzDetailNotFoundException, TriggerDetailNotFoundException {
         if (StringUtils.isEmpty(groupName)) {
-            throw new QuartzDetailNotFoundException();
+            throw new QuartzDetailNotFoundException(getMessage("no.quartz.details.found"));
         }
 
         List<JobDetailsCO> jobDetails = fetchJobDetailsByGroupName(groupName);
 
         if (isEmpty(jobDetails)) {
-            throw new QuartzDetailNotFoundException();
+            throw new QuartzDetailNotFoundException(getMessage("no.quartz.details.found"));
         }
 
         List<QuartzDetailsCO> quartzDetails = new ArrayList<QuartzDetailsCO>();
@@ -399,7 +398,7 @@ public class QuartzService {
         }
 
         if (isEmpty(quartzDetails)) {
-            throw new QuartzDetailNotFoundException();
+            throw new QuartzDetailNotFoundException(getMessage("no.quartz.details.found"));
         }
 
         quartzDetails.sort(((o1, o2) -> o1.getJobDetails().getKeyName().compareToIgnoreCase(o2.getJobDetails().getKeyName())));
@@ -416,7 +415,7 @@ public class QuartzService {
      */
     public void resumeTriggers(String keyName, String groupName) throws SchedulerException, ResumeTriggerFailureException {
         if (StringUtils.isEmpty(groupName)) {
-            throw new ResumeTriggerFailureException();
+            throw new ResumeTriggerFailureException(getMessage("quartz.trigger.resume.failure"));
         }
 
         if (isNotEmpty(keyName)) {
@@ -436,7 +435,7 @@ public class QuartzService {
      */
     public void pauseTriggers(String keyName, String groupName) throws SchedulerException, PauseTriggerFailureException {
         if (StringUtils.isEmpty(groupName)) {
-            throw new PauseTriggerFailureException();
+            throw new PauseTriggerFailureException(getMessage("quartz.trigger.pause.failure"));
         }
 
         if (isNotEmpty(keyName)) {
@@ -456,7 +455,7 @@ public class QuartzService {
      */
     public void resumeJobs(String keyName, String groupName) throws SchedulerException, ResumeJobFailureException {
         if (StringUtils.isEmpty(groupName)) {
-            throw new ResumeJobFailureException();
+            throw new ResumeJobFailureException(getMessage("quartz.job.resume.failure"));
         }
 
         if (isNotEmpty(keyName)) {
@@ -476,7 +475,7 @@ public class QuartzService {
      */
     public void pauseJobs(String keyName, String groupName) throws SchedulerException, PauseJobFailureException {
         if (StringUtils.isEmpty(groupName)) {
-            throw new PauseJobFailureException();
+            throw new PauseJobFailureException(getMessage("quartz.job.pause.failure"));
         }
 
         if (isNotEmpty(keyName)) {
@@ -498,7 +497,7 @@ public class QuartzService {
     public Boolean deleteJobs(String keyName, String groupName) throws SchedulerException, JobDeleteFailureException {
 
         if (StringUtils.isEmpty(groupName)) {
-            throw new JobDeleteFailureException();
+            throw new JobDeleteFailureException(getMessage("quartz.jobs.delete.failure"));
         }
 
         Boolean deleted = FALSE;
@@ -509,7 +508,7 @@ public class QuartzService {
         }
 
         if (isFalse(deleted)) {
-            throw new JobDeleteFailureException();
+            throw new JobDeleteFailureException(getMessage("quartz.jobs.delete.failure"));
         }
 
         return deleted;
@@ -527,7 +526,7 @@ public class QuartzService {
     public Boolean deleteTriggers(String keyName, String groupName) throws SchedulerException, TriggerDeleteFailureException {
 
         if (StringUtils.isEmpty(groupName)) {
-            throw new TriggerDeleteFailureException();
+            throw new TriggerDeleteFailureException(getMessage("quartz.triggers.delete.failure"));
         }
 
         Boolean deleted = FALSE;
@@ -538,7 +537,7 @@ public class QuartzService {
         }
 
         if (isFalse(deleted)) {
-            throw new TriggerDeleteFailureException();
+            throw new TriggerDeleteFailureException(getMessage("quartz.triggers.delete.failure"));
         }
 
         return deleted;

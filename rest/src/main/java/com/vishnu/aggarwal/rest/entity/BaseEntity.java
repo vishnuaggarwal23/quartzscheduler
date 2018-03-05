@@ -22,6 +22,11 @@ import java.util.Date;
 
 import static javax.persistence.TemporalType.TIMESTAMP;
 
+/**
+ * The type Base entity.
+ *
+ * @param <ID> the type parameter
+ */
 @Getter
 @Setter
 @MappedSuperclass
@@ -31,6 +36,11 @@ public abstract class BaseEntity<ID> implements Serializable {
 
     private static final long serialVersionUID = -2248190721476487645L;
 
+    /**
+     * Gets id.
+     *
+     * @return the id
+     */
     protected abstract ID getId();
 
     private Boolean isDeleted = Boolean.FALSE;

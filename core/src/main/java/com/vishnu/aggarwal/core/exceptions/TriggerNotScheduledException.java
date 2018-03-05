@@ -15,8 +15,10 @@ import lombok.Setter;
 public class TriggerNotScheduledException extends Exception {
     /**
      * Instantiates a new Trigger not scheduled exception.
+     *
+     * @param message the message
      */
-    public TriggerNotScheduledException() {
-        super("quartz.trigger.scheduling.exception");
+    public TriggerNotScheduledException(String message) {
+        super(message);
     }
 }

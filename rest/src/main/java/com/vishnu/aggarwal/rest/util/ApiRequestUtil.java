@@ -3,7 +3,7 @@ package com.vishnu.aggarwal.rest.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vishnu.aggarwal.core.dto.JobTriggerResponseDTO;
-import com.vishnu.aggarwal.rest.service.JobTriggerResponseService;
+import com.vishnu.aggarwal.rest.service.JobTriggerResponseRepoService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ abstract class ApiRequestUtil {
      * The Job trigger response service.
      */
     @Autowired
-    JobTriggerResponseService jobTriggerResponseService;
+    JobTriggerResponseRepoService jobTriggerResponseRepoService;
 
     private String convertResponseToString(Object response) {
         try {

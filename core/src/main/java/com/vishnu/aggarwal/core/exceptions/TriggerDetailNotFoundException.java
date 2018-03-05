@@ -15,8 +15,10 @@ import lombok.Setter;
 public class TriggerDetailNotFoundException extends Exception {
     /**
      * Instantiates a new Trigger detail not found exception.
+     *
+     * @param message the message
      */
-    public TriggerDetailNotFoundException() {
-        super("no.triggers.details.found");
+    public TriggerDetailNotFoundException(String message) {
+        super(message);
     }
 }

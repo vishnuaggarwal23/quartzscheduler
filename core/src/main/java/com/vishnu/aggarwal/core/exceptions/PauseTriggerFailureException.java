@@ -15,8 +15,10 @@ import lombok.Setter;
 public class PauseTriggerFailureException extends Exception {
     /**
      * Instantiates a new Pause trigger failure exception.
+     *
+     * @param message the message
      */
-    public PauseTriggerFailureException() {
-        super("quartz.trigger.pause.failure");
+    public PauseTriggerFailureException(String message) {
+        super(message);
     }
 }

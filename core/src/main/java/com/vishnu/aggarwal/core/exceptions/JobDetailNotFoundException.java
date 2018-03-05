@@ -15,8 +15,10 @@ import lombok.Setter;
 public class JobDetailNotFoundException extends Exception {
     /**
      * Instantiates a new Job detail not found exception.
+     *
+     * @param exceptionMessage the exception message
      */
-    public JobDetailNotFoundException() {
-        super("no.job.details.found");
+    public JobDetailNotFoundException(String exceptionMessage) {
+        super(exceptionMessage);
     }
 }

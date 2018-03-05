@@ -15,8 +15,10 @@ import lombok.Setter;
 public class JobDeleteFailureException extends Exception {
     /**
      * Instantiates a new Job delete failure exception.
+     *
+     * @param message the message
      */
-    public JobDeleteFailureException() {
-        super("quartz.jobs.delete.failure");
+    public JobDeleteFailureException(String message) {
+        super(message);
     }
 }

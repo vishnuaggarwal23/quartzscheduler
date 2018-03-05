@@ -15,8 +15,10 @@ import lombok.Setter;
 public class JobTypeNotFoundException extends Exception {
     /**
      * Instantiates a new Job type not found exception.
+     *
+     * @param message the message
      */
-    public JobTypeNotFoundException() {
-        super("no.job.type.found");
+    public JobTypeNotFoundException(String message) {
+        super(message);
     }
 }

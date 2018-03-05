@@ -12,6 +12,9 @@ import org.springframework.context.ApplicationListener;
 @CommonsLog
 @Getter
 public abstract class ApplicationReadyEventHandlerService implements ApplicationListener<ApplicationEvent> {
+    /**
+     * The Bootstrap enabled.
+     */
     @Value("${bootstrap.enabled:false}")
     Boolean bootstrapEnabled;
 }

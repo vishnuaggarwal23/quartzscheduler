@@ -22,7 +22,7 @@ import java.util.Objects;
 @Service
 @Transactional
 @CommonsLog
-public class JobTriggerResponseService extends BaseService<JobTriggerResponse, Long> {
+public class JobTriggerResponseRepoService extends BaseRepoService<JobTriggerResponse, Long> {
 
     /**
      * The Job trigger response repository.
@@ -44,6 +44,7 @@ public class JobTriggerResponseService extends BaseService<JobTriggerResponse, L
      * Save.
      *
      * @param jobTriggerResponseDTO the job trigger response dto
+     * @return the job trigger response
      */
     public JobTriggerResponse save(JobTriggerResponseDTO jobTriggerResponseDTO) {
         if (Objects.nonNull(jobTriggerResponseDTO)) {

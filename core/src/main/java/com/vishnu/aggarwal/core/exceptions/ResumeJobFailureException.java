@@ -15,8 +15,10 @@ import lombok.Setter;
 public class ResumeJobFailureException extends Exception {
     /**
      * Instantiates a new Resume job failure exception.
+     *
+     * @param message the message
      */
-    public ResumeJobFailureException() {
-        super("quartz.job.resume.failure");
+    public ResumeJobFailureException(String message) {
+        super(message);
     }
 }

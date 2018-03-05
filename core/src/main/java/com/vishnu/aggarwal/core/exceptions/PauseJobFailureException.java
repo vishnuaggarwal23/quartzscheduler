@@ -15,8 +15,10 @@ import lombok.Setter;
 public class PauseJobFailureException extends Exception {
     /**
      * Instantiates a new Pause job failure exception.
+     *
+     * @param message the message
      */
-    public PauseJobFailureException() {
-        super("quartz.job.pause.failure");
+    public PauseJobFailureException(String message) {
+        super(message);
     }
 }

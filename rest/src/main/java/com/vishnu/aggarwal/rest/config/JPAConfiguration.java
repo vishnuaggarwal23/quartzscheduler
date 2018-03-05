@@ -18,6 +18,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 public class JPAConfiguration {
 
+    /**
+     * Auditor aware auditor aware.
+     *
+     * @return the auditor aware
+     */
     @Bean(value = "auditorAware")
     public AuditorAware<String> auditorAware() {
         return new AuditorAwareImpl();

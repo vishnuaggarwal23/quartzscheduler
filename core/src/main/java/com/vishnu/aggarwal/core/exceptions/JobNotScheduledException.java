@@ -15,8 +15,10 @@ import lombok.Setter;
 public class JobNotScheduledException extends Exception {
     /**
      * Instantiates a new Job not scheduled exception.
+     *
+     * @param message the message
      */
-    public JobNotScheduledException() {
-        super("quartz.job.scheduling.exception");
+    public JobNotScheduledException(String message) {
+        super(message);
     }
 }

@@ -65,26 +65,26 @@ public class QuartzController extends BaseController {
                 if (isTrue(quartzDTO.getJob().getScheduled())) {
                     if (quartzDTO.getScheduleType().equals(SIMPLE)) {
                         scheduledJobDate = quartzService.createNewScheduledApiSimpleJob(quartzDTO);
-                        setRestResponseVO(restResponseVO, "Job created & scheduled at " + scheduledJobDate, ACCEPTED, "quartz.job.created.and.scheduled");
+                        setRestResponseVO(restResponseVO, "Job created & scheduled at " + scheduledJobDate, OK, getMessage("quartz.job.created.and.scheduled"));
                     } else if (quartzDTO.getScheduleType().equals(CRON)) {
                         scheduledJobDate = quartzService.createNewScheduledApiCronJob(quartzDTO);
-                        setRestResponseVO(restResponseVO, "Job created & scheduled at " + scheduledJobDate, ACCEPTED, "quartz.job.created.and.scheduled");
+                        setRestResponseVO(restResponseVO, "Job created & scheduled at " + scheduledJobDate, OK, getMessage("quartz.job.created.and.scheduled"));
                     } else {
-                        throw new ScheduleTypeNotFoundException();
+                        throw new ScheduleTypeNotFoundException(getMessage(getMessage("no.scheduling.type.found")));
                     }
                 } else {
                     quartzService.createNewUnscheduledApiJob(quartzDTO);
-                    setRestResponseVO(restResponseVO, null, ACCEPTED, "quartz.job.created");
+                    setRestResponseVO(restResponseVO, null, OK, getMessage("quartz.job.created"));
                 }
             } else {
-                throw new JobTypeNotFoundException();
+                throw new JobTypeNotFoundException(getMessage("no.job.type.found"));
             }
         } catch (JobNotScheduledException | ClassNotFoundException | SchedulerException | JobTypeNotFoundException | ScheduleTypeNotFoundException e) {
-            log.error("********* Error while creating a new job ********** \n", e);
+            log.error("********* Error while creating a new job ********** \n");
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
         } catch (Exception e) {
-            log.error("********* Error while creating a new job ********** \n", e);
+            log.error("********* Error while creating a new job ********** \n");
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
         }
@@ -107,19 +107,19 @@ public class QuartzController extends BaseController {
             Date scheduledTriggerDate = null;
             if (quartzDTO.getScheduleType().equals(SIMPLE)) {
                 scheduledTriggerDate = quartzService.createNewSimpleTriggerForJob(quartzDTO);
-                setRestResponseVO(restResponseVO, "Trigger created and scheduled at " + scheduledTriggerDate, ACCEPTED, "quartz.trigger.created.and.scheduled");
+                setRestResponseVO(restResponseVO, "Trigger created and scheduled at " + scheduledTriggerDate, OK, getMessage("quartz.trigger.created.and.scheduled"));
             } else if (quartzDTO.getScheduleType().equals(CRON)) {
                 scheduledTriggerDate = quartzService.createNewCronTriggerForJob(quartzDTO);
-                setRestResponseVO(restResponseVO, "Trigger created and scheduled at " + scheduledTriggerDate, ACCEPTED, "quartz.trigger.created.and.scheduled");
+                setRestResponseVO(restResponseVO, "Trigger created and scheduled at " + scheduledTriggerDate, OK, getMessage("quartz.trigger.created.and.scheduled"));
             } else {
-                throw new ScheduleTypeNotFoundException();
+                throw new ScheduleTypeNotFoundException(getMessage(getMessage("no.scheduling.type.found")));
             }
         } catch (ScheduleTypeNotFoundException | TriggerNotScheduledException | SchedulerException e) {
-            log.error("********* Error while creating a new trigger ********** \n", e);
+            log.error("********* Error while creating a new trigger ********** \n");
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
         } catch (Exception e) {
-            log.error("********* Error while creating a new trigger ********** \n", e);
+            log.error("********* Error while creating a new trigger ********** \n");
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
         }
@@ -142,12 +142,12 @@ public class QuartzController extends BaseController {
         try {
             List<JobDetailsCO> jobDetails = quartzService.fetchJobDetailsByGroupName(groupName);
             setDataTableVO(jobDetailsCODataTableVO, jobDetails.size(), jobDetails.size(), jobDetails.size(), jobDetails);
-            httpStatus = ACCEPTED;
+            httpStatus = OK;
         } catch (JobDetailNotFoundException | SchedulerException e) {
-            log.error("********** Error while fetching jobs by group name ********** \n", e);
+            log.error("********** Error while fetching jobs by group name ********** \n");
             e.printStackTrace();
         } catch (Exception e) {
-            log.error("********** Error while fetching jobs by group name ********** \n", e);
+            log.error("********** Error while fetching jobs by group name ********** \n");
             e.printStackTrace();
         }
         return new ResponseEntity<DataTableVO<JobDetailsCO>>(jobDetailsCODataTableVO, httpStatus);
@@ -170,12 +170,12 @@ public class QuartzController extends BaseController {
         try {
             List<TriggerDetailsCO> triggerDetails = quartzService.fetchTriggerDetailsByJobKeyNameAndGroupName(jobKeyName, groupName);
             setDataTableVO(triggerDetailsCODataTableVO, triggerDetails.size(), triggerDetails.size(), triggerDetails.size(), triggerDetails);
-            httpStatus = ACCEPTED;
+            httpStatus = OK;
         } catch (TriggerDetailNotFoundException | SchedulerException e) {
-            log.error("*********** Error while fetching triggers by job key and group name", e);
+            log.error("*********** Error while fetching triggers by job key and group name");
             e.printStackTrace();
         } catch (Exception e) {
-            log.error("*********** Error while fetching triggers by job key and group name", e);
+            log.error("*********** Error while fetching triggers by job key and group name");
             e.printStackTrace();
         }
         return new ResponseEntity<DataTableVO<TriggerDetailsCO>>(triggerDetailsCODataTableVO, httpStatus);
@@ -197,12 +197,12 @@ public class QuartzController extends BaseController {
         try {
             List<QuartzDetailsCO> quartzDetails = quartzService.fetchQuartzDetailsForAGroupName(groupName);
             setDataTableVO(quartzDetailsCODataTableVO, quartzDetails.size(), quartzDetails.size(), quartzDetails.size(), quartzDetails);
-            httpStatus = ACCEPTED;
+            httpStatus = OK;
         } catch (QuartzDetailNotFoundException | TriggerDetailNotFoundException | JobDetailNotFoundException | SchedulerException e) {
-            log.error("************* Error while fetching quartz details by group name", e);
+            log.error("************* Error while fetching quartz details by group name");
             e.printStackTrace();
         } catch (Exception e) {
-            log.error("************* Error while fetching quartz details by group name", e);
+            log.error("************* Error while fetching quartz details by group name");
             e.printStackTrace();
         }
         return new ResponseEntity<DataTableVO<QuartzDetailsCO>>(quartzDetailsCODataTableVO, httpStatus);
@@ -222,13 +222,13 @@ public class QuartzController extends BaseController {
         RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, BAD_REQUEST.value(), EMPTY);
         try {
             quartzService.resumeJobs(jobKeyGroupNameDTO.getKeyName(), jobKeyGroupNameDTO.getGroupName());
-            setRestResponseVO(restResponseVO, TRUE, ACCEPTED, "quartz.jobs.resume.success");
+            setRestResponseVO(restResponseVO, TRUE, OK, getMessage("quartz.jobs.resume.success"));
         } catch (SchedulerException | ResumeJobFailureException e) {
-            log.error("************* Error while resuming job ************ \n", e);
+            log.error("************* Error while resuming job ************ \n");
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
         } catch (Exception e) {
-            log.error("************* Error while resuming job ************ \n", e);
+            log.error("************* Error while resuming job ************ \n");
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
         }
@@ -249,7 +249,7 @@ public class QuartzController extends BaseController {
         RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, BAD_REQUEST.value(), EMPTY);
         try {
             quartzService.pauseJobs(jobKeyGroupNameDTO.getKeyName(), jobKeyGroupNameDTO.getGroupName());
-            setRestResponseVO(restResponseVO, TRUE, ACCEPTED, "quartz.jobs.pause.success");
+            setRestResponseVO(restResponseVO, TRUE, OK, getMessage("quartz.jobs.pause.success"));
         } catch (SchedulerException | PauseJobFailureException e) {
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
@@ -274,13 +274,13 @@ public class QuartzController extends BaseController {
         RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, BAD_REQUEST.value(), EMPTY);
         try {
             quartzService.resumeTriggers(triggerKeyGroupNameDTO.getKeyName(), triggerKeyGroupNameDTO.getGroupName());
-            setRestResponseVO(restResponseVO, TRUE, ACCEPTED, "quartz.triggers.resume.success");
+            setRestResponseVO(restResponseVO, TRUE, OK, getMessage("quartz.triggers.resume.success"));
         } catch (SchedulerException | ResumeTriggerFailureException e) {
-            log.error("************** Error while resuming trigger(s) ********** \n", e);
+            log.error("************** Error while resuming trigger(s) ********** \n");
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
         } catch (Exception e) {
-            log.error("************** Error while resuming trigger(s) ********** \n", e);
+            log.error("************** Error while resuming trigger(s) ********** \n");
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
         }
@@ -301,13 +301,13 @@ public class QuartzController extends BaseController {
         RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, BAD_REQUEST.value(), EMPTY);
         try {
             quartzService.pauseTriggers(triggerKeyGroupNameDTO.getKeyName(), triggerKeyGroupNameDTO.getGroupName());
-            setRestResponseVO(restResponseVO, TRUE, ACCEPTED, "quartz.triggers.pause.success");
+            setRestResponseVO(restResponseVO, TRUE, OK, getMessage("quartz.triggers.pause.success"));
         } catch (SchedulerException | PauseTriggerFailureException e) {
-            log.error("************ Error while pausing trigger(s) ************* \n", e);
+            log.error("************ Error while pausing trigger(s) ************* \n");
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
         } catch (Exception e) {
-            log.error("************ Error while pausing trigger(s) ************* \n", e);
+            log.error("************ Error while pausing trigger(s) ************* \n");
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
         }
@@ -328,13 +328,13 @@ public class QuartzController extends BaseController {
         RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, BAD_REQUEST.value(), EMPTY);
         try {
             Boolean deleted = quartzService.deleteJobs(jobKeyGroupNameDTO.getKeyName(), jobKeyGroupNameDTO.getGroupName());
-            setRestResponseVO(restResponseVO, deleted, ACCEPTED, "quartz.jobs.delete.success");
+            setRestResponseVO(restResponseVO, deleted, OK, getMessage("quartz.jobs.delete.success"));
         } catch (SchedulerException | JobDeleteFailureException e) {
-            log.error("************ Error while deleting job(s) *************** \n", e);
+            log.error("************ Error while deleting job(s) *************** \n");
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
         } catch (Exception e) {
-            log.error("************ Error while deleting job(s) *************** \n", e);
+            log.error("************ Error while deleting job(s) *************** \n");
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
         }
@@ -355,13 +355,13 @@ public class QuartzController extends BaseController {
         RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, BAD_REQUEST.value(), EMPTY);
         try {
             Boolean deleted = quartzService.deleteTriggers(triggerKeyGroupNameDTO.getKeyName(), triggerKeyGroupNameDTO.getGroupName());
-            setRestResponseVO(restResponseVO, deleted, ACCEPTED, "quartz.triggers.delete.success");
+            setRestResponseVO(restResponseVO, deleted, OK, getMessage("quartz.triggers.delete.success"));
         } catch (SchedulerException | TriggerDeleteFailureException e) {
-            log.error("************* Error while deleting trigger(s) *************** \n", e);
+            log.error("************* Error while deleting trigger(s) *************** \n");
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
         } catch (Exception e) {
-            log.error("************* Error while deleting trigger(s) *************** \n", e);
+            log.error("************* Error while deleting trigger(s) *************** \n");
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
         }

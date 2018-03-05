@@ -15,8 +15,10 @@ import lombok.Setter;
 public class ResumeTriggerFailureException extends Exception {
     /**
      * Instantiates a new Resume trigger failure exception.
+     *
+     * @param message the message
      */
-    public ResumeTriggerFailureException() {
-        super("quartz.trigger.resume.failure");
+    public ResumeTriggerFailureException(String message) {
+        super(message);
     }
 }

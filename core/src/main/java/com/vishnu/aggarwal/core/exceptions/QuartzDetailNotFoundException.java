@@ -15,8 +15,10 @@ import lombok.Setter;
 public class QuartzDetailNotFoundException extends Exception {
     /**
      * Instantiates a new Quartz detail not found exception.
+     *
+     * @param message the message
      */
-    public QuartzDetailNotFoundException() {
-        super("no.quartz.details.found");
+    public QuartzDetailNotFoundException(String message) {
+        super(message);
     }
 }

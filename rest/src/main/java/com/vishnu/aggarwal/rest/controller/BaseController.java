@@ -4,9 +4,11 @@ package com.vishnu.aggarwal.rest.controller;
 Created by vishnu on 28/2/18 1:26 PM
 */
 
+import com.vishnu.aggarwal.core.BaseMessageResolver;
 import com.vishnu.aggarwal.core.vo.DataTableVO;
 import com.vishnu.aggarwal.core.vo.RestResponseVO;
 import lombok.extern.apachecommons.CommonsLog;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
@@ -16,6 +18,22 @@ import java.util.List;
  */
 @CommonsLog
 public class BaseController {
+
+    /**
+     * The Base message resolver.
+     */
+    @Autowired
+    BaseMessageResolver baseMessageResolver;
+
+    /**
+     * Get message string.
+     *
+     * @param messageCode the message code
+     * @return the string
+     */
+    protected String getMessage(String messageCode) {
+        return baseMessageResolver.getMessage(messageCode);
+    }
 
     /**
      * Set rest response vo.

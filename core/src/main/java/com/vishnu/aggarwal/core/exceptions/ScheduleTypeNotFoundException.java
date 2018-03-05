@@ -15,8 +15,10 @@ import lombok.Setter;
 public class ScheduleTypeNotFoundException extends Exception {
     /**
      * Instantiates a new Schedule type not found exception.
+     *
+     * @param message the message
      */
-    public ScheduleTypeNotFoundException() {
-        super("no.scheduling.type.found");
+    public ScheduleTypeNotFoundException(String message) {
+        super(message);
     }
 }

@@ -46,6 +46,6 @@ public class ApiPostRequestUtil extends ApiRequestUtil implements Job {
             }
         });
 
-        jobTriggerResponseService.save(constructJobTriggerResponseDTO(restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<String>("parameters", httpHeaders), String.class), context));
+        jobTriggerResponseRepoService.save(constructJobTriggerResponseDTO(restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<String>("parameters", httpHeaders), String.class), context));
     }
 }
