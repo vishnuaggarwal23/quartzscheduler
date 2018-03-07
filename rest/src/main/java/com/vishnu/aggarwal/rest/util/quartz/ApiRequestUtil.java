@@ -1,9 +1,9 @@
-package com.vishnu.aggarwal.rest.util;
+package com.vishnu.aggarwal.rest.util.quartz;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vishnu.aggarwal.core.dto.JobTriggerResponseDTO;
-import com.vishnu.aggarwal.rest.service.JobTriggerResponseRepoService;
+import com.vishnu.aggarwal.rest.service.repository.JobTriggerResponseRepoService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;

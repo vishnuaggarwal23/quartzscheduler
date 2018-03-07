@@ -1,5 +1,6 @@
 package com.vishnu.aggarwal.rest.config;
 
+import com.vishnu.aggarwal.rest.entity.User;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +25,7 @@ public class JPAConfiguration {
      * @return the auditor aware
      */
     @Bean(value = "auditorAware")
-    public AuditorAware<String> auditorAware() {
+    public AuditorAware<User> auditorAware() {
         return new AuditorAwareImpl();
     }
 }

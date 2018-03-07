@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * The type Base service.
  */
-public class BaseService {
+public abstract class BaseService {
 
     /**
      * The Base message resolver.

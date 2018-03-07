@@ -1,10 +1,11 @@
-package com.vishnu.aggarwal.rest.service;
+package com.vishnu.aggarwal.rest.service.repository;
 
 /*
 Created by vishnu on 1/3/18 1:00 PM
 */
 
 import com.vishnu.aggarwal.core.co.DataTableCO;
+import com.vishnu.aggarwal.rest.service.BaseService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -51,7 +52,7 @@ public abstract class BaseRepoService<T, ID extends Serializable> extends BaseSe
      *
      * @return the criteria
      */
-    Criteria getBaseCriteriaImpl() {
+    protected Criteria getBaseCriteriaImpl() {
         return getSession().createCriteria(getEntityClass());
     }
 

@@ -1,4 +1,4 @@
-package com.vishnu.aggarwal.rest.util;
+package com.vishnu.aggarwal.rest.util.quartz;
 
 import lombok.extern.apachecommons.CommonsLog;
 import org.quartz.Job;

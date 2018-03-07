@@ -1,4 +1,4 @@
-package com.vishnu.aggarwal.rest.service;
+package com.vishnu.aggarwal.rest.service.repository;
 
 import com.vishnu.aggarwal.core.dto.JobTriggerResponseDTO;
 import com.vishnu.aggarwal.rest.entity.JobTriggerResponse;

@@ -53,8 +53,8 @@ public abstract class BaseEntity<ID> implements Serializable {
     @Temporal(TIMESTAMP)
     private Date lastModifiedDate;
     @CreatedBy
-    private String createdBy;
+    private User createdBy;
     @LastModifiedBy
-    private String lastModifiedBy;
+    private User lastModifiedBy;
 
 }
