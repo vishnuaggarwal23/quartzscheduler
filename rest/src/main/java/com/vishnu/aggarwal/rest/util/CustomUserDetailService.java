@@ -4,8 +4,8 @@ package com.vishnu.aggarwal.rest.util;
 Created by vishnu on 6/3/18 10:32 AM
 */
 
-import com.vishnu.aggarwal.core.BaseMessageResolver;
 import com.vishnu.aggarwal.rest.entity.User;
+import com.vishnu.aggarwal.rest.service.BaseService;
 import com.vishnu.aggarwal.rest.service.UserService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.hibernate.HibernateException;
@@ -19,24 +19,21 @@ import static java.util.Objects.isNull;
 
 @Service
 @CommonsLog
-public class UserDetailUtil implements UserDetailsService {
+public class CustomUserDetailService extends BaseService implements UserDetailsService {
 
     @Autowired
     UserService userService;
-
-    @Autowired
-    BaseMessageResolver baseMessageResolver;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         try {
             User user = userService.findByUsername(username);
             if (isNull(user)) {
-                throw new UsernameNotFoundException(baseMessageResolver.getMessage("username.not.found"));
+                throw new UsernameNotFoundException(getMessage("username.not.found"));
             }
             return user;
         } catch (HibernateException e) {
-            throw new UsernameNotFoundException(baseMessageResolver.getMessage("multiple.usernames.found"));
+            throw new UsernameNotFoundException(getMessage("multiple.usernames.found"));
         } catch (UsernameNotFoundException e) {
             throw new UsernameNotFoundException(e.getLocalizedMessage(), e);
         }

@@ -38,7 +38,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
  */
 @RestController
 @CommonsLog
-@RequestMapping("/api/quartz")
+@RequestMapping("/quartz")
 public class QuartzController extends BaseController {
 
     /**

@@ -4,7 +4,7 @@ package com.vishnu.aggarwal.rest.controller;
 Created by vishnu on 28/2/18 1:26 PM
 */
 
-import com.vishnu.aggarwal.core.BaseMessageResolver;
+import com.vishnu.aggarwal.core.config.BaseMessageResolver;
 import com.vishnu.aggarwal.core.vo.DataTableVO;
 import com.vishnu.aggarwal.core.vo.RestResponseVO;
 import lombok.extern.apachecommons.CommonsLog;
@@ -31,7 +31,7 @@ public class BaseController {
      * @param messageCode the message code
      * @return the string
      */
-    protected String getMessage(String messageCode) {
+    String getMessage(String messageCode) {
         return baseMessageResolver.getMessage(messageCode);
     }
 

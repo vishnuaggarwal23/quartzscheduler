@@ -4,7 +4,7 @@ package com.vishnu.aggarwal.rest.service;
 Created by vishnu on 5/3/18 10:37 AM
 */
 
-import com.vishnu.aggarwal.core.BaseMessageResolver;
+import com.vishnu.aggarwal.core.config.BaseMessageResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**

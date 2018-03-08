@@ -3,7 +3,7 @@ package com.vishnu.aggarwal.core.bootstrap;
 import lombok.Getter;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEvent;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 
 /**
@@ -11,7 +11,7 @@ import org.springframework.context.ApplicationListener;
  */
 @CommonsLog
 @Getter
-public abstract class ApplicationReadyEventHandlerService implements ApplicationListener<ApplicationEvent> {
+public abstract class ApplicationReadyEventHandlerService implements ApplicationListener<ApplicationReadyEvent> {
     /**
      * The Bootstrap enabled.
      */

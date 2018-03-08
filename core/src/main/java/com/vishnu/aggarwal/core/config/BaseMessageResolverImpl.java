@@ -1,4 +1,4 @@
-package com.vishnu.aggarwal.core;
+package com.vishnu.aggarwal.core.config;
 
 /*
 Created by vishnu on 1/3/18 2:42 PM
@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Locale;
+import static java.util.Locale.ROOT;
 
 /**
  * The type Base message resolver.
@@ -16,7 +16,7 @@ import java.util.Locale;
 @Configuration
 public class BaseMessageResolverImpl implements BaseMessageResolver {
 
-    private MessageSource messageSource;
+    private final MessageSource messageSource;
 
     /**
      * Instantiates a new Base message resolver.
@@ -29,7 +29,7 @@ public class BaseMessageResolverImpl implements BaseMessageResolver {
     }
 
     public String getMessage(String messageCode) {
-        return messageSource.getMessage(messageCode, null, Locale.ROOT);
+        return messageSource.getMessage(messageCode, null, ROOT);
     }
 
 }

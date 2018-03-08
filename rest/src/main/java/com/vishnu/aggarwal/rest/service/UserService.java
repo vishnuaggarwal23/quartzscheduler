@@ -28,7 +28,6 @@ public class UserService extends BaseService {
         return (User) getContext().getAuthentication().getPrincipal();
     }
 
-
     public User findByUsername(String username) throws HibernateException {
         return userRepoService.findByUsername(username);
     }

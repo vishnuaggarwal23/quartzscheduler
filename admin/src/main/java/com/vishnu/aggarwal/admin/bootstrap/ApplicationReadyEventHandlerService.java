@@ -1,7 +1,7 @@
 package com.vishnu.aggarwal.admin.bootstrap;
 
 import lombok.extern.apachecommons.CommonsLog;
-import org.springframework.context.ApplicationEvent;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @CommonsLog
 public class ApplicationReadyEventHandlerService extends com.vishnu.aggarwal.core.bootstrap.ApplicationReadyEventHandlerService {
     @Override
-    public void onApplicationEvent(ApplicationEvent event) {
+    public void onApplicationEvent(ApplicationReadyEvent event) {
         if (getBootstrapEnabled()) {
             log.info("******************** Application Ready Event Handler called for admin.");
         }

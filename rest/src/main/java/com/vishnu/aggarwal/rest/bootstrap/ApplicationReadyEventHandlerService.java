@@ -1,19 +1,19 @@
 package com.vishnu.aggarwal.rest.bootstrap;
 
-import com.vishnu.aggarwal.core.enums.RoleType;
+import com.vishnu.aggarwal.core.config.RoleType;
 import com.vishnu.aggarwal.rest.entity.Role;
 import com.vishnu.aggarwal.rest.entity.User;
 import com.vishnu.aggarwal.rest.service.repository.RoleRepoService;
 import com.vishnu.aggarwal.rest.service.repository.UserRepoService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import static com.vishnu.aggarwal.core.enums.RoleType.ROLE_ADMIN;
-import static com.vishnu.aggarwal.core.enums.RoleType.ROLE_USER;
+import static com.vishnu.aggarwal.core.config.RoleType.ROLE_ADMIN;
+import static com.vishnu.aggarwal.core.config.RoleType.ROLE_USER;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
 
@@ -34,7 +34,7 @@ public class ApplicationReadyEventHandlerService extends com.vishnu.aggarwal.cor
     ApplicationContext applicationContext;
 
     @Override
-    public void onApplicationEvent(ApplicationEvent event) {
+    public void onApplicationEvent(ApplicationReadyEvent event) {
         if (getBootstrapEnabled()) {
             log.info("*****************Application Ready Event Handler called for Rest Application.");
             createUsers();

@@ -2,6 +2,7 @@ package com.vishnu.aggarwal.core.interceptor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.apachecommons.CommonsLog;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.WebUtils;
@@ -17,6 +18,13 @@ import java.util.Map;
  */
 @CommonsLog
 public abstract class RequestInterceptor implements HandlerInterceptor {
+
+    /**
+     * The Object mapper.
+     */
+    @Autowired
+    ObjectMapper objectMapper;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Map<String, Object> data = new HashMap<String, Object>();
@@ -31,7 +39,7 @@ public abstract class RequestInterceptor implements HandlerInterceptor {
         data.put("authenticationType", request.getAuthType());
         data.put("headers", convertEnumerationToMap(request.getHeaderNames(), request));
 
-        log.info(convertMapToJsonString(data));
+        log.info("************* Request Logging ***************\n " + convertMapToJsonString(data) + "\n");
         return true;
     }
 
@@ -46,7 +54,7 @@ public abstract class RequestInterceptor implements HandlerInterceptor {
     }
 
     private String convertMapToJsonString(Map data) throws Exception {
-        return new ObjectMapper().writeValueAsString(data);
+        return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(data);
     }
 
     @Override

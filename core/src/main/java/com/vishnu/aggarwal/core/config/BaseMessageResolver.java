@@ -1,4 +1,4 @@
-package com.vishnu.aggarwal.core;
+package com.vishnu.aggarwal.core.config;
 
 import org.springframework.context.annotation.Configuration;
 

@@ -14,11 +14,11 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import static java.lang.Boolean.FALSE;
 
 /**
- * The type Message source config.
+ * The type Custom message source.
  */
 @CommonsLog
 @Configuration("customMessageSource")
-public class MessageSourceConfig {
+public class CustomMessageSource {
 
     /**
      * Message source message source.
