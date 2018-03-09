@@ -1,5 +1,6 @@
 server:
   port: 9090
+  context-path: "/admin"
 bootstrap:
   enabled: true
 spring:
@@ -13,7 +14,9 @@ spring:
     check-template: true
   devtools:
     livereload:
-      enabled: true # misc tuning
+      enabled: true
+    restart:
+      enabled: true
 logging:
   level:
     org:
@@ -30,3 +33,4 @@ logging:
 rest:
   application:
     url: "${REST_APPLICATION_URL:http://localhost:8080}"
+    contextPath: "/rest/api"

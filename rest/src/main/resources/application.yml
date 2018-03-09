@@ -1,6 +1,6 @@
 server:
   port: 8080
-  context-path: "/api"
+  context-path: "/rest/api"
 bootstrap:
   enabled: true
 spring:
@@ -69,7 +69,9 @@ spring:
     platform: mysql
   devtools:
     livereload:
-      enabled: true # misc tuning
+      enabled: true
+    restart:
+      enabled: true
 hibernate:
   dialect: org.hibernate.dialect.MySQL5Dialect
   show_sql: true

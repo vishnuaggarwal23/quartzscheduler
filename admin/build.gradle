@@ -41,8 +41,8 @@ configurations {
 }
 
 dependencies {
-	compile('org.springframework.boot:spring-boot-starter-thymeleaf')
 	compile project(path: ':core')
+	compile('org.springframework.boot:spring-boot-starter-thymeleaf')
 }
 
 bootRun {

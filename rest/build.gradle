@@ -27,11 +27,6 @@ version = projectVersion
 sourceCompatibility = jdkSource
 targetCompatibility = jdkTarget
 
-group = projectVersion
-version = projectVersion
-sourceCompatibility = jdkSource
-targetCompatibility = jdkTarget
-
 war {
     baseName = 'quartz-rest'
     version = projectVersion
@@ -46,19 +41,16 @@ configurations {
 }
 
 dependencies {
+    compile project(path : ':core')
     compile group: 'org.quartz-scheduler', name: 'quartz', version: '2.3.0'
     compile group: 'com.cronutils', name: 'cron-utils', version: '7.0.1'
-    runtime('mysql:mysql-connector-java')
-    compile('org.springframework.boot:spring-boot-starter-jdbc')
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
-    compile('org.springframework.boot:spring-boot-starter-data-rest')
-    compile('org.springframework.boot:spring-boot-starter-cache')
+//    compile('org.springframework.boot:spring-boot-starter-cache')
+    compile group: 'org.springframework', name: 'spring-context-support', version: '5.0.4.RELEASE'
     compile('org.springframework.boot:spring-boot-starter-security')
-    compile('org.springframework.session:spring-session')
     compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.0'
+    runtime('mysql:mysql-connector-java')
     testCompile('org.springframework.security:spring-security-test')
-//    compile('org.springframework.data:spring-data-rest-hal-browser')
-    compile project(path : ':core')
 }
 
 bootRun {
