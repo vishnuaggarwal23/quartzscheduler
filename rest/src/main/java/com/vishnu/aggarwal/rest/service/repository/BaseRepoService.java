@@ -5,7 +5,7 @@ Created by vishnu on 1/3/18 1:00 PM
 */
 
 import com.vishnu.aggarwal.core.co.DataTableCO;
-import com.vishnu.aggarwal.rest.service.BaseService;
+import com.vishnu.aggarwal.core.service.BaseService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.hibernate.Criteria;
 import org.hibernate.Session;

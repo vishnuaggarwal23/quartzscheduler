@@ -1,4 +1,4 @@
-package com.vishnu.aggarwal.rest.controller;
+package com.vishnu.aggarwal.core.controller;
 
 /*
 Created by vishnu on 28/2/18 1:26 PM
@@ -31,7 +31,7 @@ public class BaseController {
      * @param messageCode the message code
      * @return the string
      */
-    String getMessage(String messageCode) {
+    public String getMessage(String messageCode) {
         return baseMessageResolver.getMessage(messageCode);
     }
 
@@ -44,7 +44,7 @@ public class BaseController {
      * @param message        the message
      */
     @SuppressWarnings("unchecked")
-    static void setRestResponseVO(RestResponseVO restResponseVO, Object data, HttpStatus httpStatus, String message) {
+    protected static void setRestResponseVO(RestResponseVO restResponseVO, Object data, HttpStatus httpStatus, String message) {
         restResponseVO.setData(data);
         restResponseVO.setResponseCode(httpStatus.value());
         restResponseVO.setMessage(message);
@@ -60,7 +60,7 @@ public class BaseController {
      * @param data            the data
      */
     @SuppressWarnings("unchecked")
-    static void setDataTableVO(DataTableVO dataTableVO, Integer count, Integer recordsTotal, Integer recordsFiltered, List data) {
+    protected static void setDataTableVO(DataTableVO dataTableVO, Integer count, Integer recordsTotal, Integer recordsFiltered, List data) {
         dataTableVO.setCount(count);
         dataTableVO.setRecordsTotal(recordsTotal);
         dataTableVO.setRecordsFiltered(recordsFiltered);

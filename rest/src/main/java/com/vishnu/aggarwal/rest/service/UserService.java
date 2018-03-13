@@ -4,6 +4,7 @@ package com.vishnu.aggarwal.rest.service;
 Created by vishnu on 6/3/18 10:33 AM
 */
 
+import com.vishnu.aggarwal.core.service.BaseService;
 import com.vishnu.aggarwal.rest.entity.User;
 import com.vishnu.aggarwal.rest.service.repository.RoleRepoService;
 import com.vishnu.aggarwal.rest.service.repository.UserRepoService;
@@ -14,20 +15,41 @@ import org.springframework.stereotype.Service;
 
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
+/**
+ * The type User service.
+ */
 @Service
 @CommonsLog
 public class UserService extends BaseService {
 
+    /**
+     * The User repo service.
+     */
     @Autowired
     UserRepoService userRepoService;
 
+    /**
+     * The Role repo service.
+     */
     @Autowired
     RoleRepoService roleRepoService;
 
+    /**
+     * Gets current logged in user.
+     *
+     * @return the current logged in user
+     */
     public User getCurrentLoggedInUser() {
         return (User) getContext().getAuthentication().getPrincipal();
     }
 
+    /**
+     * Find by username user.
+     *
+     * @param username the username
+     * @return the user
+     * @throws HibernateException the hibernate exception
+     */
     public User findByUsername(String username) throws HibernateException {
         return userRepoService.findByUsername(username);
     }

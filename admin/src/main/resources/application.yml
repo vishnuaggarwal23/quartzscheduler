@@ -32,5 +32,5 @@ logging:
     console: "%d{yyyy-MM-dd HH:mm:ss} -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
 rest:
   application:
-    url: "${REST_APPLICATION_URL:http://localhost:8080}"
+    baseUrl: "${REST_APPLICATION_URL:http://localhost:8080}"
     contextPath: "/rest/api"

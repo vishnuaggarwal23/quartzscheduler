@@ -4,8 +4,8 @@ package com.vishnu.aggarwal.rest.util;
 Created by vishnu on 6/3/18 10:32 AM
 */
 
+import com.vishnu.aggarwal.core.service.BaseService;
 import com.vishnu.aggarwal.rest.entity.User;
-import com.vishnu.aggarwal.rest.service.BaseService;
 import com.vishnu.aggarwal.rest.service.UserService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.hibernate.HibernateException;
@@ -17,10 +17,16 @@ import org.springframework.stereotype.Service;
 
 import static java.util.Objects.isNull;
 
+/**
+ * The type Custom user detail service.
+ */
 @Service
 @CommonsLog
 public class CustomUserDetailService extends BaseService implements UserDetailsService {
 
+    /**
+     * The User service.
+     */
     @Autowired
     UserService userService;
 

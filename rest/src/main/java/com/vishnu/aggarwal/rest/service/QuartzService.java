@@ -6,6 +6,7 @@ import com.vishnu.aggarwal.core.co.TriggerDetailsCO;
 import com.vishnu.aggarwal.core.dto.QuartzDTO;
 import com.vishnu.aggarwal.core.enums.JobExecutorClass;
 import com.vishnu.aggarwal.core.exceptions.*;
+import com.vishnu.aggarwal.core.service.BaseService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
