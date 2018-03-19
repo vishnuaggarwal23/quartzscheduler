@@ -72,6 +72,24 @@ public class QuartzController extends BaseController {
         return new ResponseEntity<RestResponseVO<String>>(restResponseVO, valueOf(restResponseVO.getResponseCode()));
     }
 
+    @RequestMapping(value = "/job", method = {PUT, PATCH})
+    @ResponseBody
+    public ResponseEntity<RestResponseVO<String>> updateExistingJob(@RequestBody QuartzDTO quartzDTO, @CookieValue(name = "x-auth-token") Cookie cookie, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        RestResponseVO<String> restResponseVO = new RestResponseVO<String>(null, OK.value(), EMPTY);
+        try {
+            restResponseVO = quartzService.updateExistingJob(quartzDTO, cookie);
+        } catch (RestServiceCallException e) {
+            log.error("********* Error while creating a new job ********** \n");
+            e.printStackTrace();
+            restResponseVO.setMessage(e.getLocalizedMessage());
+        } catch (Exception e) {
+            log.error("********* Error while creating a new job ********** \n");
+            e.printStackTrace();
+            restResponseVO.setMessage(e.getLocalizedMessage());
+        }
+        return new ResponseEntity<RestResponseVO<String>>(restResponseVO, valueOf(restResponseVO.getResponseCode()));
+    }
+
     /**
      * Create new trigger response entity.
      *
@@ -88,11 +106,29 @@ public class QuartzController extends BaseController {
         try {
             restResponseVO = quartzService.createNewTrigger(quartzDTO, cookie);
         } catch (RestServiceCallException e) {
-            log.error("********* Error while creating a new trigger ********** \n");
+            log.error("********* Error while update an existing job ********** \n");
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
         } catch (Exception e) {
-            log.error("********* Error while creating a new trigger ********** \n");
+            log.error("********* Error while update an existing job ********** \n");
+            e.printStackTrace();
+            restResponseVO.setMessage(e.getLocalizedMessage());
+        }
+        return new ResponseEntity<RestResponseVO<String>>(restResponseVO, valueOf(restResponseVO.getResponseCode()));
+    }
+
+    @RequestMapping(value = "/trigger", method = {PUT, PATCH})
+    @ResponseBody
+    public ResponseEntity<RestResponseVO<String>> updateExistingTrigger(@RequestBody QuartzDTO quartzDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @CookieValue(name = "x-auth-token") Cookie cookie) {
+        RestResponseVO<String> restResponseVO = new RestResponseVO<String>(null, OK.value(), EMPTY);
+        try {
+            restResponseVO = quartzService.updateExistingTrigger(quartzDTO, cookie);
+        } catch (RestServiceCallException e) {
+            log.error("********* Error while updating an existing trigger ********** \n");
+            e.printStackTrace();
+            restResponseVO.setMessage(e.getLocalizedMessage());
+        } catch (Exception e) {
+            log.error("********* Error while updating an existing trigger ********** \n");
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
         }
@@ -190,7 +226,7 @@ public class QuartzController extends BaseController {
      * @param cookie              the cookie
      * @return the response entity
      */
-    @RequestMapping(value = "/resume/jobs", method = {POST, PUT, PATCH})
+    @RequestMapping(value = "/resume/jobs", method = {PUT, PATCH})
     @ResponseBody
     public ResponseEntity<RestResponseVO<Boolean>> resumeJobs(@RequestBody KeyGroupNameDTO jobKeyGroupNameDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @CookieValue(name = "x-auth-token") Cookie cookie) {
         RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, OK.value(), EMPTY);
@@ -217,7 +253,7 @@ public class QuartzController extends BaseController {
      * @param cookie              the cookie
      * @return the response entity
      */
-    @RequestMapping(value = "/pause/jobs", method = {POST, PUT, PATCH})
+    @RequestMapping(value = "/pause/jobs", method = {PUT, PATCH})
     @ResponseBody
     public ResponseEntity<RestResponseVO<Boolean>> pauseJobs(@RequestBody KeyGroupNameDTO jobKeyGroupNameDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @CookieValue(name = "x-auth-token") Cookie cookie) {
         RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, OK.value(), EMPTY);
@@ -242,7 +278,7 @@ public class QuartzController extends BaseController {
      * @param cookie                 the cookie
      * @return the response entity
      */
-    @RequestMapping(value = "/resume/triggers", method = {POST, PUT, PATCH})
+    @RequestMapping(value = "/resume/triggers", method = {PUT, PATCH})
     @ResponseBody
     public ResponseEntity<RestResponseVO<Boolean>> resumeTriggers(@RequestBody KeyGroupNameDTO triggerKeyGroupNameDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @CookieValue(name = "x-auth-token") Cookie cookie) {
         RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, OK.value(), EMPTY);
@@ -269,7 +305,7 @@ public class QuartzController extends BaseController {
      * @param cookie                 the cookie
      * @return the response entity
      */
-    @RequestMapping(value = "/pause/triggers", method = {POST, PUT, PATCH})
+    @RequestMapping(value = "/pause/triggers", method = {PUT, PATCH})
     @ResponseBody
     public ResponseEntity<RestResponseVO<Boolean>> pauseTriggers(@RequestBody KeyGroupNameDTO triggerKeyGroupNameDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @CookieValue(name = "x-auth-token") Cookie cookie) {
         RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, OK.value(), EMPTY);
