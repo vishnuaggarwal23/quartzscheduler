@@ -93,6 +93,37 @@ public class QuartzController extends BaseController {
     }
 
     /**
+     * Update existing job response entity.
+     *
+     * @param quartzDTO           the quartz dto
+     * @param httpServletRequest  the http servlet request
+     * @param httpServletResponse the http servlet response
+     * @return the response entity
+     */
+    @RequestMapping(value = "/job", method = {PUT, PATCH})
+    @ResponseBody
+    public ResponseEntity<RestResponseVO<String>> updateExistingJob(@RequestBody QuartzDTO quartzDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        RestResponseVO<String> restResponseVO = new RestResponseVO<String>(null, OK.value(), EMPTY);
+        try {
+            if (quartzDTO.getJob().getType().equals(API)) {
+                quartzService.updateExistingJob(quartzDTO);
+                setRestResponseVO(restResponseVO, "Job updated.", ACCEPTED, getMessage("quartz.job.updated"));
+            } else {
+                throw new JobTypeNotFoundException(getMessage("no.job.type.found"));
+            }
+        } catch (ClassNotFoundException | SchedulerException | JobTypeNotFoundException e) {
+            log.error("********* Error while updating an existing job ********** \n");
+            e.printStackTrace();
+            restResponseVO.setMessage(e.getLocalizedMessage());
+        } catch (Exception e) {
+            log.error("********* Error while updating an existing job ********** \n");
+            e.printStackTrace();
+            restResponseVO.setMessage(e.getLocalizedMessage());
+        }
+        return new ResponseEntity<RestResponseVO<String>>(restResponseVO, valueOf(restResponseVO.getResponseCode()));
+    }
+
+    /**
      * Create new trigger response entity.
      *
      * @param quartzDTO           the quartz dto
@@ -121,6 +152,41 @@ public class QuartzController extends BaseController {
             restResponseVO.setMessage(e.getLocalizedMessage());
         } catch (Exception e) {
             log.error("********* Error while creating a new trigger ********** \n");
+            e.printStackTrace();
+            restResponseVO.setMessage(e.getLocalizedMessage());
+        }
+        return new ResponseEntity<RestResponseVO<String>>(restResponseVO, valueOf(restResponseVO.getResponseCode()));
+    }
+
+    /**
+     * Update existing trigger response entity.
+     *
+     * @param quartzDTO           the quartz dto
+     * @param httpServletRequest  the http servlet request
+     * @param httpServletResponse the http servlet response
+     * @return the response entity
+     */
+    @RequestMapping(value = "/trigger", method = {PUT, PATCH})
+    @ResponseBody
+    public ResponseEntity<RestResponseVO<String>> updateExistingTrigger(@RequestBody QuartzDTO quartzDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        RestResponseVO<String> restResponseVO = new RestResponseVO<String>(null, OK.value(), EMPTY);
+        try {
+            Date scheduledTriggerDate = null;
+            if (quartzDTO.getScheduleType().equals(SIMPLE)) {
+                scheduledTriggerDate = quartzService.updateExistingSimpleTrigger(quartzDTO);
+                setRestResponseVO(restResponseVO, "Trigger updated and scheduled at " + scheduledTriggerDate, ACCEPTED, getMessage("quartz.updated.created.and.scheduled"));
+            } else if (quartzDTO.getScheduleType().equals(CRON)) {
+                scheduledTriggerDate = quartzService.updateExistingCronTrigger(quartzDTO);
+                setRestResponseVO(restResponseVO, "Trigger updated and scheduled at " + scheduledTriggerDate, ACCEPTED, getMessage("quartz.updated.created.and.scheduled"));
+            } else {
+                throw new ScheduleTypeNotFoundException(getMessage(getMessage("no.scheduling.type.found")));
+            }
+        } catch (ScheduleTypeNotFoundException | TriggerNotScheduledException | JobDetailNotFoundException | TriggerDetailNotFoundException | SchedulerException e) {
+            log.error("********* Error while updating an existing trigger ********** \n");
+            e.printStackTrace();
+            restResponseVO.setMessage(e.getLocalizedMessage());
+        } catch (Exception e) {
+            log.error("********* Error while updating an existing trigger ********** \n");
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
         }
@@ -217,7 +283,7 @@ public class QuartzController extends BaseController {
      * @param httpServletResponse the http servlet response
      * @return the response entity
      */
-    @RequestMapping(value = "/resume/jobs", method = {POST, PUT, PATCH})
+    @RequestMapping(value = "/resume/jobs", method = {PUT, PATCH})
     @ResponseBody
     public ResponseEntity<RestResponseVO<Boolean>> resumeJobs(@RequestBody KeyGroupNameDTO jobKeyGroupNameDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, OK.value(), EMPTY);
@@ -244,7 +310,7 @@ public class QuartzController extends BaseController {
      * @param httpServletResponse the http servlet response
      * @return the response entity
      */
-    @RequestMapping(value = "/pause/jobs", method = {POST, PUT, PATCH})
+    @RequestMapping(value = "/pause/jobs", method = {PUT, PATCH})
     @ResponseBody
     public ResponseEntity<RestResponseVO<Boolean>> pauseJobs(@RequestBody KeyGroupNameDTO jobKeyGroupNameDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, OK.value(), EMPTY);
@@ -269,7 +335,7 @@ public class QuartzController extends BaseController {
      * @param httpServletResponse    the http servlet response
      * @return the response entity
      */
-    @RequestMapping(value = "/resume/triggers", method = {POST, PUT, PATCH})
+    @RequestMapping(value = "/resume/triggers", method = {PUT, PATCH})
     @ResponseBody
     public ResponseEntity<RestResponseVO<Boolean>> resumeTriggers(@RequestBody KeyGroupNameDTO triggerKeyGroupNameDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, OK.value(), EMPTY);
@@ -296,7 +362,7 @@ public class QuartzController extends BaseController {
      * @param httpServletResponse    the http servlet response
      * @return the response entity
      */
-    @RequestMapping(value = "/pause/triggers", method = {POST, PUT, PATCH})
+    @RequestMapping(value = "/pause/triggers", method = {PUT, PATCH})
     @ResponseBody
     public ResponseEntity<RestResponseVO<Boolean>> pauseTriggers(@RequestBody KeyGroupNameDTO triggerKeyGroupNameDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, OK.value(), EMPTY);

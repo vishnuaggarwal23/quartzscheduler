@@ -16,4 +16,5 @@ public class TriggerCO {
     private String triggerDescription;
     private Boolean startNow;
     private Date startTime;
+    private Date endTime;
 }

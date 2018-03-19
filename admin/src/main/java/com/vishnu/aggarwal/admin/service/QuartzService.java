@@ -21,7 +21,8 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.Cookie;
 import java.util.List;
 
-import static com.vishnu.aggarwal.core.enums.QuartzRestApiEndPointEnum.*;
+import static com.vishnu.aggarwal.core.enums.RestApiEndPoint.*;
+import static org.springframework.http.HttpMethod.PUT;
 
 /**
  * The type Quartz service.
@@ -61,6 +62,32 @@ public class QuartzService extends BaseService {
      */
     public RestResponseVO<String> createNewTrigger(QuartzDTO quartzDTO, Cookie cookie) throws RestServiceCallException, Exception {
         return (RestResponseVO<String>) restService.getResponseFromBackendService(quartzDTO, cookie.getValue(), CREATE_NEW_TRIGGER.getApiEndPoint(), (HttpMethod) CREATE_NEW_TRIGGER.getHttpMethods(), CREATE_NEW_TRIGGER.getResponseTypeClass());
+    }
+
+    /**
+     * Update existing job rest response vo.
+     *
+     * @param quartzDTO the quartz dto
+     * @param cookie    the cookie
+     * @return the rest response vo
+     * @throws RestServiceCallException the rest service call exception
+     * @throws Exception                the exception
+     */
+    public RestResponseVO<String> updateExistingJob(QuartzDTO quartzDTO, Cookie cookie) throws RestServiceCallException, Exception {
+        return (RestResponseVO<String>) restService.getResponseFromBackendService(quartzDTO, cookie.getValue(), UPDATE_EXISTING_JOB.getApiEndPoint(), ((List<HttpMethod>) UPDATE_EXISTING_JOB.getHttpMethods()).stream().findAny().orElse(PUT), UPDATE_EXISTING_JOB.getResponseTypeClass());
+    }
+
+    /**
+     * Update existing trigger rest response vo.
+     *
+     * @param quartzDTO the quartz dto
+     * @param cookie    the cookie
+     * @return the rest response vo
+     * @throws RestServiceCallException the rest service call exception
+     * @throws Exception                the exception
+     */
+    public RestResponseVO<String> updateExistingTrigger(QuartzDTO quartzDTO, Cookie cookie) throws RestServiceCallException, Exception {
+        return (RestResponseVO<String>) restService.getResponseFromBackendService(quartzDTO, cookie.getValue(), UPDATE_EXISTING_TRIGGER.getApiEndPoint(), ((List<HttpMethod>) UPDATE_EXISTING_TRIGGER.getHttpMethods()).stream().findAny().orElse(PUT), UPDATE_EXISTING_TRIGGER.getResponseTypeClass());
     }
 
     /**
@@ -113,7 +140,7 @@ public class QuartzService extends BaseService {
      * @throws Exception                the exception
      */
     public RestResponseVO<Boolean> resumeJobs(KeyGroupNameDTO keyGroupNameDTO, Cookie cookie) throws RestServiceCallException, Exception {
-        return (RestResponseVO<Boolean>) restService.getResponseFromBackendService(keyGroupNameDTO, cookie.getValue(), RESUME_JOBS.getApiEndPoint(), ((List<HttpMethod>) RESUME_JOBS.getHttpMethods()).stream().findAny().orElse(HttpMethod.POST), RESUME_JOBS.getResponseTypeClass());
+        return (RestResponseVO<Boolean>) restService.getResponseFromBackendService(keyGroupNameDTO, cookie.getValue(), RESUME_JOBS.getApiEndPoint(), ((List<HttpMethod>) RESUME_JOBS.getHttpMethods()).stream().findAny().orElse(PUT), RESUME_JOBS.getResponseTypeClass());
     }
 
     /**
@@ -126,7 +153,7 @@ public class QuartzService extends BaseService {
      * @throws Exception                the exception
      */
     public RestResponseVO<Boolean> pauseJobs(KeyGroupNameDTO keyGroupNameDTO, Cookie cookie) throws RestServiceCallException, Exception {
-        return (RestResponseVO<Boolean>) restService.getResponseFromBackendService(keyGroupNameDTO, cookie.getValue(), PAUSE_JOBS.getApiEndPoint(), ((List<HttpMethod>) PAUSE_JOBS.getHttpMethods()).stream().findAny().orElse(HttpMethod.POST), PAUSE_JOBS.getResponseTypeClass());
+        return (RestResponseVO<Boolean>) restService.getResponseFromBackendService(keyGroupNameDTO, cookie.getValue(), PAUSE_JOBS.getApiEndPoint(), ((List<HttpMethod>) PAUSE_JOBS.getHttpMethods()).stream().findAny().orElse(PUT), PAUSE_JOBS.getResponseTypeClass());
     }
 
     /**
@@ -139,7 +166,7 @@ public class QuartzService extends BaseService {
      * @throws Exception                the exception
      */
     public RestResponseVO<Boolean> resumeTriggers(KeyGroupNameDTO keyGroupNameDTO, Cookie cookie) throws RestServiceCallException, Exception {
-        return (RestResponseVO<Boolean>) restService.getResponseFromBackendService(keyGroupNameDTO, cookie.getValue(), RESUME_TRIGGERS.getApiEndPoint(), ((List<HttpMethod>) RESUME_TRIGGERS.getHttpMethods()).stream().findAny().orElse(HttpMethod.POST), RESUME_TRIGGERS.getResponseTypeClass());
+        return (RestResponseVO<Boolean>) restService.getResponseFromBackendService(keyGroupNameDTO, cookie.getValue(), RESUME_TRIGGERS.getApiEndPoint(), ((List<HttpMethod>) RESUME_TRIGGERS.getHttpMethods()).stream().findAny().orElse(PUT), RESUME_TRIGGERS.getResponseTypeClass());
     }
 
     /**
@@ -152,7 +179,7 @@ public class QuartzService extends BaseService {
      * @throws Exception                the exception
      */
     public RestResponseVO<Boolean> pauseTriggers(KeyGroupNameDTO keyGroupNameDTO, Cookie cookie) throws RestServiceCallException, Exception {
-        return (RestResponseVO<Boolean>) restService.getResponseFromBackendService(keyGroupNameDTO, cookie.getValue(), PAUSE_TRIGGERS.getApiEndPoint(), ((List<HttpMethod>) PAUSE_TRIGGERS.getHttpMethods()).stream().findAny().orElse(HttpMethod.POST), PAUSE_TRIGGERS.getResponseTypeClass());
+        return (RestResponseVO<Boolean>) restService.getResponseFromBackendService(keyGroupNameDTO, cookie.getValue(), PAUSE_TRIGGERS.getApiEndPoint(), ((List<HttpMethod>) PAUSE_TRIGGERS.getHttpMethods()).stream().findAny().orElse(PUT), PAUSE_TRIGGERS.getResponseTypeClass());
     }
 
     /**

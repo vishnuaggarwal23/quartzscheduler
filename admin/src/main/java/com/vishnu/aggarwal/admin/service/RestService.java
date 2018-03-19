@@ -17,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
  * The type Rest service.
@@ -47,7 +48,9 @@ public class RestService extends BaseService {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
         ResponseEntity<?> responseEntity = null;
-        httpHeaders.add("x-auth-token", xAuthToken);
+        if (isNotEmpty(xAuthToken)) {
+            httpHeaders.add("x-auth-token", xAuthToken);
+        }
         httpHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
         Gson gson = new Gson();
         HttpEntity<?> httpEntity = new HttpEntity<Object>(isNull(requestObject) ? null : gson.toJson(requestObject), httpHeaders);

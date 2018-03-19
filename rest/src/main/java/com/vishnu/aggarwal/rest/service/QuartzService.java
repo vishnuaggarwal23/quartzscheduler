@@ -8,7 +8,6 @@ import com.vishnu.aggarwal.core.enums.JobExecutorClass;
 import com.vishnu.aggarwal.core.exceptions.*;
 import com.vishnu.aggarwal.core.service.BaseService;
 import lombok.extern.apachecommons.CommonsLog;
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +19,13 @@ import java.util.*;
 import static com.vishnu.aggarwal.core.enums.ScheduleType.CRON;
 import static com.vishnu.aggarwal.core.enums.ScheduleType.SIMPLE;
 import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 import static java.lang.Class.forName;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
+import static org.apache.commons.lang3.BooleanUtils.isTrue;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
@@ -71,7 +72,7 @@ public class QuartzService extends BaseService {
                 .setJobData(jobDataMap);
         JobDetail jobDetail = jobBuilder.build();
 
-        if (BooleanUtils.isTrue(quartzDTO.getJob().getDurability())) {
+        if (isTrue(quartzDTO.getJob().getDurability())) {
             quartzScheduler.addJob(jobDetail, false);
         } else {
             quartzScheduler.addJob(jobDetail, false, true);
@@ -102,7 +103,7 @@ public class QuartzService extends BaseService {
                 .usingJobData(jobDataMap)
                 .withDescription(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getTriggerDescription())
                 .withIdentity(new TriggerKey(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getKeyName(), quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getGroupName()));
-        if (BooleanUtils.isTrue(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getStartNow())) {
+        if (isTrue(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getStartNow())) {
             triggerBuilder = triggerBuilder.startNow();
         } else {
             triggerBuilder = triggerBuilder.startAt(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getStartTime());
@@ -164,7 +165,7 @@ public class QuartzService extends BaseService {
                 .withDescription(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getTriggerDescription())
                 .withIdentity(new TriggerKey(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getKeyName(), quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getGroupName()))
                 .withSchedule(cronSchedule(quartzDTO.getApiJobData().getCronJobScheduler().getCronExpression()).inTimeZone(TimeZone.getDefault()));
-        if (BooleanUtils.isTrue(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getStartNow())) {
+        if (isTrue(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getStartNow())) {
             triggerBuilder = triggerBuilder.startNow();
         } else {
             triggerBuilder = triggerBuilder.startAt(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getStartTime());
@@ -195,10 +196,14 @@ public class QuartzService extends BaseService {
                 .usingJobData(jobDetail.getJobDataMap())
                 .withDescription(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getTriggerDescription())
                 .withIdentity(new TriggerKey(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getKeyName(), quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getGroupName()));
-        if (BooleanUtils.isTrue(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getStartNow())) {
+        if (isTrue(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getStartNow())) {
             triggerBuilder = triggerBuilder.startNow();
-        } else {
+        } else if (nonNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getStartTime())) {
             triggerBuilder = triggerBuilder.startAt(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getStartTime());
+        }
+
+        if (nonNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getEndTime())) {
+            triggerBuilder = triggerBuilder.endAt(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getEndTime());
         }
 
         switch (quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatType()) {
@@ -251,10 +256,190 @@ public class QuartzService extends BaseService {
                 .withDescription(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getTriggerDescription())
                 .withIdentity(new TriggerKey(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getKeyName(), quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getGroupName()))
                 .withSchedule(cronSchedule(quartzDTO.getApiJobData().getCronJobScheduler().getCronExpression()).inTimeZone(TimeZone.getDefault()));
-        if (BooleanUtils.isTrue(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getStartNow())) {
+        if (isTrue(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getStartNow())) {
             triggerBuilder = triggerBuilder.startNow();
-        } else {
+        } else if (nonNull(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getStartTime())) {
             triggerBuilder = triggerBuilder.startAt(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getStartTime());
+        }
+
+        if (nonNull(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getEndTime())) {
+            triggerBuilder = triggerBuilder.endAt(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getEndTime());
+        }
+
+        Date scheduledDate = quartzScheduler.scheduleJob(triggerBuilder.build());
+
+        if (isNull(scheduledDate)) {
+            throw new TriggerNotScheduledException(getMessage("quartz.trigger.scheduling.exception"));
+        }
+
+        return scheduledDate;
+    }
+
+    /**
+     * Update existing job.
+     *
+     * @param quartzDTO the quartz dto
+     * @throws ClassNotFoundException     the class not found exception
+     * @throws SchedulerException         the scheduler exception
+     * @throws JobDetailNotFoundException the job detail not found exception
+     */
+    public void updateExistingJob(QuartzDTO quartzDTO) throws ClassNotFoundException, SchedulerException, JobDetailNotFoundException {
+        JobKey jobKey = quartzScheduler.getJobKeys(jobGroupEquals(quartzDTO.getJob().getGroupName()))
+                .stream()
+                .filter(Objects::nonNull)
+                .filter(it -> it.getName().equalsIgnoreCase(quartzDTO.getJob().getKeyName()))
+                .findFirst()
+                .orElse(null);
+
+        if (isNull(jobKey)) {
+            throw new JobDetailNotFoundException(formatMessage(getMessage("quartz.job.not.found.for.key.and.group"), quartzDTO.getJob().getKeyName(), quartzDTO.getJob().getGroupName()));
+        }
+
+        JobBuilder jobBuilder = newJob(getExecutorClass(quartzDTO.getExecutorClass()))
+                .requestRecovery(quartzDTO.getJob().getRecover())
+                .storeDurably(quartzDTO.getJob().getDurability())
+                .withIdentity(jobKey)
+                .withDescription(quartzDTO.getJob().getDescription())
+                .setJobData(new JobDataMap(createJobDataMap(quartzDTO)));
+        JobDetail jobDetail = jobBuilder.build();
+
+        if (isTrue(quartzDTO.getJob().getDurability())) {
+            quartzScheduler.addJob(jobDetail, TRUE);
+        } else {
+            quartzScheduler.addJob(jobDetail, TRUE, TRUE);
+        }
+    }
+
+    /**
+     * Update existing simple trigger date.
+     *
+     * @param quartzDTO the quartz dto
+     * @return the date
+     * @throws TriggerNotScheduledException   the trigger not scheduled exception
+     * @throws SchedulerException             the scheduler exception
+     * @throws JobDetailNotFoundException     the job detail not found exception
+     * @throws TriggerDetailNotFoundException the trigger detail not found exception
+     */
+    public Date updateExistingSimpleTrigger(QuartzDTO quartzDTO) throws TriggerNotScheduledException, SchedulerException, JobDetailNotFoundException, TriggerDetailNotFoundException {
+        JobKey jobKey = quartzScheduler.getJobKeys(jobGroupEquals(quartzDTO.getJob().getGroupName()))
+                .stream()
+                .filter(Objects::nonNull)
+                .filter(it -> it.getName().equalsIgnoreCase(quartzDTO.getJob().getKeyName()))
+                .findFirst()
+                .orElse(null);
+
+        if (isNull(jobKey)) {
+            throw new JobDetailNotFoundException(formatMessage(getMessage("quartz.job.not.found.for.key.and.group"), quartzDTO.getJob().getKeyName(), quartzDTO.getJob().getGroupName()));
+        }
+
+        TriggerKey triggerKey = quartzScheduler.getTriggerKeys(triggerGroupEquals(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getGroupName()))
+                .stream()
+                .filter(Objects::nonNull)
+                .filter(it -> it.getName().equalsIgnoreCase(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getKeyName()))
+                .findFirst()
+                .orElse(null);
+
+        if (isNull(triggerKey)) {
+            throw new TriggerDetailNotFoundException(formatMessage(getMessage("quartz.trigger.not.found.for.key.and.group"), quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getKeyName(), quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getGroupName()));
+        }
+
+        JobDetail jobDetail = quartzScheduler.getJobDetail(jobKey);
+        TriggerBuilder triggerBuilder = newTrigger()
+                .forJob(jobDetail)
+                .usingJobData(jobDetail.getJobDataMap())
+                .withDescription(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getTriggerDescription())
+                .withIdentity(triggerKey);
+        if (isTrue(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getStartNow())) {
+            triggerBuilder = triggerBuilder.startNow();
+        } else if (nonNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getStartTime())) {
+            triggerBuilder = triggerBuilder.startAt(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getStartTime());
+        }
+
+        if (nonNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getEndTime())) {
+            triggerBuilder = triggerBuilder.endAt(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getEndTime());
+        }
+
+        switch (quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatType()) {
+            case REPEAT_BY_SECOND:
+                if (quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatForever()) {
+                    triggerBuilder = triggerBuilder.withSchedule(repeatSecondlyForever(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()));
+                } else {
+                    triggerBuilder = triggerBuilder.withSchedule(repeatSecondlyForTotalCount(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatCount(), quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()));
+                }
+                break;
+            case REPEAT_BY_MINUTE:
+                if (quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatForever()) {
+                    triggerBuilder = triggerBuilder.withSchedule(repeatMinutelyForever(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()));
+                } else {
+                    triggerBuilder = triggerBuilder.withSchedule(repeatMinutelyForTotalCount(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatCount(), quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()));
+                }
+                break;
+            case REPEAT_BY_HOUR:
+                if (quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatForever()) {
+                    triggerBuilder = triggerBuilder.withSchedule(repeatHourlyForever(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()));
+                } else {
+                    triggerBuilder = triggerBuilder.withSchedule(repeatHourlyForTotalCount(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatCount(), quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()));
+                }
+                break;
+        }
+
+        Date scheduledDate = quartzScheduler.scheduleJob(triggerBuilder.build());
+
+        if (isNull(scheduledDate)) {
+            throw new TriggerNotScheduledException(getMessage("quartz.trigger.scheduling.exception"));
+        }
+
+        return scheduledDate;
+    }
+
+    /**
+     * Update existing cron trigger date.
+     *
+     * @param quartzDTO the quartz dto
+     * @return the date
+     * @throws SchedulerException             the scheduler exception
+     * @throws JobDetailNotFoundException     the job detail not found exception
+     * @throws TriggerDetailNotFoundException the trigger detail not found exception
+     * @throws TriggerNotScheduledException   the trigger not scheduled exception
+     */
+    public Date updateExistingCronTrigger(QuartzDTO quartzDTO) throws SchedulerException, JobDetailNotFoundException, TriggerDetailNotFoundException, TriggerNotScheduledException {
+        JobKey jobKey = quartzScheduler.getJobKeys(jobGroupEquals(quartzDTO.getJob().getGroupName()))
+                .stream()
+                .filter(Objects::nonNull)
+                .filter(it -> it.getName().equalsIgnoreCase(quartzDTO.getJob().getKeyName()))
+                .findFirst()
+                .orElse(null);
+
+        if (isNull(jobKey)) {
+            throw new JobDetailNotFoundException(formatMessage(getMessage("quartz.job.not.found.for.key.and.group"), quartzDTO.getJob().getKeyName(), quartzDTO.getJob().getGroupName()));
+        }
+
+        TriggerKey triggerKey = quartzScheduler.getTriggerKeys(triggerGroupEquals(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getGroupName()))
+                .stream()
+                .filter(Objects::nonNull)
+                .filter(it -> it.getName().equalsIgnoreCase(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getKeyName()))
+                .findFirst()
+                .orElse(null);
+
+        if (isNull(triggerKey)) {
+            throw new TriggerDetailNotFoundException(formatMessage(getMessage("quartz.trigger.not.found.for.key.and.group"), quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getKeyName(), quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getGroupName()));
+        }
+
+        JobDetail jobDetail = quartzScheduler.getJobDetail(jobKey);
+        TriggerBuilder triggerBuilder = newTrigger()
+                .forJob(jobDetail)
+                .usingJobData(jobDetail.getJobDataMap())
+                .withDescription(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getTriggerDescription())
+                .withIdentity(triggerKey)
+                .withSchedule(cronSchedule(quartzDTO.getApiJobData().getCronJobScheduler().getCronExpression()).inTimeZone(TimeZone.getDefault()));
+        if (isTrue(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getStartNow())) {
+            triggerBuilder = triggerBuilder.startNow();
+        } else if (nonNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getStartTime())) {
+            triggerBuilder = triggerBuilder.startAt(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getStartTime());
+        }
+
+        if (nonNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getEndTime())) {
+            triggerBuilder = triggerBuilder.endAt(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getEndTime());
         }
 
         Date scheduledDate = quartzScheduler.scheduleJob(triggerBuilder.build());
