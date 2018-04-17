@@ -14,6 +14,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import static com.vishnu.aggarwal.core.constants.ApplicationConstants.X_AUTH_TOKEN;
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -49,7 +50,7 @@ public class RestService extends BaseService {
         HttpHeaders httpHeaders = new HttpHeaders();
         ResponseEntity<?> responseEntity = null;
         if (isNotEmpty(xAuthToken)) {
-            httpHeaders.add("x-auth-token", xAuthToken);
+            httpHeaders.add(X_AUTH_TOKEN, xAuthToken);
         }
         httpHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
         Gson gson = new Gson();

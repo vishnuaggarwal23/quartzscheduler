@@ -12,7 +12,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class JobDetailNotFoundException extends Exception {
+public class JobDetailNotFoundException extends RuntimeException {
     /**
      * Instantiates a new Job detail not found exception.
      *

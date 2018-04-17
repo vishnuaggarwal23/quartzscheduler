@@ -17,4 +17,13 @@ public enum JobType {
     JobType(String key) {
         this.key = key;
     }
+
+    public static JobType getJobType(String nameOrKey) {
+        for (JobType jobType : values()) {
+            if (jobType.name().equalsIgnoreCase(nameOrKey) || jobType.getKey().equalsIgnoreCase(nameOrKey)) {
+                return jobType;
+            }
+        }
+        return null;
+    }
 }

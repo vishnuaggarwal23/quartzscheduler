@@ -12,7 +12,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class TriggerDeleteFailureException extends Exception {
+public class TriggerDeleteFailureException extends RuntimeException {
     /**
      * Instantiates a new Trigger delete failure exception.
      *

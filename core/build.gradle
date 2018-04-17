@@ -28,8 +28,13 @@ sourceCompatibility = jdkSource
 targetCompatibility = jdkTarget
 
 war {
+    enabled = true
     baseName = 'quartz-core'
     version = projectVersion
+}
+
+bootRepackage {
+    enabled = false
 }
 
 repositories {

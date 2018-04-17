@@ -16,7 +16,6 @@ import com.vishnu.aggarwal.core.vo.DataTableVO;
 import com.vishnu.aggarwal.core.vo.RestResponseVO;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,9 +23,10 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static com.vishnu.aggarwal.core.constants.ApplicationConstants.X_AUTH_TOKEN;
+import static com.vishnu.aggarwal.core.constants.UrlMapping.Admin.Api.Quartz.*;
 import static java.lang.Boolean.FALSE;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.HttpStatus.valueOf;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -35,7 +35,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
  * The type Quartz controller.
  */
 @RestController(value = "apiQuartzController")
-@RequestMapping(value = "/api/quartz", produces = {APPLICATION_JSON_UTF8_VALUE})
+@RequestMapping(value = BASE_URI, produces = {APPLICATION_JSON_UTF8_VALUE})
 @CommonsLog
 public class QuartzController extends BaseController {
 
@@ -54,10 +54,10 @@ public class QuartzController extends BaseController {
      * @param httpServletResponse the http servlet response
      * @return the response entity
      */
-    @RequestMapping(value = "/job", method = POST)
+    @RequestMapping(value = CREATE_JOB, method = POST)
     @ResponseBody
-    public ResponseEntity<RestResponseVO<String>> createNewJob(@RequestBody QuartzDTO quartzDTO, @CookieValue(name = "x-auth-token") Cookie cookie, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        RestResponseVO<String> restResponseVO = new RestResponseVO<String>(null, OK.value(), EMPTY);
+    public ResponseEntity<RestResponseVO<String>> createNewJob(@RequestBody QuartzDTO quartzDTO, @CookieValue(name = X_AUTH_TOKEN) Cookie cookie, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        RestResponseVO<String> restResponseVO = new RestResponseVO<String>(null, null, EMPTY);
         try {
             restResponseVO = quartzService.createNewJob(quartzDTO, cookie);
         } catch (RestServiceCallException e) {
@@ -69,13 +69,22 @@ public class QuartzController extends BaseController {
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
         }
-        return new ResponseEntity<RestResponseVO<String>>(restResponseVO, valueOf(restResponseVO.getResponseCode()));
+        return new ResponseEntity<RestResponseVO<String>>(restResponseVO, valueOf(httpServletResponse.getStatus()));
     }
 
-    @RequestMapping(value = "/job", method = {PUT, PATCH})
+    /**
+     * Update existing job response entity.
+     *
+     * @param quartzDTO           the quartz dto
+     * @param cookie              the cookie
+     * @param httpServletRequest  the http servlet request
+     * @param httpServletResponse the http servlet response
+     * @return the response entity
+     */
+    @RequestMapping(value = UPDATE_JOB, method = {PUT, PATCH})
     @ResponseBody
-    public ResponseEntity<RestResponseVO<String>> updateExistingJob(@RequestBody QuartzDTO quartzDTO, @CookieValue(name = "x-auth-token") Cookie cookie, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        RestResponseVO<String> restResponseVO = new RestResponseVO<String>(null, OK.value(), EMPTY);
+    public ResponseEntity<RestResponseVO<String>> updateExistingJob(@RequestBody QuartzDTO quartzDTO, @CookieValue(name = X_AUTH_TOKEN) Cookie cookie, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        RestResponseVO<String> restResponseVO = new RestResponseVO<String>(null, null, EMPTY);
         try {
             restResponseVO = quartzService.updateExistingJob(quartzDTO, cookie);
         } catch (RestServiceCallException e) {
@@ -87,7 +96,7 @@ public class QuartzController extends BaseController {
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
         }
-        return new ResponseEntity<RestResponseVO<String>>(restResponseVO, valueOf(restResponseVO.getResponseCode()));
+        return new ResponseEntity<RestResponseVO<String>>(restResponseVO, valueOf(httpServletResponse.getStatus()));
     }
 
     /**
@@ -99,10 +108,10 @@ public class QuartzController extends BaseController {
      * @param cookie              the cookie
      * @return the response entity
      */
-    @RequestMapping(value = "/trigger", method = POST)
+    @RequestMapping(value = CREATE_TRIGGER, method = POST)
     @ResponseBody
-    public ResponseEntity<RestResponseVO<String>> createNewTrigger(@RequestBody QuartzDTO quartzDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @CookieValue(name = "x-auth-token") Cookie cookie) {
-        RestResponseVO<String> restResponseVO = new RestResponseVO<String>(null, OK.value(), EMPTY);
+    public ResponseEntity<RestResponseVO<String>> createNewTrigger(@RequestBody QuartzDTO quartzDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @CookieValue(name = X_AUTH_TOKEN) Cookie cookie) {
+        RestResponseVO<String> restResponseVO = new RestResponseVO<String>(null, null, EMPTY);
         try {
             restResponseVO = quartzService.createNewTrigger(quartzDTO, cookie);
         } catch (RestServiceCallException e) {
@@ -114,13 +123,22 @@ public class QuartzController extends BaseController {
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
         }
-        return new ResponseEntity<RestResponseVO<String>>(restResponseVO, valueOf(restResponseVO.getResponseCode()));
+        return new ResponseEntity<RestResponseVO<String>>(restResponseVO, valueOf(httpServletResponse.getStatus()));
     }
 
-    @RequestMapping(value = "/trigger", method = {PUT, PATCH})
+    /**
+     * Update existing trigger response entity.
+     *
+     * @param quartzDTO           the quartz dto
+     * @param httpServletRequest  the http servlet request
+     * @param httpServletResponse the http servlet response
+     * @param cookie              the cookie
+     * @return the response entity
+     */
+    @RequestMapping(value = UPDATE_TRIGGER, method = {PUT, PATCH})
     @ResponseBody
-    public ResponseEntity<RestResponseVO<String>> updateExistingTrigger(@RequestBody QuartzDTO quartzDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @CookieValue(name = "x-auth-token") Cookie cookie) {
-        RestResponseVO<String> restResponseVO = new RestResponseVO<String>(null, OK.value(), EMPTY);
+    public ResponseEntity<RestResponseVO<String>> updateExistingTrigger(@RequestBody QuartzDTO quartzDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @CookieValue(name = X_AUTH_TOKEN) Cookie cookie) {
+        RestResponseVO<String> restResponseVO = new RestResponseVO<String>(null, null, EMPTY);
         try {
             restResponseVO = quartzService.updateExistingTrigger(quartzDTO, cookie);
         } catch (RestServiceCallException e) {
@@ -132,7 +150,7 @@ public class QuartzController extends BaseController {
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
         }
-        return new ResponseEntity<RestResponseVO<String>>(restResponseVO, valueOf(restResponseVO.getResponseCode()));
+        return new ResponseEntity<RestResponseVO<String>>(restResponseVO, valueOf(httpServletResponse.getStatus()));
     }
 
     /**
@@ -144,14 +162,12 @@ public class QuartzController extends BaseController {
      * @param cookie              the cookie
      * @return the response entity
      */
-    @RequestMapping(value = "/job/{groupName}", method = GET)
+    @RequestMapping(value = FETCH_JOB_BY_GROUP_NAME, method = GET)
     @ResponseBody
-    public ResponseEntity<DataTableVO<JobDetailsCO>> fetchJobsByGroupName(@PathVariable("groupName") String groupName, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @CookieValue(name = "x-auth-token") Cookie cookie) {
-        DataTableVO<JobDetailsCO> jobDetailsCODataTableVO = new DataTableVO<JobDetailsCO>(0, 0, 0, null);
-        HttpStatus httpStatus = OK;
+    public ResponseEntity<DataTableVO<JobDetailsCO>> fetchJobsByGroupName(@PathVariable("groupName") String groupName, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @CookieValue(name = X_AUTH_TOKEN) Cookie cookie) {
+        RestResponseVO<DataTableVO<JobDetailsCO>> jobDetailsCODataTableVO = new RestResponseVO<DataTableVO<JobDetailsCO>>(new DataTableVO<JobDetailsCO>(0, 0, 0, null), null, null);
         try {
             jobDetailsCODataTableVO = quartzService.fetchJobsByGroupName(groupName, cookie);
-            httpStatus = ACCEPTED;
         } catch (RestServiceCallException e) {
             log.error("********** Error while fetching jobs by group name ********** \n");
             e.printStackTrace();
@@ -159,7 +175,7 @@ public class QuartzController extends BaseController {
             log.error("********** Error while fetching jobs by group name ********** \n");
             e.printStackTrace();
         }
-        return new ResponseEntity<DataTableVO<JobDetailsCO>>(jobDetailsCODataTableVO, httpStatus);
+        return new ResponseEntity<DataTableVO<JobDetailsCO>>(jobDetailsCODataTableVO.getData(), valueOf(httpServletResponse.getStatus()));
     }
 
     /**
@@ -172,14 +188,12 @@ public class QuartzController extends BaseController {
      * @param cookie              the cookie
      * @return the response entity
      */
-    @RequestMapping(value = "/trigger/{jobKeyName}/{groupName}", method = GET)
+    @RequestMapping(value = FETCH_TRIGGER_BY_JOB_KEY_GROUP_NAME, method = GET)
     @ResponseBody
-    public ResponseEntity<DataTableVO<TriggerDetailsCO>> fetchTriggersByJobKeyNameAndGroupName(@PathVariable("jobKeyName") String jobKeyName, @PathVariable("groupName") String groupName, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @CookieValue(name = "x-auth-token") Cookie cookie) {
-        DataTableVO<TriggerDetailsCO> triggerDetailsCODataTableVO = new DataTableVO<TriggerDetailsCO>(0, 0, 0, null);
-        HttpStatus httpStatus = OK;
+    public ResponseEntity<DataTableVO<TriggerDetailsCO>> fetchTriggersByJobKeyNameAndGroupName(@PathVariable("jobKeyName") String jobKeyName, @PathVariable("groupName") String groupName, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @CookieValue(name = X_AUTH_TOKEN) Cookie cookie) {
+        RestResponseVO<DataTableVO<TriggerDetailsCO>> triggerDetailsCODataTableVO = new RestResponseVO<DataTableVO<TriggerDetailsCO>>(new DataTableVO<TriggerDetailsCO>(0, 0, 0, null), null, null);
         try {
             triggerDetailsCODataTableVO = quartzService.fetchTriggersByJobKeyNameAndGroupName(jobKeyName, groupName, cookie);
-            httpStatus = ACCEPTED;
         } catch (RestServiceCallException e) {
             log.error("*********** Error while fetching triggers by job key and group name");
             e.printStackTrace();
@@ -187,7 +201,7 @@ public class QuartzController extends BaseController {
             log.error("*********** Error while fetching triggers by job key and group name");
             e.printStackTrace();
         }
-        return new ResponseEntity<DataTableVO<TriggerDetailsCO>>(triggerDetailsCODataTableVO, httpStatus);
+        return new ResponseEntity<DataTableVO<TriggerDetailsCO>>(triggerDetailsCODataTableVO.getData(), valueOf(httpServletResponse.getStatus()));
     }
 
     /**
@@ -199,14 +213,12 @@ public class QuartzController extends BaseController {
      * @param cookie              the cookie
      * @return the response entity
      */
-    @RequestMapping(value = "/details/{groupName}", method = GET)
+    @RequestMapping(value = FETCH_QUARTZ_DETAILS_GROUP_NAME, method = GET)
     @ResponseBody
-    public ResponseEntity<DataTableVO<QuartzDetailsCO>> fetchQuartzDetailsForGroupName(@PathVariable("groupName") String groupName, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @CookieValue(name = "x-auth-token") Cookie cookie) {
-        DataTableVO<QuartzDetailsCO> quartzDetailsCODataTableVO = new DataTableVO<QuartzDetailsCO>(0, 0, 0, null);
-        HttpStatus httpStatus = OK;
+    public ResponseEntity<DataTableVO<QuartzDetailsCO>> fetchQuartzDetailsForGroupName(@PathVariable("groupName") String groupName, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @CookieValue(name = X_AUTH_TOKEN) Cookie cookie) {
+        RestResponseVO<DataTableVO<QuartzDetailsCO>> quartzDetailsCODataTableVO = new RestResponseVO<DataTableVO<QuartzDetailsCO>>(new DataTableVO<QuartzDetailsCO>(0, 0, 0, null), null, null);
         try {
             quartzDetailsCODataTableVO = quartzService.fetchQuartzDetailsForGroupName(groupName, cookie);
-            httpStatus = ACCEPTED;
         } catch (RestServiceCallException e) {
             log.error("************* Error while fetching quartz details by group name");
             e.printStackTrace();
@@ -214,7 +226,7 @@ public class QuartzController extends BaseController {
             log.error("************* Error while fetching quartz details by group name");
             e.printStackTrace();
         }
-        return new ResponseEntity<DataTableVO<QuartzDetailsCO>>(quartzDetailsCODataTableVO, httpStatus);
+        return new ResponseEntity<DataTableVO<QuartzDetailsCO>>(quartzDetailsCODataTableVO.getData(), valueOf(httpServletResponse.getStatus()));
     }
 
     /**
@@ -226,10 +238,10 @@ public class QuartzController extends BaseController {
      * @param cookie              the cookie
      * @return the response entity
      */
-    @RequestMapping(value = "/resume/jobs", method = {PUT, PATCH})
+    @RequestMapping(value = RESUME_JOBS, method = {PUT, PATCH})
     @ResponseBody
-    public ResponseEntity<RestResponseVO<Boolean>> resumeJobs(@RequestBody KeyGroupNameDTO jobKeyGroupNameDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @CookieValue(name = "x-auth-token") Cookie cookie) {
-        RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, OK.value(), EMPTY);
+    public ResponseEntity<RestResponseVO<Boolean>> resumeJobs(@RequestBody KeyGroupNameDTO jobKeyGroupNameDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @CookieValue(name = X_AUTH_TOKEN) Cookie cookie) {
+        RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, null, EMPTY);
         try {
             restResponseVO = quartzService.resumeJobs(jobKeyGroupNameDTO, cookie);
         } catch (RestServiceCallException e) {
@@ -241,7 +253,7 @@ public class QuartzController extends BaseController {
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
         }
-        return new ResponseEntity<RestResponseVO<Boolean>>(restResponseVO, valueOf(restResponseVO.getResponseCode()));
+        return new ResponseEntity<RestResponseVO<Boolean>>(restResponseVO, valueOf(httpServletResponse.getStatus()));
     }
 
     /**
@@ -253,10 +265,10 @@ public class QuartzController extends BaseController {
      * @param cookie              the cookie
      * @return the response entity
      */
-    @RequestMapping(value = "/pause/jobs", method = {PUT, PATCH})
+    @RequestMapping(value = PAUSE_JOBS, method = {PUT, PATCH})
     @ResponseBody
-    public ResponseEntity<RestResponseVO<Boolean>> pauseJobs(@RequestBody KeyGroupNameDTO jobKeyGroupNameDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @CookieValue(name = "x-auth-token") Cookie cookie) {
-        RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, OK.value(), EMPTY);
+    public ResponseEntity<RestResponseVO<Boolean>> pauseJobs(@RequestBody KeyGroupNameDTO jobKeyGroupNameDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @CookieValue(name = X_AUTH_TOKEN) Cookie cookie) {
+        RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, null, EMPTY);
         try {
             restResponseVO = quartzService.pauseJobs(jobKeyGroupNameDTO, cookie);
         } catch (RestServiceCallException e) {
@@ -266,7 +278,7 @@ public class QuartzController extends BaseController {
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
         }
-        return new ResponseEntity<RestResponseVO<Boolean>>(restResponseVO, valueOf(restResponseVO.getResponseCode()));
+        return new ResponseEntity<RestResponseVO<Boolean>>(restResponseVO, valueOf(httpServletResponse.getStatus()));
     }
 
     /**
@@ -278,10 +290,10 @@ public class QuartzController extends BaseController {
      * @param cookie                 the cookie
      * @return the response entity
      */
-    @RequestMapping(value = "/resume/triggers", method = {PUT, PATCH})
+    @RequestMapping(value = RESUME_TRIGGERS, method = {PUT, PATCH})
     @ResponseBody
-    public ResponseEntity<RestResponseVO<Boolean>> resumeTriggers(@RequestBody KeyGroupNameDTO triggerKeyGroupNameDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @CookieValue(name = "x-auth-token") Cookie cookie) {
-        RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, OK.value(), EMPTY);
+    public ResponseEntity<RestResponseVO<Boolean>> resumeTriggers(@RequestBody KeyGroupNameDTO triggerKeyGroupNameDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @CookieValue(name = X_AUTH_TOKEN) Cookie cookie) {
+        RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, null, EMPTY);
         try {
             restResponseVO = quartzService.resumeTriggers(triggerKeyGroupNameDTO, cookie);
         } catch (RestServiceCallException e) {
@@ -293,7 +305,7 @@ public class QuartzController extends BaseController {
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
         }
-        return new ResponseEntity<RestResponseVO<Boolean>>(restResponseVO, valueOf(restResponseVO.getResponseCode()));
+        return new ResponseEntity<RestResponseVO<Boolean>>(restResponseVO, valueOf(httpServletResponse.getStatus()));
     }
 
     /**
@@ -305,10 +317,10 @@ public class QuartzController extends BaseController {
      * @param cookie                 the cookie
      * @return the response entity
      */
-    @RequestMapping(value = "/pause/triggers", method = {PUT, PATCH})
+    @RequestMapping(value = PAUSE_TRIGGERS, method = {PUT, PATCH})
     @ResponseBody
-    public ResponseEntity<RestResponseVO<Boolean>> pauseTriggers(@RequestBody KeyGroupNameDTO triggerKeyGroupNameDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @CookieValue(name = "x-auth-token") Cookie cookie) {
-        RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, OK.value(), EMPTY);
+    public ResponseEntity<RestResponseVO<Boolean>> pauseTriggers(@RequestBody KeyGroupNameDTO triggerKeyGroupNameDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @CookieValue(name = X_AUTH_TOKEN) Cookie cookie) {
+        RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, null, EMPTY);
         try {
             restResponseVO = quartzService.pauseTriggers(triggerKeyGroupNameDTO, cookie);
         } catch (RestServiceCallException e) {
@@ -320,7 +332,7 @@ public class QuartzController extends BaseController {
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
         }
-        return new ResponseEntity<RestResponseVO<Boolean>>(restResponseVO, valueOf(restResponseVO.getResponseCode()));
+        return new ResponseEntity<RestResponseVO<Boolean>>(restResponseVO, valueOf(httpServletResponse.getStatus()));
     }
 
     /**
@@ -332,10 +344,10 @@ public class QuartzController extends BaseController {
      * @param cookie              the cookie
      * @return the response entity
      */
-    @RequestMapping(value = "/delete/jobs", method = DELETE)
+    @RequestMapping(value = DELETE_JOBS, method = DELETE)
     @ResponseBody
-    public ResponseEntity<RestResponseVO<Boolean>> deleteJobs(@RequestBody KeyGroupNameDTO jobKeyGroupNameDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @CookieValue(name = "x-auth-token") Cookie cookie) {
-        RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, OK.value(), EMPTY);
+    public ResponseEntity<RestResponseVO<Boolean>> deleteJobs(@RequestBody KeyGroupNameDTO jobKeyGroupNameDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @CookieValue(name = X_AUTH_TOKEN) Cookie cookie) {
+        RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, null, EMPTY);
         try {
             restResponseVO = quartzService.deleteJobs(jobKeyGroupNameDTO, cookie);
         } catch (RestServiceCallException e) {
@@ -347,7 +359,7 @@ public class QuartzController extends BaseController {
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
         }
-        return new ResponseEntity<RestResponseVO<Boolean>>(restResponseVO, valueOf(restResponseVO.getResponseCode()));
+        return new ResponseEntity<RestResponseVO<Boolean>>(restResponseVO, valueOf(httpServletResponse.getStatus()));
     }
 
     /**
@@ -359,10 +371,10 @@ public class QuartzController extends BaseController {
      * @param cookie                 the cookie
      * @return the response entity
      */
-    @RequestMapping(value = "/delete/triggers", method = DELETE)
+    @RequestMapping(value = DELETE_TRIGGERS, method = DELETE)
     @ResponseBody
-    public ResponseEntity<RestResponseVO<Boolean>> deleteTriggers(@RequestBody KeyGroupNameDTO triggerKeyGroupNameDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @CookieValue(name = "x-auth-token") Cookie cookie) {
-        RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, OK.value(), EMPTY);
+    public ResponseEntity<RestResponseVO<Boolean>> deleteTriggers(@RequestBody KeyGroupNameDTO triggerKeyGroupNameDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @CookieValue(name = X_AUTH_TOKEN) Cookie cookie) {
+        RestResponseVO<Boolean> restResponseVO = new RestResponseVO<Boolean>(FALSE, null, EMPTY);
         try {
             restResponseVO = quartzService.deleteTriggers(triggerKeyGroupNameDTO, cookie);
         } catch (RestServiceCallException e) {
@@ -374,7 +386,7 @@ public class QuartzController extends BaseController {
             e.printStackTrace();
             restResponseVO.setMessage(e.getLocalizedMessage());
         }
-        return new ResponseEntity<RestResponseVO<Boolean>>(restResponseVO, valueOf(restResponseVO.getResponseCode()));
+        return new ResponseEntity<RestResponseVO<Boolean>>(restResponseVO, valueOf(httpServletResponse.getStatus()));
     }
 
 }

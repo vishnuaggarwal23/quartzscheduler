@@ -1,4 +1,4 @@
-package com.vishnu.aggarwal.core.config;
+package com.vishnu.aggarwal.core.constants;
 
 /*
 Created by vishnu on 6/3/18 10:55 AM
@@ -14,6 +14,4 @@ public class RoleType {
     public static List<String> getValues() {
         return Arrays.asList(ROLE_ADMIN, ROLE_USER);
     }
-
-
 }

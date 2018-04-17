@@ -12,7 +12,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class PauseJobFailureException extends Exception {
+public class PauseJobFailureException extends RuntimeException {
     /**
      * Instantiates a new Pause job failure exception.
      *

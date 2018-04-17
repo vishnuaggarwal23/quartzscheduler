@@ -13,6 +13,10 @@ import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+
 /**
  * The type Base controller.
  */
@@ -32,7 +36,7 @@ public class BaseController {
      * @return the string
      */
     public String getMessage(String messageCode) {
-        return baseMessageResolver.getMessage(messageCode);
+        return isNotEmpty(messageCode) ? baseMessageResolver.getMessage(messageCode) : EMPTY;
     }
 
     /**
@@ -46,7 +50,11 @@ public class BaseController {
     @SuppressWarnings("unchecked")
     protected static void setRestResponseVO(RestResponseVO restResponseVO, Object data, HttpStatus httpStatus, String message) {
         restResponseVO.setData(data);
-        restResponseVO.setResponseCode(httpStatus.value());
+        if (nonNull(httpStatus)) {
+            restResponseVO.setCode(httpStatus.value());
+        } else {
+            restResponseVO.setCode(null);
+        }
         restResponseVO.setMessage(message);
     }
 

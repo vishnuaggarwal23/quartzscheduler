@@ -8,6 +8,9 @@ import com.vishnu.aggarwal.core.config.BaseMessageResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static java.text.MessageFormat.format;
+import static org.apache.commons.lang3.ObjectUtils.allNotNull;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
  * The type Base service.
@@ -31,6 +34,12 @@ public abstract class BaseService {
     }
 
     protected String formatMessage(String messagePattern, Object... messageArguments) {
-        return format(messagePattern, messageArguments);
+        if (isNotBlank(messagePattern)) {
+            if (allNotNull(messagePattern)) {
+                return format(messagePattern, messageArguments);
+            }
+            return format(messagePattern);
+        }
+        return EMPTY;
     }
 }

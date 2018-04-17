@@ -12,7 +12,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class JobNotScheduledException extends Exception {
+public class JobNotScheduledException extends RuntimeException {
     /**
      * Instantiates a new Job not scheduled exception.
      *

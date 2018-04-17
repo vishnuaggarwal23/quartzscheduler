@@ -99,8 +99,8 @@ public class QuartzService extends BaseService {
      * @throws RestServiceCallException the rest service call exception
      * @throws Exception                the exception
      */
-    public DataTableVO<JobDetailsCO> fetchJobsByGroupName(String groupName, Cookie cookie) throws RestServiceCallException, Exception {
-        return (DataTableVO<JobDetailsCO>) restService.getResponseFromBackendService(null, cookie.getValue(), FETCH_JOBS_BY_GROUP_NAME.getApiEndPoint().replace("{groupName}", groupName), (HttpMethod) FETCH_JOBS_BY_GROUP_NAME.getHttpMethods(), FETCH_JOBS_BY_GROUP_NAME.getResponseTypeClass());
+    public RestResponseVO<DataTableVO<JobDetailsCO>> fetchJobsByGroupName(String groupName, Cookie cookie) throws RestServiceCallException, Exception {
+        return (RestResponseVO<DataTableVO<JobDetailsCO>>) restService.getResponseFromBackendService(null, cookie.getValue(), FETCH_JOBS_BY_GROUP_NAME.getApiEndPoint().replace("{groupName}", groupName), (HttpMethod) FETCH_JOBS_BY_GROUP_NAME.getHttpMethods(), FETCH_JOBS_BY_GROUP_NAME.getResponseTypeClass());
     }
 
     /**
@@ -113,8 +113,8 @@ public class QuartzService extends BaseService {
      * @throws RestServiceCallException the rest service call exception
      * @throws Exception                the exception
      */
-    public DataTableVO<TriggerDetailsCO> fetchTriggersByJobKeyNameAndGroupName(String jobKeyName, String groupName, Cookie cookie) throws RestServiceCallException, Exception {
-        return (DataTableVO<TriggerDetailsCO>) restService.getResponseFromBackendService(null, cookie.getValue(), FETCH_TRIGGERS_BY_JOB_KEY_NAME_AND_GROUP_NAME.getApiEndPoint().replace("{jobKeyName}", jobKeyName).replace("{groupName}", groupName), (HttpMethod) FETCH_TRIGGERS_BY_JOB_KEY_NAME_AND_GROUP_NAME.getHttpMethods(), FETCH_TRIGGERS_BY_JOB_KEY_NAME_AND_GROUP_NAME.getResponseTypeClass());
+    public RestResponseVO<DataTableVO<TriggerDetailsCO>> fetchTriggersByJobKeyNameAndGroupName(String jobKeyName, String groupName, Cookie cookie) throws RestServiceCallException, Exception {
+        return (RestResponseVO<DataTableVO<TriggerDetailsCO>>) restService.getResponseFromBackendService(null, cookie.getValue(), FETCH_TRIGGERS_BY_JOB_KEY_NAME_AND_GROUP_NAME.getApiEndPoint().replace("{jobKeyName}", jobKeyName).replace("{groupName}", groupName), (HttpMethod) FETCH_TRIGGERS_BY_JOB_KEY_NAME_AND_GROUP_NAME.getHttpMethods(), FETCH_TRIGGERS_BY_JOB_KEY_NAME_AND_GROUP_NAME.getResponseTypeClass());
     }
 
     /**
@@ -126,8 +126,8 @@ public class QuartzService extends BaseService {
      * @throws RestServiceCallException the rest service call exception
      * @throws Exception                the exception
      */
-    public DataTableVO<QuartzDetailsCO> fetchQuartzDetailsForGroupName(String groupName, Cookie cookie) throws RestServiceCallException, Exception {
-        return (DataTableVO<QuartzDetailsCO>) restService.getResponseFromBackendService(null, cookie.getValue(), FETCH_QUARTZ_DETAILS_BY_GROUP_NAME.getApiEndPoint().replace("{groupName}", groupName), (HttpMethod) FETCH_QUARTZ_DETAILS_BY_GROUP_NAME.getHttpMethods(), FETCH_QUARTZ_DETAILS_BY_GROUP_NAME.getResponseTypeClass());
+    public RestResponseVO<DataTableVO<QuartzDetailsCO>> fetchQuartzDetailsForGroupName(String groupName, Cookie cookie) throws RestServiceCallException, Exception {
+        return (RestResponseVO<DataTableVO<QuartzDetailsCO>>) restService.getResponseFromBackendService(null, cookie.getValue(), FETCH_QUARTZ_DETAILS_BY_GROUP_NAME.getApiEndPoint().replace("{groupName}", groupName), (HttpMethod) FETCH_QUARTZ_DETAILS_BY_GROUP_NAME.getHttpMethods(), FETCH_QUARTZ_DETAILS_BY_GROUP_NAME.getResponseTypeClass());
     }
 
     /**

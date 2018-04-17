@@ -12,7 +12,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class QuartzDetailNotFoundException extends Exception {
+public class QuartzDetailNotFoundException extends RuntimeException {
     /**
      * Instantiates a new Quartz detail not found exception.
      *

@@ -12,7 +12,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class ResumeJobFailureException extends Exception {
+public class ResumeJobFailureException extends RuntimeException {
     /**
      * Instantiates a new Resume job failure exception.
      *

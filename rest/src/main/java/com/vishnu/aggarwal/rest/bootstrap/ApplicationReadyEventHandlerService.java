@@ -1,6 +1,6 @@
 package com.vishnu.aggarwal.rest.bootstrap;
 
-import com.vishnu.aggarwal.core.config.RoleType;
+import com.vishnu.aggarwal.core.constants.RoleType;
 import com.vishnu.aggarwal.rest.entity.Role;
 import com.vishnu.aggarwal.rest.entity.User;
 import com.vishnu.aggarwal.rest.service.repository.RoleRepoService;
@@ -12,8 +12,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import static com.vishnu.aggarwal.core.config.RoleType.ROLE_ADMIN;
-import static com.vishnu.aggarwal.core.config.RoleType.ROLE_USER;
+import static com.vishnu.aggarwal.core.constants.RoleType.ROLE_ADMIN;
+import static com.vishnu.aggarwal.core.constants.RoleType.ROLE_USER;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
 

@@ -12,7 +12,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class JobDeleteFailureException extends Exception {
+public class JobDeleteFailureException extends RuntimeException {
     /**
      * Instantiates a new Job delete failure exception.
      *

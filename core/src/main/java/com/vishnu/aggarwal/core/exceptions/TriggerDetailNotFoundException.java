@@ -12,7 +12,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class TriggerDetailNotFoundException extends Exception {
+public class TriggerDetailNotFoundException extends RuntimeException {
     /**
      * Instantiates a new Trigger detail not found exception.
      *

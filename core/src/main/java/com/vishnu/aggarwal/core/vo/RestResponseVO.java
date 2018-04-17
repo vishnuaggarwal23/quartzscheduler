@@ -16,6 +16,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class RestResponseVO<T> {
     private T data;
-    private Integer responseCode;
+    private Integer code;
     private String message;
 }
