@@ -13,6 +13,9 @@ import java.util.Set;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
+/**
+ * The type User dto.
+ */
 @Getter
 @Setter
 @ToString
@@ -28,18 +31,38 @@ public class UserDTO {
     private Boolean isDeleted = FALSE;
     private Set<RoleDTO> roles;
 
+    /**
+     * Is account non expired boolean.
+     *
+     * @return the boolean
+     */
     public Boolean isAccountNonExpired() {
         return !this.accountExpired;
     }
 
+    /**
+     * Is account non locked boolean.
+     *
+     * @return the boolean
+     */
     public Boolean isAccountNonLocked() {
         return !this.accountLocked;
     }
 
+    /**
+     * Is credentials non expired boolean.
+     *
+     * @return the boolean
+     */
     public Boolean isCredentialsNonExpired() {
         return !this.credentialsExpired;
     }
 
+    /**
+     * Is enabled boolean.
+     *
+     * @return the boolean
+     */
     public Boolean isEnabled() {
         return this.accountEnabled;
     }

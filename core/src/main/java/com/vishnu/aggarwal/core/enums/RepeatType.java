@@ -5,7 +5,6 @@ import lombok.Getter;
 /**
  * The enum Repeat type.
  */
-
 @Getter
 public enum RepeatType {
     /**

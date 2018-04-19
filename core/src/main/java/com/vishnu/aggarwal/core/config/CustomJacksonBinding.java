@@ -9,9 +9,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
+/**
+ * The type Custom jackson binding.
+ */
 @Configuration
 public class CustomJacksonBinding {
 
+    /**
+     * Object mapper object mapper.
+     *
+     * @return the object mapper
+     */
     @Bean
     @Primary
     public ObjectMapper objectMapper() {

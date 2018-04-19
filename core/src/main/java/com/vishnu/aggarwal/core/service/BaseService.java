@@ -33,6 +33,13 @@ public abstract class BaseService {
         return baseMessageResolver.getMessage(messageCode);
     }
 
+    /**
+     * Format message string.
+     *
+     * @param messagePattern   the message pattern
+     * @param messageArguments the message arguments
+     * @return the string
+     */
     protected String formatMessage(String messagePattern, Object... messageArguments) {
         if (isNotBlank(messagePattern)) {
             if (allNotNull(messagePattern)) {

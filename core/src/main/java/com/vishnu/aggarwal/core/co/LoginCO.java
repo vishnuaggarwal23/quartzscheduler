@@ -7,6 +7,9 @@ Created by vishnu on 14/4/18 4:19 PM
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * The type Login co.
+ */
 @Getter
 @Setter
 public class LoginCO {

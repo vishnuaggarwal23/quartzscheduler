@@ -18,6 +18,12 @@ public enum JobType {
         this.key = key;
     }
 
+    /**
+     * Gets job type.
+     *
+     * @param nameOrKey the name or key
+     * @return the job type
+     */
     public static JobType getJobType(String nameOrKey) {
         for (JobType jobType : values()) {
             if (jobType.name().equalsIgnoreCase(nameOrKey) || jobType.getKey().equalsIgnoreCase(nameOrKey)) {

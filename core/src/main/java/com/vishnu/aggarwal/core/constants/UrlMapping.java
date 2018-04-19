@@ -140,12 +140,27 @@ public class UrlMapping {
                  * The constant LOGIN.
                  */
                 public static final String LOGIN = "/login";
+                /**
+                 * The constant LOGOUT.
+                 */
                 public static final String LOGOUT = "/logout";
             }
 
+            /**
+             * The type Validation.
+             */
             public static class Validation {
+                /**
+                 * The constant BASE_URI.
+                 */
                 public static final String BASE_URI = "/api/validation";
+                /**
+                 * The constant UNIQUE_JOB_KEY_PER_GROUP.
+                 */
                 public static final String UNIQUE_JOB_KEY_PER_GROUP = "/uniqueJobKey";
+                /**
+                 * The constant UNIQUE_TRIGGER_KEY_PER_GROUP.
+                 */
                 public static final String UNIQUE_TRIGGER_KEY_PER_GROUP = "/uniqueTriggerKey";
             }
         }
@@ -243,9 +258,21 @@ public class UrlMapping {
             public static final String CURRENT_LOGGED_IN_USER = "/currentLoggedInUser";
         }
 
+        /**
+         * The type Validation.
+         */
         public static class Validation {
+            /**
+             * The constant BASE_URI.
+             */
             public static final String BASE_URI = "/validation";
+            /**
+             * The constant UNIQUE_JOB_KEY_PER_GROUP.
+             */
             public static final String UNIQUE_JOB_KEY_PER_GROUP = "/uniqueJobKey";
+            /**
+             * The constant UNIQUE_TRIGGER_KEY_PER_GROUP.
+             */
             public static final String UNIQUE_TRIGGER_KEY_PER_GROUP = "/uniqueTriggerKey";
         }
     }
