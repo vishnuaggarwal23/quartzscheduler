@@ -68,7 +68,7 @@ configurations {
 }
 
 dependencies {
-    compile project(path : ':core')
+    compile project(path: ':core')
     compile group: 'org.quartz-scheduler', name: 'quartz', version: '2.3.0'
     compile group: 'com.cronutils', name: 'cron-utils', version: '7.0.1'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: "${springBootVersion}"
