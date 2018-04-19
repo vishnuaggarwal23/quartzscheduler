@@ -2,7 +2,6 @@ package com.vishnu.aggarwal.admin.interceptor;
 
 import com.vishnu.aggarwal.admin.service.AuthenticationService;
 import com.vishnu.aggarwal.core.config.BaseMessageResolver;
-import com.vishnu.aggarwal.core.exceptions.RestServiceCallException;
 import com.vishnu.aggarwal.core.exceptions.UserNotAuthenticatedException;
 import com.vishnu.aggarwal.core.vo.RestResponseVO;
 import lombok.extern.apachecommons.CommonsLog;
@@ -17,11 +16,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.vishnu.aggarwal.core.constants.ApplicationConstants.USER_LOGGED_IN;
-import static com.vishnu.aggarwal.core.constants.ApplicationConstants.X_AUTH_TOKEN;
+import static com.vishnu.aggarwal.core.constants.ApplicationConstants.*;
 import static java.util.Objects.nonNull;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
+import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 import static org.springframework.web.util.WebUtils.getCookie;
 
 /*
@@ -76,13 +75,11 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                     throw new UserNotAuthenticatedException(baseMessageResolver.getMessage(""));
                 }
             }
-        } catch (RestServiceCallException | UserNotAuthenticatedException e) {
-            log.error("************** Error while authenticating user *************** \n", e);
-            response.setStatus(SC_UNAUTHORIZED);
-            response.sendRedirect(request.getContextPath() + "/web");
-            return false;
         } catch (Exception e) {
-            log.error("************** Error while authenticating user *************** \n", e);
+            log.error("************** [Request ID " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while authenticating user *************** \n", e);
+            log.error("***************** [Request ID " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while logging in user *************************");
+            log.error("************* [Request ID " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Stacktrace ****************** \n");
+            log.error(getStackTrace(e));
             response.setStatus(SC_UNAUTHORIZED);
             response.sendRedirect(request.getContextPath() + "/web");
             return false;

@@ -29,4 +29,14 @@ public class RestApplicationConfig {
     public String restApplicationUrl() {
         return format("%s%s", this.baseUrl, this.contextPath);
     }
+
+    /**
+     * Rest application url string.
+     *
+     * @param baseUri the base uri
+     * @return the string
+     */
+    public String restApplicationUrl(String baseUri) {
+        return format("%s%s%s", this.baseUrl, this.contextPath, baseUri);
+    }
 }

@@ -54,6 +54,7 @@ public abstract class BaseRepoService<T, ID extends Serializable> extends BaseSe
      */
     protected Criteria getBaseCriteriaImpl() {
         return getSession().createCriteria(getEntityClass());
+//        return getSession().getCriteriaBuilder().createQuery(getEntityClass());
     }
 
     /**
@@ -88,7 +89,7 @@ public abstract class BaseRepoService<T, ID extends Serializable> extends BaseSe
      * @return the t
      */
     T findOne(ID id) {
-        return getJpaRepository().findOne(id);
+        return getJpaRepository().findById(id).orElse(null);
     }
 
 }

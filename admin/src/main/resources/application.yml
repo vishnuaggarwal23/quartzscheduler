@@ -1,6 +1,7 @@
 server:
   port: 9090
-  context-path: "/admin"
+  servlet:
+    context-path: "/admin"
 bootstrap:
   enabled: true
 spring:

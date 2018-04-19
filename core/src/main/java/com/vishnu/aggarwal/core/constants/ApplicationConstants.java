@@ -11,4 +11,5 @@ public class ApplicationConstants {
     public static final String WARNING = "warning";
     public static final String USER_LOGGED_IN = "userLoggedIn";
     public static final Integer MAX_COOKIE_AGE = 24 * 60 * 60;
+    public static final String CUSTOM_REQUEST_ID = "customRequestId";
 }

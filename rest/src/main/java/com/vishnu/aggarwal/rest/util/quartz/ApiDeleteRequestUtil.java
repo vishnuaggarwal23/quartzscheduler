@@ -1,7 +1,6 @@
 package com.vishnu.aggarwal.rest.util.quartz;
 
 import lombok.extern.apachecommons.CommonsLog;
-import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -19,11 +18,10 @@ import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.MediaType.parseMediaType;
 
 /**
- * The type Api get request util.
+ * The type Api delete request util.
  */
 @CommonsLog
-public class ApiDeleteRequestUtil extends ApiRequestUtil implements Job {
-
+public class ApiDeleteRequestUtil extends ApiRequestUtil {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         restTemplate = new RestTemplate();

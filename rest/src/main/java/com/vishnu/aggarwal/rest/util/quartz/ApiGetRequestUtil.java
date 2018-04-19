@@ -1,7 +1,6 @@
 package com.vishnu.aggarwal.rest.util.quartz;
 
 import lombok.extern.apachecommons.CommonsLog;
-import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -21,7 +20,7 @@ import static org.springframework.http.MediaType.parseMediaType;
  * The type Api get request util.
  */
 @CommonsLog
-public class ApiGetRequestUtil extends ApiRequestUtil implements Job {
+public class ApiGetRequestUtil extends ApiRequestUtil {
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {

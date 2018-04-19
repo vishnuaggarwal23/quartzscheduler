@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '1.5.9.RELEASE'
+        springBootVersion = '2.0.1.RELEASE'
         projectVersion = '0.0.1-SNAPSHOT'
         projectGroup = 'com.vishnu.aggarwal.rest'
         jdkSource = 1.8
@@ -11,7 +11,7 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath 'org.springframework:springloaded:1.2.6.RELEASE'
+        classpath 'org.springframework:springloaded:1.2.8.RELEASE'
     }
 }
 
@@ -21,6 +21,7 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'war'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
+apply plugin: 'io.spring.dependency-management'
 
 group = projectGroup
 version = projectVersion
@@ -29,7 +30,33 @@ targetCompatibility = jdkTarget
 
 war {
     baseName = 'quartz-rest'
+    enabled = true
     version = projectVersion
+}
+
+jar {
+    baseName = 'quartz-rest'
+    enabled = true
+    version = projectVersion
+}
+
+bootWar {
+    baseName = 'quartz-rest'
+    enabled = true
+    version = projectVersion
+}
+
+bootJar {
+    baseName = 'quartz-rest'
+    enabled = true
+    version = projectVersion
+}
+
+bootRun {
+    sourceResources sourceSets.main
+    jvmArgs = [
+            "-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5006",
+    ]
 }
 
 repositories {
@@ -44,18 +71,11 @@ dependencies {
     compile project(path : ':core')
     compile group: 'org.quartz-scheduler', name: 'quartz', version: '2.3.0'
     compile group: 'com.cronutils', name: 'cron-utils', version: '7.0.1'
-    compile('org.springframework.boot:spring-boot-starter-data-jpa')
-//    compile('org.springframework.boot:spring-boot-starter-cache')
-    compile group: 'org.springframework', name: 'spring-context-support', version: '5.0.4.RELEASE'
-    compile('org.springframework.boot:spring-boot-starter-security')
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: "${springBootVersion}"
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: "${springBootVersion}"
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: "${springBootVersion}"
+    compile group: 'org.springframework', name: 'spring-context-support', version: '5.0.5.RELEASE'
     compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.0'
-    runtime('mysql:mysql-connector-java')
-    testCompile('org.springframework.security:spring-security-test')
-}
-
-bootRun {
-    addResources = false // We can set it to true if we would like to reload src/main/resources
-    jvmArgs = [
-            "-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5006",
-    ]
+    runtime group: 'mysql', name: 'mysql-connector-java', version: '6.0.6'
+    testCompile group: 'org.springframework.security', name: 'spring-security-test', version: '5.0.4.RELEASE'
 }

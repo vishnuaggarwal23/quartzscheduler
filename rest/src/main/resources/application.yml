@@ -1,6 +1,7 @@
 server:
   port: 8080
-  context-path: "/rest/api"
+  servlet:
+    context-path: "/rest/api"
 bootstrap:
   enabled: true
 spring:
@@ -26,12 +27,11 @@ spring:
       naming:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-        strategy: org.hibernate.cfg.ImprovedNamingStrategy
   datasource:
     url: "${JDBC_DATABASE_URL:jdbc:mysql://localhost:3306/quartz_job_scheduler?useSSL=false&autoReconnect=true&useUnicode=yes&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&serverTimezone=UTC&useLegacyDatetimeCode=false&user=root&password=igdefault}"
     pooled: true
     jmxExport: true
-    driverClassName: com.mysql.jdbc.Driver
+    driverClassName: com.mysql.cj.jdbc.Driver
     dialect: org.hibernate.dialect.MySQL5Dialect
     dbCreate: update
     logSql: true
@@ -102,9 +102,28 @@ logging:
         aggarwal: info
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
-security:
-  ignored: /**
 management:
-  context-path: /manage
-  security:
-    enabled: true
+  health:
+    db:
+      enabled: true
+    defaults:
+      enabled: true
+    diskspace:
+      enabled: true
+  info:
+    build:
+      enabled: true
+    git:
+      enabled: true
+      mode: full
+    defaults:
+      enabled: true
+    env:
+      enabled: true
+  trace:
+    http:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"

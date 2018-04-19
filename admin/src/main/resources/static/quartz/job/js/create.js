@@ -14,42 +14,105 @@ $.validator.addMethod('customRepeatForeverRequired', function (value, element, o
     return !$('th.repeat-count-column').hasClass('hidden') && !$('td.repeat-count-column').parent().hasClass('hidden');
 });
 
+/*$.validator.addMethod('customAllowedValues', function (value, element, options) {
+    if ($(element).hasClass('cron-seconds') || $(element).hasClass('cron-minutes')) {
+        return (parseInt(value) >= 0 && parseInt(value) <= 59;
+    }
+    if ($(element).hasClass('cron-hours')) {
+        return parseInt(value) >= 0 && parseInt(value) <= 23;
+    }
+    if ($(element).hasClass('cron-day-of-month')) {
+        return parseInt(value) >= 1 && parseInt(value) <= 31;
+    }
+    if ($(element).hasClass('cron-month')) {
+        var months = Array.apply(0, Array(12)).map(function (_, i) {
+            return moment().month(i).format('MMM').toUpperCase()
+        });
+        return (parseInt(value) >= 1 && parseInt(value) <= 12) || $.inArray(value, months) !== -1;
+    }
+    if ($(element).hasClass('cron-day-of-week')) {
+        var days = Array.apply(0, Array(7)).map(function (_, i) {
+            return moment(i, 'e').format('ddd').toUpperCase();
+        });
+        return (parseInt(value) >= 1 && parseInt(value) <= 7) || $.inArray(value, days) !== -1;
+    }
+    if ($(element).hasClass('cron-years')) {
+        return value.trim().length === 0 || parseInt(value) >= 1970 && parseInt(value) <= 2099;
+    }
+});
+
+$.validator.addMethod('customAllowedSpecialCharacters', function (value, element, options) {
+    if ($(element).hasClass('cron-seconds') || $(element).hasClass('cron-minutes') || $(element).hasClass('cron-hours') || $(element).hasClass('cron-month')) {
+        return $.inArray(value, [',', '-', '*', '/']) !== -1
+    }
+    if ($(element).hasClass('cron-day-of-month')) {
+        return $.inArray(value, [',', '-', '*', '/', '?', 'L', 'W']) !== -1
+    }
+    if ($(element).hasClass('cron-day-of-week')) {
+        return $.inArray(value, [',', '-', '*', '/', '?', 'L', '#']) !== -1
+    }
+    if ($(element).hasClass('cron-years')) {
+        return value.trim().length === 0 || $.inArray(value, [',', '-', '*', '/']) !== -1;
+    }
+});*/
+
 $.validator.addMethod('customTriggerStartTimeRequired', function (value, element, options) {
-    return !$('input#triggerStartNow').is(':checked') && $(element).val().length > 0 && !$(element).hasClass('hidden');
+    return !$('input#triggerStartNow').is(':checked') && $(element).val().trim().length > 0 && !$(element).hasClass('hidden');
 });
 
 $.validator.addMethod('customTriggerRepeatCountRequired', function (value, element, options) {
-    return !$('input#repeatForever').is(':checked') && $(element).val().length > 0 && !$('th.repeat-count-column').hasClass('hidden') && !$('td.repeat-count-column').hasClass('hidden');
+    return !$('input#repeatForever').is(':checked') && $(element).val().trim().length > 0 && !$('th.repeat-count-column').hasClass('hidden') && !$('td.repeat-count-column').hasClass('hidden');
 });
 
-$.validator.addMethod('uniqueJobKey', function (value, element, options) {
-    var requestJson = {
-        keyName: $(element).val(),
-        groupName: $($(element).data('groupNameSelector')).val()
-    };
+$.validator.addMethod('customRequestHeadersRequired', function (value, element, options) {
+    if ($(element).hasClass('request-header-key')) {
+        if ($(element).val().trim().length === 0) {
+            return $($(element).data('associatedHeaderValueId')).val().trim().length === 0;
+        } else {
+            if ($($(element).data('associatedHeaderValueId')).val().trim().length === 0) {
+                $('form#createApiJobForm').validate().element($(element).data('associatedHeaderValueId'));
+            }
+            return true;
+        }
+    }
+    if ($(element).hasClass('request-header-value')) {
+        if ($(element).val().trim().length === 0) {
+            return $($(element).data('associatedHeaderKeyId')).val().trim().length === 0;
+        } else {
+            if ($($(element).data('associatedHeaderKeyId')).val().trim().length === 0) {
+                $('form#createApiJobForm').validate().element($(element).data('associatedHeaderKeyId'));
+            }
+            return true;
+        }
+    }
+});
 
+$.validator.addMethod('customUniqueKey', function (value, element, options) {
+    var isValid = false;
     $.ajax({
-        url: $(element).data('uniqueKeyValidation'),
-        type: "post",
+        url: $(element).data('customUniqueKeyValidation'),
+        type: "get",
         async: false,
-        data: JSON.stringify(requestJson),
+        data: {
+            keyName: $(element).val()
+        },
         contentType: "application/json",
+        dataType: "json",
         complete: function (response) {
             if (response && response.responseText) {
                 var responseJson = $.parseJSON(response.responseText);
                 if (responseJson.data) {
-                    return true;
+                    isValid = true;
                 }
             }
         }
     });
-    return false;
+    return isValid;
 });
 
 $(document).ready(function () {
     $('form#createApiJobForm input').keypress(function (e) {
         if (e.which === 13) {
-            preventEvent(e);
             if ($('form#createApiJobForm').validate().form()) {
                 $('.form#createApiJobForm').submit();
             }
@@ -63,18 +126,26 @@ $(document).ready(function () {
         var nextRowNumber = currentRowNumber + 1;
         var nextHeaderKeyRowId = "requestHeaderKey_" + nextRowNumber;
         var nextHeaderValueRowId = "requestHeaderValue_" + nextRowNumber;
+        var nextHeaderKeyRowReference = "input#" + nextHeaderKeyRowId;
+        var nextHeaderValueRowReference = "input#" + nextHeaderValueRowId;
         var nextRemoveHeaderKeyValueRowId = "removeRequestHeaderRow_" + nextRowNumber;
         var newRowHtml = "<tr data-row-number='" + nextRowNumber + "' class=\"request-header-row\">\n" +
             "            <td>\n" +
             "                <input type=\"text\" id='" + nextHeaderKeyRowId + "'\n" +
             "                       name=\"requestHeaderKey\"\n" +
             "                       class=\"form-control request-header-key\"\n" +
+            "                       data-rule-customRequestHeadersRequired=\"true\"\n" +
+            "                       data-msg-customRequestHeadersRequired=\"Request Header Key is missing.\"\n" +
+            "                       data-associated-header-value-id='" + nextHeaderValueRowReference + "'\n" +
             "                       placeholder=\"Request Header Key\"/>\n" +
             "            </td>\n" +
             "            <td>\n" +
             "                <input type=\"text\" id='" + nextHeaderValueRowId + "'\n" +
             "                       name=\"requestHeaderValue\"\n" +
             "                       class=\"form-control request-header-value\"\n" +
+            "                       data-rule-customRequestHeadersRequired=\"true\"\n" +
+            "                       data-msg-customRequestHeadersRequired=\"Request Header Value is missing.\"\n" +
+            "                       data-associated-header-key-id='" + nextHeaderKeyRowReference + "'\n" +
             "                       placeholder=\"Request Header Value\"/>\n" +
             "            </td>\n" +
             "            <td>\n" +
@@ -140,8 +211,7 @@ $(document).ready(function () {
         }
     });
 
-    handleCreateUnScheduledJob();
-    // handleCreateScheduledJob();
+    handleCreateJob();
 });
 
 var toggleTriggerStartTimeBasedOnTriggerStartNow = function (triggerStartNowElement, triggerStartTimeRowElement) {
@@ -192,19 +262,19 @@ var changeRequestTypeBasedOnExecutorClass = function (executorClassElement, requ
 
 };
 
-var handleCreateScheduledJob = function () {
-    handleCreateUnScheduledJob();
-};
-
-var handleCreateUnScheduledJob = function () {
+var handleCreateJob = function () {
     $('form#createApiJobForm').validate({
         submitHandler: function (form) {
-            formSubmitHandler(form, false);
+            formSubmitHandler(form);
         }
     });
 };
 
-var formSubmitHandler = function (form, isScheduledJob) {
+var formSubmitHandler = function (form) {
+    trimText();
+
+    var quartzDTO = {};
+
     var jobCO = {
         keyName: $('input#jobKeyName').val().trim(),
         description: $('textarea#jobDescription').val().trim(),
@@ -214,20 +284,80 @@ var formSubmitHandler = function (form, isScheduledJob) {
         scheduled: $('input#jobScheduled').is(':checked')
     };
 
+    var requestHeaders = [];
+    $.each($('tr.request-header-row'), function (index, value) {
+        var $headerKey = $(value).find('input.request-header-key');
+        var $headerValue = $(value).find('input.request-header-value');
+        if ($headerKey.length > 0 && $headerValue.length > 0) {
+            if ($($headerKey).val().trim().length > 0 && $($headerValue).val().trim().length > 0) {
+                requestHeaders.push({
+                    key: $($headerKey).val().trim(),
+                    value: $($headerValue).val().trim()
+                })
+            }
+        }
+    });
+
     var apiJobDataCO = {
-        executorClass: $('select#jobExecutorClass').val(),
-        requestType: $('select#requestType').val(),
+        executorClass: $('select#jobExecutorClass').find(':selected').val(),
+        requestType: $('select#requestType').find(':selected').val(),
         requestUrl: $('input#requestUrl').val().trim()
     };
 
-    if (isScheduledJob) {
-
+    if (requestHeaders.length > 0) {
+        apiJobDataCO["requestHeaders"] = requestHeaders;
     }
 
-    var quartzDTO = {
-        job: jobCO,
-        apiJobData: apiJobDataCO
-    };
+    if ($('input#jobScheduled').is(':checked')) {
+        var triggerCO = {
+            keyName: $('input#triggerKeyName').val(),
+            triggerDescription: $('input#triggerDescription').val()
+        };
+
+        if ($('input#triggerEndTime').val().trim().length > 0) {
+            triggerCO["endTime"] = $('input#triggerEndTime').data("DateTimePicker").date();
+        }
+
+        if ($('input#triggerStartNow').is(':checked')) {
+            triggerCO["startNow"] = true;
+        } else {
+            triggerCO["startTime"] = $('#input#triggerStartTime').data("DateTimePicker").date()
+        }
+
+        quartzDTO["scheduleType"] = $('select#scheduleType').find(':selected').val();
+        if ($('select#scheduleType').find(':selected').val() === "SIMPLE") {
+            var repeatInterval = {
+                repeatValue: $('input#repeatValue').val()
+            };
+
+            if ($('input#repeatForever').is(':checked')) {
+                repeatInterval["repeatForever"] = true;
+            } else {
+                repeatInterval["repeatCount"] = $('input#repeatCount').val()
+            }
+
+            apiJobDataCO["simpleJobScheduler"] = {
+                trigger: triggerCO,
+                repeatType: $('select#repeatType').find(':selected').val(),
+                repeatInterval: repeatInterval
+            };
+        }
+        if ($('select#scheduleType').find(':selected').val() === "CRON") {
+            apiJobDataCO["cronJobScheduler"] = {
+                trigger: triggerCO,
+                second: $('input#cronExpressionSecond').val(),
+                minute: $('input#cronExpressionMinute').val(),
+                hour: $('input#cronExpressionHour').val(),
+                dayOfMonth: $('input#cronExpressionDayOfMonth').val(),
+                month: $('input#cronExpressionMonth').val(),
+                dayOfWeek: $('input#cronExpressionDayOfWeek').val(),
+                year: $('input#cronExpressionYear').val()
+            }
+        }
+    }
+
+    quartzDTO["job"] = jobCO;
+    quartzDTO["apiJobData"] = apiJobDataCO;
 
     $.ajax({
         url: $(form).data('createNewJobUri'),
@@ -238,7 +368,7 @@ var formSubmitHandler = function (form, isScheduledJob) {
         complete: function (response) {
             if (response && response.responseText) {
                 var responseJson = $.parseJSON(response.responseText);
-                responseJson.responseCode === 200 ? showSuccessMessage(responseJson.message) : showErrorMessage(responseJson.message);
+                responseJson.responseCode in [200, 201, 202, 203, 204] ? showSuccessMessage(responseJson.message) : showErrorMessage(responseJson.message);
             }
         }
     });

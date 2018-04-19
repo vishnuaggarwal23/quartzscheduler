@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vishnu.aggarwal.core.dto.JobTriggerResponseDTO;
 import com.vishnu.aggarwal.rest.service.repository.JobTriggerResponseRepoService;
 import lombok.extern.apachecommons.CommonsLog;
+import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -15,7 +16,7 @@ import org.springframework.web.client.RestTemplate;
  * The type Api request util.
  */
 @CommonsLog
-abstract class ApiRequestUtil {
+public abstract class ApiRequestUtil implements Job {
 
     /**
      * The Url.

@@ -4,8 +4,11 @@ import com.vishnu.aggarwal.admin.interceptor.AuthenticationInterceptor;
 import com.vishnu.aggarwal.admin.interceptor.LoginInterceptor;
 import com.vishnu.aggarwal.admin.interceptor.LogoutInterceptor;
 import com.vishnu.aggarwal.admin.interceptor.RequestInterceptor;
+import com.vishnu.aggarwal.core.config.WebConfig;
 import lombok.extern.apachecommons.CommonsLog;
+import nz.net.ultraq.thymeleaf.LayoutDialect;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 
@@ -14,7 +17,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
  */
 @Configuration
 @CommonsLog
-public class WebConfig extends com.vishnu.aggarwal.core.config.WebConfig {
+public class ApplicationConfig extends WebConfig {
     private final RequestInterceptor requestInterceptor;
     private final AuthenticationInterceptor authenticationInterceptor;
     private final LoginInterceptor loginInterceptor;
@@ -29,7 +32,7 @@ public class WebConfig extends com.vishnu.aggarwal.core.config.WebConfig {
      * @param logoutInterceptor         the logout interceptor
      */
     @Autowired
-    public WebConfig(RequestInterceptor requestInterceptor, AuthenticationInterceptor authenticationInterceptor, LoginInterceptor loginInterceptor, LogoutInterceptor logoutInterceptor) {
+    public ApplicationConfig(RequestInterceptor requestInterceptor, AuthenticationInterceptor authenticationInterceptor, LoginInterceptor loginInterceptor, LogoutInterceptor logoutInterceptor) {
         this.requestInterceptor = requestInterceptor;
         this.authenticationInterceptor = authenticationInterceptor;
         this.loginInterceptor = loginInterceptor;
@@ -38,9 +41,14 @@ public class WebConfig extends com.vishnu.aggarwal.core.config.WebConfig {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(requestInterceptor).excludePathPatterns("/**/*.js", "/**/*.css");
-        registry.addInterceptor(authenticationInterceptor).addPathPatterns("/**/web/user/**", "/**/web/quartz/**").excludePathPatterns("/**/web", "/**/web/", "/**/web/forgotPassowrd", "/**/*.js", "/**/*.css");
-        registry.addInterceptor(loginInterceptor).addPathPatterns("/**/web", "/**/web/").excludePathPatterns("/**/*.js", "/**/*.css");
-        registry.addInterceptor(logoutInterceptor).addPathPatterns("/**/api/user/logout", "/**/api/user/logout/").excludePathPatterns("/**/*.js", "/**/*.css");
+        registry.addInterceptor(requestInterceptor).excludePathPatterns("/**/js/**/", "/**/css/**/", "/**/img/**/", "/**/font/**/", "/**/fonts/**/", "/**/webjars/**/");
+        registry.addInterceptor(authenticationInterceptor).addPathPatterns("/**/web/user/**", "/**/web/quartz/**").excludePathPatterns("/**/web", "/**/web/", "/**/web/forgotPassword", "/**/js/**/", "/**/css/**/", "/**/img/**/", "/**/font/**/", "/**/fonts/**/", "/**/webjars/**/");
+        registry.addInterceptor(loginInterceptor).addPathPatterns("/**/web", "/**/web/").excludePathPatterns("/**/js/**/", "/**/css/**/", "/**/img/**/", "/**/font/**/", "/**/fonts/**/", "/**/webjars/**/");
+        registry.addInterceptor(logoutInterceptor).addPathPatterns("/**/api/user/logout", "/**/api/user/logout/").excludePathPatterns("/**/js/**/", "/**/css/**/", "/**/img/**/", "/**/font/**/", "/**/fonts/**/", "/**/webjars/**/");
+    }
+
+    @Bean
+    public LayoutDialect layoutDialect() {
+        return new LayoutDialect();
     }
 }

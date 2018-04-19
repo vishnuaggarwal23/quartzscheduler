@@ -37,8 +37,8 @@ public class ApplicationReadyEventHandlerService extends com.vishnu.aggarwal.cor
     public void onApplicationEvent(ApplicationReadyEvent event) {
         if (getBootstrapEnabled()) {
             log.info("*****************Application Ready Event Handler called for Rest Application.");
-            createUsers();
-            createRoles();
+//            createUsers();
+//            createRoles();
         }
     }
 

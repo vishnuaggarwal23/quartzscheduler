@@ -8,6 +8,8 @@ import com.vishnu.aggarwal.rest.entity.User;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;
 
+import java.util.Optional;
+
 import static java.util.Objects.nonNull;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
@@ -17,8 +19,8 @@ import static org.springframework.security.core.context.SecurityContextHolder.ge
 public class AuditorAwareImpl implements AuditorAware<User> {
 
     @Override
-    public User getCurrentAuditor() {
+    public Optional<User> getCurrentAuditor() {
         Authentication authentication = getContext().getAuthentication();
-        return nonNull(authentication) ? (User) authentication.getPrincipal() : null;
+        return nonNull(authentication) ? (Optional<User>) authentication.getPrincipal() : Optional.empty();
     }
 }

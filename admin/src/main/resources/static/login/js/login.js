@@ -31,7 +31,7 @@ var Login = function () {
                     complete: function (response) {
                         if (response && response.responseJSON) {
                             var data = $.parseJSON(response.responseJSON.data);
-                            if (response.responseJSON.responseCode === 202) {
+                            if (response.responseJSON) {
                                 if (data.path) {
                                     // $('form.redirect-login-form').attr('action', data.path).submit();
                                     window.location.href = data.path;

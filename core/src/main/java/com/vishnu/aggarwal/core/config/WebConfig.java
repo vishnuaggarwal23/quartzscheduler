@@ -1,11 +1,11 @@
 package com.vishnu.aggarwal.core.config;
 
 import lombok.extern.apachecommons.CommonsLog;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * The type Web config.
  */
 @CommonsLog
-public abstract class WebConfig extends WebMvcConfigurerAdapter {
+public abstract class WebConfig implements WebMvcConfigurer {
 }

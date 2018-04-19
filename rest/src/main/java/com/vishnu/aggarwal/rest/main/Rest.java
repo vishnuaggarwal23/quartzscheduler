@@ -1,8 +1,9 @@
 package com.vishnu.aggarwal.rest.main;
 
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
+
+import static org.springframework.boot.SpringApplication.run;
 
 /**
  * The type Rest.
@@ -16,6 +17,8 @@ public class Rest {
      * @param args the input arguments
      */
     public static void main(String[] args) {
-        SpringApplication.run(Rest.class, args);
+        /*setProperty("spring.devtools.restart.enabled", "true");
+        setProperty("spring.devtools.livereload.enabled", "true");*/
+        run(Rest.class, args);
     }
 }

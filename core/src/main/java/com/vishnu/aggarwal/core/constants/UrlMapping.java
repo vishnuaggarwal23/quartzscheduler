@@ -142,6 +142,12 @@ public class UrlMapping {
                 public static final String LOGIN = "/login";
                 public static final String LOGOUT = "/logout";
             }
+
+            public static class Validation {
+                public static final String BASE_URI = "/api/validation";
+                public static final String UNIQUE_JOB_KEY_PER_GROUP = "/uniqueJobKey";
+                public static final String UNIQUE_TRIGGER_KEY_PER_GROUP = "/uniqueTriggerKey";
+            }
         }
     }
 
@@ -235,6 +241,12 @@ public class UrlMapping {
              * The constant CURRENT_LOGGED_IN_USER.
              */
             public static final String CURRENT_LOGGED_IN_USER = "/currentLoggedInUser";
+        }
+
+        public static class Validation {
+            public static final String BASE_URI = "/validation";
+            public static final String UNIQUE_JOB_KEY_PER_GROUP = "/uniqueJobKey";
+            public static final String UNIQUE_TRIGGER_KEY_PER_GROUP = "/uniqueTriggerKey";
         }
     }
 }

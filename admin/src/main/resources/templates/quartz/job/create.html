@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:with="lang=${#locale.language}" th:lang="${lang}"
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-      layout:decorator="common/layout">
+      layout:decorate="common/layout">
 <head>
     <div layout:fragment="customCSS">
         <link rel="stylesheet" type="text/css" th:href="@{/webjars/select2/4.0.3/css/select2.css}"/>
@@ -30,14 +30,15 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="jobKeyName" class="control-label col-md-3">Key Name</label>
+                                        <label for="jobKeyName" class="control-label col-md-3">Key Name<span
+                                                class="required" aria-required="true"> * </span></label>
                                         <div class="col-md-9">
                                             <input type="text" id="jobKeyName" name="jobKeyName"
                                                    data-rule-required="true"
                                                    data-msg-required="Job Key Name is missing."
-                                                   data-rule-uniqueJobKey="true"
-                                                   data-msg-uniqueJobKey="Job key already exists."
-                                                   th:attr="data-unique-key-validation=@{/api/validation/uniqueJobKey}"
+                                                   data-rule-customUniqueKey="true"
+                                                   data-msg-customUniqueKey="Job key already exists."
+                                                   th:attr="data-custom-unique-key-validation=@{/api/validation/uniqueJobKey}"
                                                    data-group-name-selector="input#jobGroupName"
                                                    class="form-control" placeholder="Job Key Name"/>
                                         </div>
@@ -45,9 +46,10 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="jobGroupName" class="control-label col-md-3">Group Name</label>
+                                        <label for="jobGroupName" class="control-label col-md-3">Group Name<span
+                                                class="required" aria-required="true"> * </span></label>
                                         <div class="col-md-9">
-                                            <input type="text" readonly="readonly"
+                                            <input type="text" readonly="readonly" value="DEFAULT"
                                                    data-rule-required="true"
                                                    data-msg-required="Job Group Name is missing."
                                                    id="jobGroupName" name="jobGroupName"
@@ -59,7 +61,8 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="jobDescription" class="control-label col-md-3">Description</label>
+                                        <label for="jobDescription" class="control-label col-md-3">Description<span
+                                                class="required" aria-required="true"> * </span></label>
                                         <div class="col-md-9">
                                             <textarea th:rows="10" th:cols="5" id="jobDescription"
                                                       data-rule-required="true"
@@ -71,7 +74,8 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label class="control-label col-md-3">Type</label>
+                                        <label class="control-label col-md-3">Type<span class="required"
+                                                                                        aria-required="true"> * </span></label>
                                         <div class="col-md-9">
                                             <input type="text" id="jobType" name="jobType"
                                                    data-rule-required="true" data-msg-required="Job Type is missing."
@@ -120,7 +124,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label th:for="jobExecutorClass" class="control-label col-md-3">Job Executor
-                                            Class</label>
+                                            Class<span class="required" aria-required="true"> * </span></label>
                                         <div class="col-md-9">
                                             <select id="jobExecutorClass" name="jobExecutorClass"
                                                     data-rule-required="true"
@@ -140,7 +144,8 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label th:for="requestType" class="control-label col-md-3">Request Type</label>
+                                        <label th:for="requestType" class="control-label col-md-3">Request Type<span
+                                                class="required" aria-required="true"> * </span></label>
                                         <div class="col-md-9">
                                             <select id="requestType" name="requestType" disabled="disabled"
                                                     data-rule-required="true"
@@ -161,7 +166,8 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="requestUrl" class="control-label col-md-3">Request Url</label>
+                                        <label for="requestUrl" class="control-label col-md-3">Request Url<span
+                                                class="required" aria-required="true"> * </span></label>
                                         <div class="col-md-9">
                                             <input type="url" id="requestUrl" name="requestUrl"
                                                    data-rule-required="true" data-msg-required="Request Url is missing."
@@ -196,12 +202,18 @@
                                                                     <input type="text" id="requestHeaderKey_1"
                                                                            name="requestHeaderKey"
                                                                            class="form-control request-header-key"
+                                                                           data-rule-customRequestHeadersRequired="true"
+                                                                           data-msg-customRequestHeadersRequired="Request Header Key is missing."
+                                                                           data-associated-header-value-id="input#requestHeaderValue_1"
                                                                            placeholder="Request Header Key"/>
                                                                 </td>
                                                                 <td>
                                                                     <input type="text" id="requestHeaderValue_1"
                                                                            name="requestHeaderValue"
                                                                            class="form-control request-header-value"
+                                                                           data-rule-customRequestHeadersRequired="true"
+                                                                           data-msg-customRequestHeadersRequired="Request Header Value is missing."
+                                                                           data-associated-header-key-id="input#requestHeaderKey_1"
                                                                            placeholder="Request Header Value"/>
                                                                 </td>
                                                                 <td>
@@ -229,7 +241,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label th:for="scheduleType" class="control-label col-md-3">Schedule
-                                            Type</label>
+                                            Type<span class="required" aria-required="true"> * </span></label>
                                         <div class="col-md-9">
                                             <select id="scheduleType" name="scheduleType"
                                                     data-rule-required="true"
@@ -249,14 +261,15 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="triggerKeyName" class="control-label col-md-3">Key Name</label>
+                                        <label for="triggerKeyName" class="control-label col-md-3">Key Name<span
+                                                class="required" aria-required="true"> * </span></label>
                                         <div class="col-md-9">
                                             <input type="text" id="triggerKeyName"
                                                    data-rule-required="true"
                                                    data-msg-required="Trigger Key Name is missing."
-                                                   data-rule-uniqueJobKey="true"
-                                                   data-msg-uniqueJobKey="Trigger key already exists."
-                                                   th:attr="data-unique-key-validation=@{/api/validation/uniqueTriggerKey}"
+                                                   data-rule-customUniqueKey="true"
+                                                   data-msg-customUniqueKey="Trigger key already exists."
+                                                   th:attr="data-custom-unique-key-validation=@{/api/validation/uniqueTriggerKey}"
                                                    data-group-name-selector="input#triggerGroupName"
                                                    name="triggerKeyName"
                                                    class="form-control" placeholder="Trigger Key Name"/>
@@ -265,10 +278,11 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="triggerGroupName" class="control-label col-md-3">Group Name</label>
+                                        <label for="triggerGroupName" class="control-label col-md-3">Group Name<span
+                                                class="required" aria-required="true"> * </span></label>
                                         <div class="col-md-9">
                                             <input type="text" readonly="readonly"
-                                                   data-rule-required="true"
+                                                   data-rule-required="true" value="DEFAULT"
                                                    data-msg-required="Trigger Group Name is missing."
                                                    id="triggerGroupName" name="triggerGroupName"
                                                    class="form-control" placeholder="Trigger Group Name"/>
@@ -280,7 +294,8 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="triggerDescription"
-                                               class="control-label col-md-3">Description</label>
+                                               class="control-label col-md-3">Description<span class="required"
+                                                                                               aria-required="true"> * </span></label>
                                         <div class="col-md-9">
                                             <textarea th:rows="10" th:cols="5"
                                                       data-rule-required="true"
@@ -342,9 +357,13 @@
                                                         <table class="table table-striped table-bordered table-hover">
                                                             <thead>
                                                             <tr>
-                                                                <th>Repeat Type</th>
+                                                                <th>Repeat Type<span class="required"
+                                                                                     aria-required="true"> * </span>
+                                                                </th>
                                                                 <th>Repeat Forever</th>
-                                                                <th>Repeat Value</th>
+                                                                <th>Repeat Value<span class="required"
+                                                                                      aria-required="true"> * </span>
+                                                                </th>
                                                                 <th class="repeat-count-column hidden">Repeat Count</th>
                                                             </tr>
                                                             </thead>
@@ -414,12 +433,20 @@
                                                         <table class="table table-striped table-bordered table-hover">
                                                             <thead>
                                                             <tr>
-                                                                <th>Second</th>
-                                                                <th>Minute</th>
-                                                                <th>Hour</th>
-                                                                <th>Day of Month</th>
-                                                                <th>Month</th>
-                                                                <th>Day of Week</th>
+                                                                <th>Second<span class="required"
+                                                                                aria-required="true"> * </span></th>
+                                                                <th>Minute<span class="required"
+                                                                                aria-required="true"> * </span></th>
+                                                                <th>Hour<span class="required"
+                                                                              aria-required="true"> * </span></th>
+                                                                <th>Day of Month<span class="required"
+                                                                                      aria-required="true"> * </span>
+                                                                </th>
+                                                                <th>Month<span class="required"
+                                                                               aria-required="true"> * </span></th>
+                                                                <th>Day of Week<span class="required"
+                                                                                     aria-required="true"> * </span>
+                                                                </th>
                                                                 <th>Year</th>
                                                             </tr>
                                                             </thead>
@@ -428,39 +455,54 @@
                                                                 <td>
                                                                     <input type="text" id="cronExpressionSecond"
                                                                            name="cronExpressionSecond"
-                                                                           placeholder="Second" class="form-control"/>
+                                                                           data-rule-required="true"
+                                                                           data-msg-required="Second is missing."
+                                                                           placeholder="Second"
+                                                                           class="form-control cron-seconds"/>
                                                                 </td>
                                                                 <td>
                                                                     <input type="text" id="cronExpressionMinute"
                                                                            name="cronExpressionMinute"
-                                                                           placeholder="Minute" class="form-control"/>
+                                                                           data-rule-required="true"
+                                                                           data-msg-required="Minute is missing."
+                                                                           placeholder="Minute"
+                                                                           class="form-control cron-minutes"/>
                                                                 </td>
                                                                 <td>
                                                                     <input type="text" id="cronExpressionHour"
                                                                            name="cronExpressionHour" placeholder="Hour"
-                                                                           class="form-control"/>
+                                                                           data-rule-required="true"
+                                                                           data-msg-required="Hour is missing."
+                                                                           class="form-control cron-hours"/>
                                                                 </td>
                                                                 <td>
                                                                     <input type="text" id="cronExpressionDayOfMonth"
                                                                            name="cronExpressionDayOfMonth"
                                                                            placeholder="Day of Month"
-                                                                           class="form-control"/>
+                                                                           data-rule-required="true"
+                                                                           data-msg-required="Day of Month is missing."
+                                                                           class="form-control cron-day-of-month"/>
                                                                 </td>
                                                                 <td>
                                                                     <input type="text" id="cronExpressionMonth"
                                                                            name="cronExpressionMonth"
-                                                                           placeholder="Month" class="form-control"/>
+                                                                           data-rule-required="true"
+                                                                           data-msg-required="Month is missing."
+                                                                           placeholder="Month"
+                                                                           class="form-control cron-month"/>
                                                                 </td>
                                                                 <td>
                                                                     <input type="text" id="cronExpressionDayOfWeek"
                                                                            name="cronExpressionDayOfWeek"
                                                                            placeholder="Day of Week"
-                                                                           class="form-control"/>
+                                                                           data-rule-required="true"
+                                                                           data-msg-required="Day of Week is missing."
+                                                                           class="form-control cron-day-of-week"/>
                                                                 </td>
                                                                 <td>
                                                                     <input type="text" id="cronExpressionYear"
                                                                            name="cronExpressionYear" placeholder="Year"
-                                                                           class="form-control"/>
+                                                                           class="form-control cron-years"/>
                                                                 </td>
                                                             </tr>
                                                             </tbody>

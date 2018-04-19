@@ -1,8 +1,9 @@
 package com.vishnu.aggarwal.admin.main;
 
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
+
+import static org.springframework.boot.SpringApplication.run;
 
 /**
  * The type Admin.
@@ -16,6 +17,8 @@ public class Admin {
      * @param args the input arguments
      */
     public static void main(String[] args) {
-        SpringApplication.run(Admin.class, args);
+        /*setProperty("spring.devtools.restart.enabled", "true");
+        setProperty("spring.devtools.livereload.enabled", "true");*/
+        run(Admin.class, args);
     }
 }

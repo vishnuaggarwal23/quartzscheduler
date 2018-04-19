@@ -4,9 +4,13 @@ package com.vishnu.aggarwal.admin.service;
 Created by vishnu on 9/3/18 11:06 AM
 */
 
+import com.vishnu.aggarwal.admin.config.FeignClientFactory;
+import com.vishnu.aggarwal.admin.config.RestApplicationConfig;
+import com.vishnu.aggarwal.admin.service.feign.QuartzFeignApiService;
 import com.vishnu.aggarwal.core.co.JobDetailsCO;
 import com.vishnu.aggarwal.core.co.QuartzDetailsCO;
 import com.vishnu.aggarwal.core.co.TriggerDetailsCO;
+import com.vishnu.aggarwal.core.constants.UrlMapping;
 import com.vishnu.aggarwal.core.dto.KeyGroupNameDTO;
 import com.vishnu.aggarwal.core.dto.QuartzDTO;
 import com.vishnu.aggarwal.core.exceptions.RestServiceCallException;
@@ -15,6 +19,8 @@ import com.vishnu.aggarwal.core.vo.DataTableVO;
 import com.vishnu.aggarwal.core.vo.RestResponseVO;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +44,15 @@ public class QuartzService extends BaseService {
     @Autowired
     RestService restService;
 
+    @Autowired
+    RestApplicationConfig restApplicationConfig;
+
+    @Bean
+    @Primary
+    QuartzFeignApiService quartzFeignApiService() {
+        return new FeignClientFactory().getInstance(QuartzFeignApiService.class, restApplicationConfig.restApplicationUrl(UrlMapping.Rest.Quartz.BASE_URI));
+    }
+
     /**
      * Create new job rest response vo.
      *
@@ -47,8 +62,9 @@ public class QuartzService extends BaseService {
      * @throws RestServiceCallException the rest service call exception
      * @throws Exception                the exception
      */
-    public RestResponseVO<String> createNewJob(QuartzDTO quartzDTO, Cookie cookie) throws RestServiceCallException, Exception {
-        return (RestResponseVO<String>) restService.getResponseFromBackendService(quartzDTO, cookie.getValue(), CREATE_NEW_JOB.getApiEndPoint(), (HttpMethod) CREATE_NEW_JOB.getHttpMethods(), CREATE_NEW_JOB.getResponseTypeClass());
+    public RestResponseVO<String> createNewJob(QuartzDTO quartzDTO, Cookie cookie) throws Exception {
+//        return (RestResponseVO<String>) restService.getResponseFromBackendService(quartzDTO, cookie.getValue(), CREATE_NEW_JOB.getApiEndPoint(), (HttpMethod) CREATE_NEW_JOB.getHttpMethods(), CREATE_NEW_JOB.getResponseTypeClass());
+        return quartzFeignApiService().createJob(quartzDTO, cookie.getValue());
     }
 
     /**
