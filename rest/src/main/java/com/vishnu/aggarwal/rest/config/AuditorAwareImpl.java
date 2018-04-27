@@ -5,9 +5,7 @@ Created by vishnu on 1/3/18 2:05 PM
 */
 
 import com.vishnu.aggarwal.rest.entity.User;
-import com.vishnu.aggarwal.rest.service.interfaces.UserService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.vishnu.aggarwal.rest.interfaces.UserService;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;
 

@@ -2,7 +2,7 @@ package com.vishnu.aggarwal.rest.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vishnu.aggarwal.core.config.BaseMessageResolver;
-import com.vishnu.aggarwal.rest.service.interfaces.TokenAuthenticationService;
+import com.vishnu.aggarwal.rest.interfaces.TokenAuthenticationService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.vishnu.aggarwal.core.constants.ApplicationConstants.X_AUTH_TOKEN;
 import static java.lang.Boolean.FALSE;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 

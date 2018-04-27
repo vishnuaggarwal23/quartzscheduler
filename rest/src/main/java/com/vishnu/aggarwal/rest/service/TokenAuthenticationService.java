@@ -10,8 +10,8 @@ import com.vishnu.aggarwal.core.service.BaseService;
 import com.vishnu.aggarwal.rest.entity.Token;
 import com.vishnu.aggarwal.rest.entity.User;
 import com.vishnu.aggarwal.rest.entity.UserToken;
-import com.vishnu.aggarwal.rest.service.interfaces.TokenHandlerService;
-import com.vishnu.aggarwal.rest.service.interfaces.UserService;
+import com.vishnu.aggarwal.rest.interfaces.TokenHandlerService;
+import com.vishnu.aggarwal.rest.interfaces.UserService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +46,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 @Service
 @Transactional
 @CommonsLog
-public class TokenAuthenticationService extends BaseService implements com.vishnu.aggarwal.rest.service.interfaces.TokenAuthenticationService {
+public class TokenAuthenticationService extends BaseService implements com.vishnu.aggarwal.rest.interfaces.TokenAuthenticationService {
 
     @Autowired
     UserService userService;

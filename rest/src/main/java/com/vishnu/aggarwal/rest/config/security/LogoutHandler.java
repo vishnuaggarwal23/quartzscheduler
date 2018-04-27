@@ -4,7 +4,7 @@ package com.vishnu.aggarwal.rest.config.security;
 Created by vishnu on 21/4/18 5:47 PM
 */
 
-import com.vishnu.aggarwal.rest.service.interfaces.TokenAuthenticationService;
+import com.vishnu.aggarwal.rest.interfaces.TokenAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 

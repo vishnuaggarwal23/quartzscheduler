@@ -6,12 +6,11 @@ Created by vishnu on 19/4/18 4:08 PM
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vishnu.aggarwal.core.config.BaseMessageResolver;
-import com.vishnu.aggarwal.rest.service.interfaces.TokenAuthenticationService;
-import com.vishnu.aggarwal.rest.service.interfaces.UserService;
+import com.vishnu.aggarwal.rest.interfaces.TokenAuthenticationService;
+import com.vishnu.aggarwal.rest.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -22,7 +21,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;

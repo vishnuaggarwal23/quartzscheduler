@@ -8,7 +8,7 @@ import com.vishnu.aggarwal.core.service.BaseService;
 import com.vishnu.aggarwal.rest.entity.User;
 import com.vishnu.aggarwal.rest.entity.UserToken;
 import com.vishnu.aggarwal.rest.exception.JwtException;
-import com.vishnu.aggarwal.rest.service.interfaces.UserService;
+import com.vishnu.aggarwal.rest.interfaces.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import lombok.extern.apachecommons.CommonsLog;
@@ -33,7 +33,7 @@ import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 
 @Service
 @CommonsLog
-public class TokenHandlerService extends BaseService implements com.vishnu.aggarwal.rest.service.interfaces.TokenHandlerService {
+public class TokenHandlerService extends BaseService implements com.vishnu.aggarwal.rest.interfaces.TokenHandlerService {
 
     @Value("${jwt.secret}")
     private String SECRET;

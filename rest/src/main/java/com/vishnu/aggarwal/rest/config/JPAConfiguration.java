@@ -1,7 +1,7 @@
 package com.vishnu.aggarwal.rest.config;
 
 import com.vishnu.aggarwal.rest.entity.User;
-import com.vishnu.aggarwal.rest.service.interfaces.UserService;
+import com.vishnu.aggarwal.rest.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;

@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import static java.lang.Boolean.TRUE;
 import static java.util.Objects.isNull;
@@ -27,7 +26,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
  */
 @Service
 @CommonsLog
-public class UserService extends BaseService implements com.vishnu.aggarwal.rest.service.interfaces.UserService {
+public class UserService extends BaseService implements com.vishnu.aggarwal.rest.interfaces.UserService {
 
     /**
      * The User repo service.

@@ -4,10 +4,9 @@ package com.vishnu.aggarwal.rest.config.security;
 Created by vishnu on 21/4/18 5:41 PM
 */
 
-import com.vishnu.aggarwal.rest.service.interfaces.TokenAuthenticationService;
+import com.vishnu.aggarwal.rest.interfaces.TokenAuthenticationService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
@@ -20,7 +19,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Optional;
 
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.X_AUTH_TOKEN;
 import static java.util.Optional.ofNullable;
