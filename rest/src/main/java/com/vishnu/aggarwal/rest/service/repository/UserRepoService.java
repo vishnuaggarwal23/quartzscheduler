@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+import static java.util.Objects.nonNull;
 import static org.hibernate.criterion.Restrictions.eq;
 
 @Service
@@ -59,5 +60,9 @@ public class UserRepoService extends BaseRepoService<User, Long> {
                 .add(eq("credentialsExpired", FALSE))
                 .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
         return (User) criteria.uniqueResult();
+    }
+
+    public Boolean isValidUserForSystemAccess(User user) {
+        return nonNull(user) ? user.isAccountNonExpired() && user.isAccountNonLocked() && user.isCredentialsNonExpired() && user.isEnabled() && !user.getIsDeleted() : FALSE;
     }
 }

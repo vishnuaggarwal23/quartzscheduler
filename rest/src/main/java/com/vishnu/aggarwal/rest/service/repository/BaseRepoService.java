@@ -11,9 +11,12 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaUpdate;
 import java.io.Serializable;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
@@ -47,6 +50,10 @@ public abstract class BaseRepoService<T, ID extends Serializable> extends BaseSe
      */
     protected abstract JpaRepository<T, ID> getJpaRepository();
 
+    CriteriaBuilder getCriteriaBuilder() {
+        return this.getSession().getCriteriaBuilder();
+    }
+
     /**
      * Get base criteria criteria.
      *
@@ -54,7 +61,10 @@ public abstract class BaseRepoService<T, ID extends Serializable> extends BaseSe
      */
     protected Criteria getBaseCriteriaImpl() {
         return getSession().createCriteria(getEntityClass());
-//        return getSession().getCriteriaBuilder().createQuery(getEntityClass());
+    }
+
+    protected CriteriaUpdate<T> getBaseCriteriaUpdateImpl() {
+        return this.getCriteriaBuilder().createCriteriaUpdate(getEntityClass());
     }
 
     /**
@@ -71,6 +81,11 @@ public abstract class BaseRepoService<T, ID extends Serializable> extends BaseSe
         }
     }
 
+    @Transactional
+    Integer updateQuery(CriteriaUpdate<T> criteriaUpdate) {
+        return getSession().createQuery(criteriaUpdate).executeUpdate();
+    }
+
     /**
      * Save s.
      *
@@ -78,6 +93,7 @@ public abstract class BaseRepoService<T, ID extends Serializable> extends BaseSe
      * @param entity the entity
      * @return the s
      */
+    @Transactional
     <S extends T> S save(S entity) {
         return getJpaRepository().save(entity);
     }

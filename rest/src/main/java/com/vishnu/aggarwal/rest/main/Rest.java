@@ -2,6 +2,7 @@ package com.vishnu.aggarwal.rest.main;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import static org.springframework.boot.SpringApplication.run;
 
@@ -10,6 +11,7 @@ import static org.springframework.boot.SpringApplication.run;
  */
 @SpringBootApplication
 @ComponentScan("com.vishnu.aggarwal")
+@EnableScheduling
 public class Rest {
     /**
      * The entry point of application.

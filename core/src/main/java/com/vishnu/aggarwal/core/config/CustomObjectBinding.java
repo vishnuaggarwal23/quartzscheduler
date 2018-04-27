@@ -10,10 +10,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 /**
- * The type Custom jackson binding.
+ * The type Custom object binding.
  */
 @Configuration
-public class CustomJacksonBinding {
+public class CustomObjectBinding {
 
     /**
      * Object mapper object mapper.

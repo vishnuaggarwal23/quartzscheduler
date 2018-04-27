@@ -30,7 +30,7 @@ public abstract class BaseService {
      * @return the message
      */
     protected String getMessage(String messageCode) {
-        return baseMessageResolver.getMessage(messageCode);
+        return isNotBlank(messageCode) ? baseMessageResolver.getMessage(messageCode) : EMPTY;
     }
 
     /**

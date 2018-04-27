@@ -4,9 +4,7 @@ import com.vishnu.aggarwal.core.dto.JobTriggerResponseDTO;
 import com.vishnu.aggarwal.rest.entity.JobTriggerResponse;
 import com.vishnu.aggarwal.rest.repository.JobTriggerResponseRepository;
 import lombok.extern.apachecommons.CommonsLog;
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,6 +13,10 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
+
+import static java.lang.Boolean.TRUE;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.hibernate.criterion.Restrictions.*;
 
 /**
  * The type Job trigger response service.
@@ -72,7 +74,7 @@ public class JobTriggerResponseRepoService extends BaseRepoService<JobTriggerRes
     public List<JobTriggerResponseDTO> fetch(JobTriggerResponseDTO jobTriggerResponseDTO) {
         return (List<JobTriggerResponseDTO>) getBaseCriteriaImpl()
                 .addOrder(getCriteriaOrder(jobTriggerResponseDTO))
-                .setReadOnly(Boolean.TRUE)
+                .setReadOnly(TRUE)
                 .setFirstResult(jobTriggerResponseDTO.getOffset())
                 .setMaxResults(jobTriggerResponseDTO.getMax())
                 .add(getRestrictionQuery(jobTriggerResponseDTO))
@@ -81,16 +83,16 @@ public class JobTriggerResponseRepoService extends BaseRepoService<JobTriggerRes
     }
 
     private Criterion getRestrictionQuery(JobTriggerResponseDTO jobTriggerResponseDTO) {
-        if (StringUtils.isNotEmpty(jobTriggerResponseDTO.getJobKeyName()) && StringUtils.isNotEmpty(jobTriggerResponseDTO.getTriggerKeyName())) {
-            return Restrictions.and(
-                    Restrictions.ilike("jobName", jobTriggerResponseDTO.getJobKeyName()),
-                    Restrictions.ilike("triggerName", jobTriggerResponseDTO.getTriggerKeyName())
+        if (isNotEmpty(jobTriggerResponseDTO.getJobKeyName()) && isNotEmpty(jobTriggerResponseDTO.getTriggerKeyName())) {
+            return and(
+                    ilike("jobName", jobTriggerResponseDTO.getJobKeyName()),
+                    ilike("triggerName", jobTriggerResponseDTO.getTriggerKeyName())
             );
-        } else if (StringUtils.isNotEmpty(jobTriggerResponseDTO.getJobKeyName())) {
-            return Restrictions.ilike("jobName", jobTriggerResponseDTO.getJobKeyName());
-        } else if (StringUtils.isNotEmpty(jobTriggerResponseDTO.getTriggerKeyName())) {
-            return Restrictions.ilike("triggerName", jobTriggerResponseDTO.getTriggerKeyName());
+        } else if (isNotEmpty(jobTriggerResponseDTO.getJobKeyName())) {
+            return ilike("jobName", jobTriggerResponseDTO.getJobKeyName());
+        } else if (isNotEmpty(jobTriggerResponseDTO.getTriggerKeyName())) {
+            return ilike("triggerName", jobTriggerResponseDTO.getTriggerKeyName());
         }
-        return Restrictions.isNotNull("id");
+        return isNotNull("id");
     }
 }

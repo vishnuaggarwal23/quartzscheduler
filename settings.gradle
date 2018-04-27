@@ -1,4 +1,3 @@
-rootProject.name = 'quartzscheduler'
 include 'core'
 include 'rest'
 include 'admin'

@@ -9,31 +9,33 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.Set;
 
 import static javax.persistence.GenerationType.AUTO;
 
 /*
-Created by vishnu on 5/3/18 11:11 AM
+Created by vishnu on 20/4/18 10:39 AM
 */
 
 @Entity
-@Table(name = "ROLE")
+@Table(name = "AUTHORITY")
 @Getter
 @Setter
-@ToString
-public class Role extends BaseEntity<Long> implements GrantedAuthority, Serializable {
-    private static final long serialVersionUID = -2248190721476487645L;
+@ToString(of = {"id", "name"})
+public class Authority extends BaseEntity<Long> implements GrantedAuthority, Serializable {
+    private static final long serialVersionUID = -4446929343152142811L;
 
     @Id
     @GeneratedValue(strategy = AUTO)
     private Long id;
 
+    @Column(name = "name", unique = true)
     @NotNull
     @NotBlank
-    @Column(unique = true)
-    private String authority;
+    private String name;
 
-    @ManyToMany(mappedBy = "roles")
-    private Set<User> users;
+    @Override
+    @Transient
+    public String getAuthority() {
+        return this.name;
+    }
 }

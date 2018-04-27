@@ -10,7 +10,9 @@ spring:
   jpa:
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL5Dialect
+        jdbc:
+          time_zone: "UTC"
+        dialect: com.vishnu.aggarwal.rest.config.MySqlDialect
         show_sql: true
         format_sql: true
         sql: info
@@ -67,11 +69,15 @@ spring:
        enableQueryTimeouts: false
        noDatetimeStringSync: true
     platform: mysql
+    initialization-mode: embedded
   devtools:
     livereload:
       enabled: true
     restart:
       enabled: true
+  output:
+    ansi:
+      enabled: detect
 hibernate:
   dialect: org.hibernate.dialect.MySQL5Dialect
   show_sql: true
@@ -79,6 +85,8 @@ hibernate:
   sql: info
   type: info
   use_sql_comments: true
+  jdbc:
+    time_zone: "UTC"
   hbm2ddl:
     auto: update
   ddl-auto: update
@@ -88,20 +96,20 @@ hibernate:
     strategy: org.hibernate.cfg.ImprovedNamingStrategy
 logging:
   level:
-    org:
-      quartz: info
-      springframework:
-        web: info
-      hibernate:
-        tool:
-          hbm2ddl: info
-        sql: info
-        type: info
-    com:
-      vishnu:
-        aggarwal: info
+    root: info
+    org.quartz: info
+    org.springframework.web: info
+    org.springframework.security: debug
+    org.hibernate.tool.hbm2ddl: info
+    org.hibernate.sql: info
+    org.hibernate.type: info
+    com.vishnu.aggarwal: info
+  file: "/home/vishnu/quartzscheduler/logging/rest.log"
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
+    dateformat: "yyyy-MMM-dd HH:mm:ss"
+    level: "%5p"
 management:
   health:
     db:
@@ -127,3 +135,6 @@ management:
     web:
       exposure:
         include: "*"
+jwt:
+  secret: MyJwtSecretStringKeyToBeUsedInSpringSecurityRest
+  expirationTime: "100000000"

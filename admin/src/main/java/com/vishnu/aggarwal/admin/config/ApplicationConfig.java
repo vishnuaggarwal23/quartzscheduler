@@ -41,10 +41,10 @@ public class ApplicationConfig extends WebConfig {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(requestInterceptor).excludePathPatterns("/**/js/**/", "/**/css/**/", "/**/img/**/", "/**/font/**/", "/**/fonts/**/", "/**/webjars/**/");
-        registry.addInterceptor(authenticationInterceptor).addPathPatterns("/**/web/user/**", "/**/web/quartz/**").excludePathPatterns("/**/web", "/**/web/", "/**/web/forgotPassword", "/**/js/**/", "/**/css/**/", "/**/img/**/", "/**/font/**/", "/**/fonts/**/", "/**/webjars/**/");
-        registry.addInterceptor(loginInterceptor).addPathPatterns("/**/web", "/**/web/").excludePathPatterns("/**/js/**/", "/**/css/**/", "/**/img/**/", "/**/font/**/", "/**/fonts/**/", "/**/webjars/**/");
-        registry.addInterceptor(logoutInterceptor).addPathPatterns("/**/api/user/logout", "/**/api/user/logout/").excludePathPatterns("/**/js/**/", "/**/css/**/", "/**/img/**/", "/**/font/**/", "/**/fonts/**/", "/**/webjars/**/");
+        registry.addInterceptor(requestInterceptor).excludePathPatterns("/**/js/**/", "/**/css/**/", "/**/img/**/", "/**/font/**/", "/**/fonts/**/", "/**/webjars/**/", "/**/webjar/**/");
+        registry.addInterceptor(authenticationInterceptor).addPathPatterns("/**/web/user/**", "/**/web/quartz/**").excludePathPatterns("/**/web", "/**/web/", "/**/web/forgotPassword", "/**/js/**/", "/**/css/**/", "/**/img/**/", "/**/font/**/", "/**/fonts/**/", "/**/webjars/**/", "/**/webjar/**/");
+        registry.addInterceptor(loginInterceptor).addPathPatterns("/**/web", "/**/web/").excludePathPatterns("/**/js/**/", "/**/css/**/", "/**/img/**/", "/**/font/**/", "/**/fonts/**/", "/**/webjars/**/", "/**/webjar/**/");
+        registry.addInterceptor(logoutInterceptor).addPathPatterns("/**/api/user/logout", "/**/api/user/logout/").excludePathPatterns("/**/js/**/", "/**/css/**/", "/**/img/**/", "/**/font/**/", "/**/fonts/**/", "/**/webjars/**/", "/**/webjar/**/");
     }
 
     @Bean
