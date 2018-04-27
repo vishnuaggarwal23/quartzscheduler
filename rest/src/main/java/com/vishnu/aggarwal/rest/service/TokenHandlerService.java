@@ -31,6 +31,9 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 
+/**
+ * The type Token handler service.
+ */
 @Service
 @CommonsLog
 public class TokenHandlerService extends BaseService implements com.vishnu.aggarwal.rest.interfaces.TokenHandlerService {
@@ -41,12 +44,21 @@ public class TokenHandlerService extends BaseService implements com.vishnu.aggar
     @Value("${jwt.expirationTime}")
     private String EXPIRATION_TIME;
 
+    /**
+     * The User service.
+     */
     @Autowired
     UserService userService;
 
+    /**
+     * The User token service.
+     */
     @Autowired
     UserTokenService userTokenService;
 
+    /**
+     * The Account status user details check.
+     */
     @Autowired
     UserDetailsChecker accountStatusUserDetailsCheck;
 

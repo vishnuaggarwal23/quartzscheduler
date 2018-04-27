@@ -25,10 +25,16 @@ import static org.hibernate.criterion.Restrictions.*;
 Created by vishnu on 20/4/18 12:20 PM
 */
 
+/**
+ * The type User token repo service.
+ */
 @Service
 @CommonsLog
 public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
 
+    /**
+     * The User token repository.
+     */
     @Autowired
     UserTokenRepository userTokenRepository;
 
@@ -46,6 +52,12 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
         return super.save(userToken);
     }
 
+    /**
+     * Find by token user token.
+     *
+     * @param token the token
+     * @return the user token
+     */
     public UserToken findByToken(String token) {
         return (UserToken) getBaseCriteriaImpl()
                 .setReadOnly(TRUE)
@@ -58,6 +70,12 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
                 .uniqueResult();
     }
 
+    /**
+     * Inactivate previous user tokens boolean.
+     *
+     * @param user the user
+     * @return the boolean
+     */
     public Boolean inactivatePreviousUserTokens(User user) {
         CriteriaUpdate<UserToken> criteriaUpdate = getBaseCriteriaUpdateImpl();
         Root<UserToken> root = criteriaUpdate.from(getEntityClass());
@@ -69,6 +87,12 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
         return updateQuery(criteriaUpdate) > 0;
     }
 
+    /**
+     * Inactivate expired user tokens boolean.
+     *
+     * @param tokens the tokens
+     * @return the boolean
+     */
     public Boolean inactivateExpiredUserTokens(List<Token> tokens){
         CriteriaUpdate<UserToken> criteriaUpdate = getBaseCriteriaUpdateImpl();
         Root<UserToken> root = criteriaUpdate.from(getEntityClass());
@@ -78,6 +102,12 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
         return updateQuery(criteriaUpdate) > 0;
     }
 
+    /**
+     * Find all user tokens list.
+     *
+     * @param user the user
+     * @return the list
+     */
     public List<UserToken> findAllUserTokens(User user) {
         return (List<UserToken>) getBaseCriteriaImpl().setReadOnly(TRUE)
                 .add(eq("user", user))
@@ -87,6 +117,13 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
                 .list();
     }
 
+    /**
+     * Find by user and status user token.
+     *
+     * @param user   the user
+     * @param status the status
+     * @return the user token
+     */
     public UserToken findByUserAndStatus(User user, Status status) {
         return (UserToken) getBaseCriteriaImpl()
                 .setReadOnly(TRUE)

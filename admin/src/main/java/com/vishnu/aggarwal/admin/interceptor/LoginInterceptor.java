@@ -28,13 +28,22 @@ import static org.apache.commons.lang3.BooleanUtils.isTrue;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 import static org.springframework.web.util.WebUtils.getCookie;
 
+/**
+ * The type Login interceptor.
+ */
 @Component
 @CommonsLog
 public class LoginInterceptor implements HandlerInterceptor {
 
+    /**
+     * The Authentication service.
+     */
     @Autowired
     AuthenticationService authenticationService;
 
+    /**
+     * The Base message resolver.
+     */
     @Autowired
     BaseMessageResolver baseMessageResolver;
 

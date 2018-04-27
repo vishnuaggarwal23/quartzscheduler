@@ -36,14 +36,28 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.util.WebUtils.getCookie;
 
+/**
+ * The type User controller.
+ */
 @RestController(value = "apiUserController")
 @CommonsLog
 @RequestMapping(value = Api.User.BASE_URI, produces = {APPLICATION_JSON_UTF8_VALUE})
 public class UserController extends BaseController {
 
+    /**
+     * The Authentication service.
+     */
     @Autowired
     AuthenticationService authenticationService;
 
+    /**
+     * Login response entity.
+     *
+     * @param login    the login
+     * @param request  the request
+     * @param response the response
+     * @return the response entity
+     */
     @RequestMapping(value = LOGIN, method = POST)
     @ResponseBody
     public ResponseEntity<RestResponseVO<String>> login(@RequestBody UserDTO login, HttpServletRequest request, HttpServletResponse response) {
@@ -66,6 +80,13 @@ public class UserController extends BaseController {
         }
     }
 
+    /**
+     * Logout string.
+     *
+     * @param request  the request
+     * @param response the response
+     * @return the string
+     */
     @RequestMapping(value = LOGOUT)
     public String logout(HttpServletRequest request, HttpServletResponse response) {
         String redirectPath;

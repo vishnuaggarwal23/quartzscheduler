@@ -9,11 +9,26 @@ import java.util.Date;
 
 import static java.util.Calendar.*;
 
+/**
+ * The type Date utils.
+ */
 public class DateUtils extends org.apache.commons.lang3.time.DateUtils{
+    /**
+     * Clear time date.
+     *
+     * @param date the date
+     * @return the date
+     */
     public static Date clearTime(Date date){
         return getStart(date);
     }
 
+    /**
+     * Get start date.
+     *
+     * @param date the date
+     * @return the date
+     */
     public static Date getStart(Date date){
         if (date == null) {
             return null;
@@ -27,6 +42,12 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils{
         return c.getTime();
     }
 
+    /**
+     * Gets end.
+     *
+     * @param date the date
+     * @return the end
+     */
     public static Date getEnd(Date date) {
         if (date == null) {
             return null;

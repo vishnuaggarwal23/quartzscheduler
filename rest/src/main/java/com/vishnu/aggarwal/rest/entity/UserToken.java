@@ -13,6 +13,9 @@ import static javax.persistence.EnumType.STRING;
 import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.GenerationType.AUTO;
 
+/**
+ * The type User token.
+ */
 /*
 Created by vishnu on 20/4/18 11:10 AM
 */

@@ -25,6 +25,9 @@ import static org.springframework.security.core.context.SecurityContextHolder.ge
 Created by vishnu on 19/4/18 4:13 PM
 */
 
+/**
+ * The type Authentication filter.
+ */
 @CommonsLog
 public class AuthenticationFilter extends GenericFilterBean {
 
@@ -33,6 +36,14 @@ public class AuthenticationFilter extends GenericFilterBean {
     private BaseMessageResolver baseMessageResolver;
     private AuthenticationManager authenticationManager;
 
+    /**
+     * Instantiates a new Authentication filter.
+     *
+     * @param tokenAuthenticationService the token authentication service
+     * @param objectMapper               the object mapper
+     * @param baseMessageResolver        the base message resolver
+     * @param authenticationManager      the authentication manager
+     */
     public AuthenticationFilter(TokenAuthenticationService tokenAuthenticationService, ObjectMapper objectMapper, BaseMessageResolver baseMessageResolver, AuthenticationManager authenticationManager) {
         super();
         this.tokenAuthenticationService = tokenAuthenticationService;

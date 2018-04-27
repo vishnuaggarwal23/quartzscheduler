@@ -50,6 +50,11 @@ public abstract class BaseRepoService<T, ID extends Serializable> extends BaseSe
      */
     protected abstract JpaRepository<T, ID> getJpaRepository();
 
+    /**
+     * Gets criteria builder.
+     *
+     * @return the criteria builder
+     */
     CriteriaBuilder getCriteriaBuilder() {
         return this.getSession().getCriteriaBuilder();
     }
@@ -63,6 +68,11 @@ public abstract class BaseRepoService<T, ID extends Serializable> extends BaseSe
         return getSession().createCriteria(getEntityClass());
     }
 
+    /**
+     * Gets base criteria update.
+     *
+     * @return the base criteria update
+     */
     protected CriteriaUpdate<T> getBaseCriteriaUpdateImpl() {
         return this.getCriteriaBuilder().createCriteriaUpdate(getEntityClass());
     }
@@ -81,6 +91,12 @@ public abstract class BaseRepoService<T, ID extends Serializable> extends BaseSe
         }
     }
 
+    /**
+     * Update query integer.
+     *
+     * @param criteriaUpdate the criteria update
+     * @return the integer
+     */
     @Transactional
     Integer updateQuery(CriteriaUpdate<T> criteriaUpdate) {
         return getSession().createQuery(criteriaUpdate).executeUpdate();

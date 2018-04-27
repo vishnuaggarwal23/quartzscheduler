@@ -22,10 +22,16 @@ import static java.lang.System.currentTimeMillis;
 import static org.hibernate.criterion.CriteriaSpecification.DISTINCT_ROOT_ENTITY;
 import static org.hibernate.criterion.Restrictions.*;
 
+/**
+ * The type Token repo service.
+ */
 @Service
 @CommonsLog
 public class TokenRepoService extends BaseRepoService<Token, Long> {
 
+    /**
+     * The Token repository.
+     */
     @Autowired
     TokenRepository tokenRepository;
 
@@ -45,10 +51,22 @@ public class TokenRepoService extends BaseRepoService<Token, Long> {
         return super.save(token);
     }
 
+    /**
+     * Find by token and is deleted token.
+     *
+     * @param token     the token
+     * @param isDeleted the is deleted
+     * @return the token
+     */
     public Token findByTokenAndIsDeleted(String token, Boolean isDeleted){
         return tokenRepository.findByTokenAndIsDeleted(token, isDeleted);
     }
 
+    /**
+     * Find all expired tokens list.
+     *
+     * @return the list
+     */
     public List<Token> findAllExpiredTokens() {
         return (List<Token>) getBaseCriteriaImpl()
                 .setReadOnly(TRUE)

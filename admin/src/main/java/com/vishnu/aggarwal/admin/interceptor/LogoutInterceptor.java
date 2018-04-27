@@ -23,13 +23,22 @@ import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
 import static org.springframework.web.util.WebUtils.getCookie;
 
+/**
+ * The type Logout interceptor.
+ */
 @Component
 @CommonsLog
 public class LogoutInterceptor implements HandlerInterceptor {
 
+    /**
+     * The Authentication service.
+     */
     @Autowired
     AuthenticationService authenticationService;
 
+    /**
+     * The Base message resolver.
+     */
     @Autowired
     BaseMessageResolver baseMessageResolver;
 

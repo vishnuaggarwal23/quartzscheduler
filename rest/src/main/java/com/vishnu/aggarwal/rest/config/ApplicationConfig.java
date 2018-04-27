@@ -36,6 +36,11 @@ public class ApplicationConfig extends WebConfig {
      */
     private final RequestInterceptor requestInterceptor;
 
+    /**
+     * Instantiates a new Application config.
+     *
+     * @param requestInterceptor the request interceptor
+     */
     @Autowired
     public ApplicationConfig(RequestInterceptor requestInterceptor) {
         this.requestInterceptor = requestInterceptor;
@@ -46,30 +51,55 @@ public class ApplicationConfig extends WebConfig {
         registry.addInterceptor(requestInterceptor).excludePathPatterns("/**/js/**/", "/**/css/**/", "/**/img/**/", "/**/font/**/", "/**/fonts/**/", "/**/webjars/**/", "/**/webjar/**/");
     }
 
+    /**
+     * B crypt password encoder b crypt password encoder.
+     *
+     * @return the b crypt password encoder
+     */
     @Bean
     @Primary
     BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder(5);
     }
 
+    /**
+     * Account status user details check user details checker.
+     *
+     * @return the user details checker
+     */
     @Bean
     @Primary
     UserDetailsChecker accountStatusUserDetailsCheck() {
         return new AccountStatusUserDetailsChecker();
     }
 
+    /**
+     * Logout handler logout handler.
+     *
+     * @return the logout handler
+     */
     @Bean
     @Primary
     LogoutHandler logoutHandler() {
         return new LogoutHandler();
     }
 
+    /**
+     * Logout success handler logout success handler.
+     *
+     * @return the logout success handler
+     */
     @Bean
     @Primary
     LogoutSuccessHandler logoutSuccessHandler(){
         return new LogoutSuccessHandler();
     }
 
+    /**
+     * Access denied handler access denied handler.
+     *
+     * @return the access denied handler
+     */
     @Bean
     @Primary
     AccessDeniedHandler accessDeniedHandler(){

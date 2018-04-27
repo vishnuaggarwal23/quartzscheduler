@@ -28,14 +28,27 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 Created by vishnu on 30/3/18 10:46 AM
 */
 
+/**
+ * The type User controller.
+ */
 @RestController
 @CommonsLog
 @RequestMapping(value = BASE_URI, produces = APPLICATION_JSON_UTF8_VALUE)
 public class UserController extends BaseController {
 
+    /**
+     * The User service.
+     */
     @Autowired
     UserService userService;
 
+    /**
+     * Authenticate user response entity.
+     *
+     * @param httpServletRequest  the http servlet request
+     * @param httpServletResponse the http servlet response
+     * @return the response entity
+     */
     @RequestMapping(value = AUTHENTICATE, method = GET)
     @ResponseBody
     public ResponseEntity<RestResponseVO<Boolean>> authenticateUser(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
@@ -49,6 +62,14 @@ public class UserController extends BaseController {
         return new ResponseEntity<RestResponseVO<Boolean>>(restResponseVO, valueOf(httpServletResponse.getStatus()));
     }
 
+    /**
+     * Login response entity.
+     *
+     * @param login               the login
+     * @param httpServletRequest  the http servlet request
+     * @param httpServletResponse the http servlet response
+     * @return the response entity
+     */
     @RequestMapping(value = LOGIN, method = POST)
     @ResponseBody
     public ResponseEntity<RestResponseVO<String>> login(@RequestBody UserDTO login, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {

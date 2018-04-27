@@ -58,8 +58,9 @@ public class QuartzService extends BaseService {
      * Create new unscheduled api job.
      *
      * @param quartzDTO the quartz dto
-     * @throws ClassNotFoundException the class not found exception
      * @throws SchedulerException     the scheduler exception
+     * @throws NullPointerException   the null pointer exception
+     * @throws ClassNotFoundException the class not found exception
      */
     public void createNewUnscheduledApiJob(QuartzDTO quartzDTO) throws SchedulerException, NullPointerException, ClassNotFoundException {
         JobKey jobKey = new JobKey(quartzDTO.getJob().getKeyName(), quartzDTO.getJob().getGroupName());
@@ -87,6 +88,7 @@ public class QuartzService extends BaseService {
      * @throws ClassNotFoundException   the class not found exception
      * @throws SchedulerException       the scheduler exception
      * @throws JobNotScheduledException the job not scheduled exception
+     * @throws NullPointerException     the null pointer exception
      */
     public Date createNewScheduledApiSimpleJob(QuartzDTO quartzDTO) throws ClassNotFoundException, SchedulerException, JobNotScheduledException, NullPointerException {
         JobKey jobKey = new JobKey(quartzDTO.getJob().getKeyName(), quartzDTO.getJob().getGroupName());
@@ -149,6 +151,7 @@ public class QuartzService extends BaseService {
      * @throws ClassNotFoundException   the class not found exception
      * @throws SchedulerException       the scheduler exception
      * @throws JobNotScheduledException the job not scheduled exception
+     * @throws NullPointerException     the null pointer exception
      */
     public Date createNewScheduledApiCronJob(QuartzDTO quartzDTO) throws ClassNotFoundException, SchedulerException, JobNotScheduledException, NullPointerException {
         JobDataMap jobDataMap = new JobDataMap(createJobDataMap(quartzDTO));
@@ -187,6 +190,7 @@ public class QuartzService extends BaseService {
      * @return the date
      * @throws SchedulerException           the scheduler exception
      * @throws TriggerNotScheduledException the trigger not scheduled exception
+     * @throws NullPointerException         the null pointer exception
      */
     public Date createNewSimpleTriggerForJob(QuartzDTO quartzDTO) throws SchedulerException, TriggerNotScheduledException, NullPointerException {
         JobKey jobKey = new JobKey(quartzDTO.getJob().getKeyName(), quartzDTO.getJob().getGroupName());
@@ -246,6 +250,7 @@ public class QuartzService extends BaseService {
      * @return the date
      * @throws SchedulerException           the scheduler exception
      * @throws TriggerNotScheduledException the trigger not scheduled exception
+     * @throws NullPointerException         the null pointer exception
      */
     public Date createNewCronTriggerForJob(QuartzDTO quartzDTO) throws SchedulerException, TriggerNotScheduledException, NullPointerException {
         JobKey jobKey = new JobKey(quartzDTO.getJob().getKeyName(), quartzDTO.getJob().getGroupName());
@@ -282,6 +287,7 @@ public class QuartzService extends BaseService {
      * @throws ClassNotFoundException     the class not found exception
      * @throws SchedulerException         the scheduler exception
      * @throws JobDetailNotFoundException the job detail not found exception
+     * @throws NullPointerException       the null pointer exception
      */
     public void updateExistingJob(QuartzDTO quartzDTO) throws ClassNotFoundException, SchedulerException, JobDetailNotFoundException, NullPointerException {
         JobKey jobKey = quartzScheduler.getJobKeys(jobGroupEquals(quartzDTO.getJob().getGroupName()))
@@ -319,6 +325,7 @@ public class QuartzService extends BaseService {
      * @throws SchedulerException             the scheduler exception
      * @throws JobDetailNotFoundException     the job detail not found exception
      * @throws TriggerDetailNotFoundException the trigger detail not found exception
+     * @throws NullPointerException           the null pointer exception
      */
     public Date updateExistingSimpleTrigger(QuartzDTO quartzDTO) throws TriggerNotScheduledException, SchedulerException, JobDetailNotFoundException, TriggerDetailNotFoundException, NullPointerException {
         JobKey jobKey = quartzScheduler.getJobKeys(jobGroupEquals(quartzDTO.getJob().getGroupName()))
@@ -401,6 +408,7 @@ public class QuartzService extends BaseService {
      * @throws JobDetailNotFoundException     the job detail not found exception
      * @throws TriggerDetailNotFoundException the trigger detail not found exception
      * @throws TriggerNotScheduledException   the trigger not scheduled exception
+     * @throws NullPointerException           the null pointer exception
      */
     public Date updateExistingCronTrigger(QuartzDTO quartzDTO) throws SchedulerException, JobDetailNotFoundException, TriggerDetailNotFoundException, TriggerNotScheduledException, NullPointerException {
         JobKey jobKey = quartzScheduler.getJobKeys(jobGroupEquals(quartzDTO.getJob().getGroupName()))
@@ -458,6 +466,7 @@ public class QuartzService extends BaseService {
      * @return the list
      * @throws SchedulerException         the scheduler exception
      * @throws JobDetailNotFoundException the job detail not found exception
+     * @throws NullPointerException       the null pointer exception
      */
     public List<JobDetailsCO> fetchJobDetailsByGroupName(String groupName) throws SchedulerException, JobDetailNotFoundException, NullPointerException {
         if (StringUtils.isEmpty(groupName)) {
@@ -504,6 +513,7 @@ public class QuartzService extends BaseService {
      * @return the list
      * @throws SchedulerException             the scheduler exception
      * @throws TriggerDetailNotFoundException the trigger detail not found exception
+     * @throws NullPointerException           the null pointer exception
      */
     @SuppressWarnings("unchecked")
     public List<TriggerDetailsCO> fetchTriggerDetailsByJobKeyNameAndGroupName(String jobKeyName, String groupName) throws SchedulerException, TriggerDetailNotFoundException, NullPointerException {
@@ -564,6 +574,7 @@ public class QuartzService extends BaseService {
      * @throws JobDetailNotFoundException     the job detail not found exception
      * @throws QuartzDetailNotFoundException  the quartz detail not found exception
      * @throws TriggerDetailNotFoundException the trigger detail not found exception
+     * @throws NullPointerException           the null pointer exception
      */
     public List<QuartzDetailsCO> fetchQuartzDetailsForAGroupName(String groupName) throws SchedulerException, JobDetailNotFoundException, QuartzDetailNotFoundException, TriggerDetailNotFoundException, NullPointerException {
         if (StringUtils.isEmpty(groupName)) {
@@ -598,6 +609,7 @@ public class QuartzService extends BaseService {
      * @param groupName the group name
      * @throws SchedulerException            the scheduler exception
      * @throws ResumeTriggerFailureException the resume trigger failure exception
+     * @throws NullPointerException          the null pointer exception
      */
     public void resumeTriggers(String keyName, String groupName) throws SchedulerException, ResumeTriggerFailureException, NullPointerException {
         if (StringUtils.isEmpty(groupName)) {
@@ -618,6 +630,7 @@ public class QuartzService extends BaseService {
      * @param groupName the group name
      * @throws SchedulerException           the scheduler exception
      * @throws PauseTriggerFailureException the pause trigger failure exception
+     * @throws NullPointerException         the null pointer exception
      */
     public void pauseTriggers(String keyName, String groupName) throws SchedulerException, PauseTriggerFailureException, NullPointerException {
         if (StringUtils.isEmpty(groupName)) {
@@ -638,6 +651,7 @@ public class QuartzService extends BaseService {
      * @param groupName the group name
      * @throws SchedulerException        the scheduler exception
      * @throws ResumeJobFailureException the resume job failure exception
+     * @throws NullPointerException      the null pointer exception
      */
     public void resumeJobs(String keyName, String groupName) throws SchedulerException, ResumeJobFailureException, NullPointerException {
         if (StringUtils.isEmpty(groupName)) {
@@ -658,6 +672,7 @@ public class QuartzService extends BaseService {
      * @param groupName the group name
      * @throws SchedulerException       the scheduler exception
      * @throws PauseJobFailureException the pause job failure exception
+     * @throws NullPointerException     the null pointer exception
      */
     public void pauseJobs(String keyName, String groupName) throws SchedulerException, PauseJobFailureException, NullPointerException {
         if (StringUtils.isEmpty(groupName)) {
@@ -679,6 +694,7 @@ public class QuartzService extends BaseService {
      * @return the boolean
      * @throws SchedulerException        the scheduler exception
      * @throws JobDeleteFailureException the job delete failure exception
+     * @throws NullPointerException      the null pointer exception
      */
     public Boolean deleteJobs(String keyName, String groupName) throws SchedulerException, JobDeleteFailureException, NullPointerException {
 
@@ -708,6 +724,7 @@ public class QuartzService extends BaseService {
      * @return the boolean
      * @throws SchedulerException            the scheduler exception
      * @throws TriggerDeleteFailureException the trigger delete failure exception
+     * @throws NullPointerException          the null pointer exception
      */
     public Boolean deleteTriggers(String keyName, String groupName) throws SchedulerException, TriggerDeleteFailureException, NullPointerException {
 

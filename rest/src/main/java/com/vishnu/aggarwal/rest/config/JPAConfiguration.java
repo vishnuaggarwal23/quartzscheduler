@@ -23,6 +23,11 @@ public class JPAConfiguration {
 
     private final UserService userService;
 
+    /**
+     * Instantiates a new Jpa configuration.
+     *
+     * @param userService the user service
+     */
     @Autowired
     public JPAConfiguration(UserService userService) {
         this.userService = userService;

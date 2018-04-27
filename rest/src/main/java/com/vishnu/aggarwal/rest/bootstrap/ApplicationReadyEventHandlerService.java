@@ -27,18 +27,33 @@ import static org.apache.commons.lang3.BooleanUtils.isTrue;
 @CommonsLog
 public class ApplicationReadyEventHandlerService extends com.vishnu.aggarwal.core.bootstrap.ApplicationReadyEventHandlerService {
 
+    /**
+     * The User repo service.
+     */
     @Autowired
     UserRepoService userRepoService;
 
+    /**
+     * The Application context.
+     */
     @Autowired
     ApplicationContext applicationContext;
 
+    /**
+     * The Authority repo service.
+     */
     @Autowired
     AuthorityRepoService authorityRepoService;
 
+    /**
+     * The B crypt password encoder.
+     */
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    /**
+     * The User authority repo service.
+     */
     @Autowired
     UserAuthorityRepoService userAuthorityRepoService;
 

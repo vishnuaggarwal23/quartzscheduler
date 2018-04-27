@@ -19,23 +19,48 @@ import javax.servlet.http.Cookie;
 
 import static com.vishnu.aggarwal.core.constants.UrlMapping.Rest.Validation.BASE_URI;
 
+/**
+ * The type Validation service.
+ */
 @Service
 @CommonsLog
 public class ValidationService extends BaseService {
 
+    /**
+     * The Rest application config.
+     */
     @Autowired
     RestApplicationConfig restApplicationConfig;
 
+    /**
+     * Validation api service validation api service.
+     *
+     * @return the validation api service
+     */
     @Bean
     @Primary
     ValidationApiService validationApiService() {
         return new FeignClientFactory().getInstance(ValidationApiService.class, restApplicationConfig.restApplicationUrl(BASE_URI));
     }
 
+    /**
+     * Is job key unique rest response vo.
+     *
+     * @param keyName    the key name
+     * @param xAuthToken the x auth token
+     * @return the rest response vo
+     */
     public RestResponseVO<Boolean> isJobKeyUnique(String keyName, Cookie xAuthToken) {
         return validationApiService().isJobKeyUnique(keyName, xAuthToken.getValue());
     }
 
+    /**
+     * Is trigger key unique rest response vo.
+     *
+     * @param keyName    the key name
+     * @param xAuthToken the x auth token
+     * @return the rest response vo
+     */
     public RestResponseVO<Boolean> isTriggerKeyUnique(String keyName, Cookie xAuthToken) {
         return validationApiService().isTriggerKeyUnique(keyName, xAuthToken.getValue());
     }

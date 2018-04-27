@@ -8,7 +8,16 @@ import org.springframework.stereotype.Repository;
 Created by vishnu on 6/3/18 10:37 AM
 */
 
+/**
+ * The interface User token repository.
+ */
 @Repository
 public interface UserTokenRepository extends JpaRepository<UserToken, Long> {
+    /**
+     * Find by token user token.
+     *
+     * @param token the token
+     * @return the user token
+     */
     UserToken findByToken(String token);
 }

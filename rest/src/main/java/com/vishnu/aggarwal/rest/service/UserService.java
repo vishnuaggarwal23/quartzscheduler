@@ -53,10 +53,22 @@ public class UserService extends BaseService implements com.vishnu.aggarwal.rest
         return userRepoService.findByUsername(username);
     }
 
+    /**
+     * Authenticate user boolean.
+     *
+     * @param xAuthToken the x auth token
+     * @return the boolean
+     */
     public Boolean authenticateUser(String xAuthToken) {
         return TRUE;
     }
 
+    /**
+     * Login string.
+     *
+     * @param login the login
+     * @return the string
+     */
     public String login(UserDTO login) {
         return RandomStringUtils.randomAlphanumeric(10);
     }

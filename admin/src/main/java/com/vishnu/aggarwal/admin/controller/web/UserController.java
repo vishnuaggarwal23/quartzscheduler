@@ -18,16 +18,31 @@ import static com.vishnu.aggarwal.core.constants.ApplicationConstants.USER_LOGGE
 import static com.vishnu.aggarwal.core.constants.UrlMapping.Admin.Web.User.*;
 import static java.lang.Boolean.TRUE;
 
+/**
+ * The type User controller.
+ */
 @Controller(value = "webUserController")
 @CommonsLog
 @RequestMapping(BASE_URI)
 public class UserController extends BaseController {
 
+    /**
+     * Login model and view.
+     *
+     * @param request the request
+     * @return the model and view
+     */
     @RequestMapping({USER_LOGIN_1, USER_LOGIN_2})
     public ModelAndView login(HttpServletRequest request) {
         return new ModelAndView("login");
     }
 
+    /**
+     * Forgot password model and view.
+     *
+     * @param username the username
+     * @return the model and view
+     */
     @RequestMapping(FORGOT_PASSWORD)
     public ModelAndView forgotPassword(@RequestParam(value = "username", required = false) String username) {
         ModelMap modelMap = new ModelMap();
@@ -35,6 +50,11 @@ public class UserController extends BaseController {
         return new ModelAndView("forgotPassword", modelMap);
     }
 
+    /**
+     * Dashboard model and view.
+     *
+     * @return the model and view
+     */
     @RequestMapping(USER_DASHBOARD)
     public ModelAndView dashboard() {
         ModelMap modelMap = new ModelMap();

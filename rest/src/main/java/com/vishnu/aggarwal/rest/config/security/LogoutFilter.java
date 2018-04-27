@@ -26,6 +26,9 @@ import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
+/**
+ * The type Logout filter.
+ */
 @CommonsLog
 public class LogoutFilter extends org.springframework.security.web.authentication.logout.LogoutFilter {
 
@@ -33,6 +36,15 @@ public class LogoutFilter extends org.springframework.security.web.authenticatio
     private LogoutHandler logoutHandler;
     private LogoutSuccessHandler logoutSuccessHandler;
 
+    /**
+     * Instantiates a new Logout filter.
+     *
+     * @param logoutUrl                  the logout url
+     * @param logoutSuccessHandler       the logout success handler
+     * @param requestMatcher             the request matcher
+     * @param tokenAuthenticationService the token authentication service
+     * @param logoutHandler              the logout handler
+     */
     public LogoutFilter(String logoutUrl, LogoutSuccessHandler logoutSuccessHandler, RequestMatcher requestMatcher, TokenAuthenticationService tokenAuthenticationService, LogoutHandler logoutHandler) {
         super(logoutSuccessHandler, logoutHandler);
         this.tokenAuthenticationService = tokenAuthenticationService;
@@ -42,6 +54,12 @@ public class LogoutFilter extends org.springframework.security.web.authenticatio
         super.setLogoutRequestMatcher(requestMatcher);
     }
 
+    /**
+     * Instantiates a new Logout filter.
+     *
+     * @param logoutSuccessUrl the logout success url
+     * @param handlers         the handlers
+     */
     @Deprecated
     public LogoutFilter(String logoutSuccessUrl, LogoutHandler... handlers) {
         super(logoutSuccessUrl, handlers);

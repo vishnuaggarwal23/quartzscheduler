@@ -13,6 +13,9 @@ import java.io.IOException;
 
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 
+/**
+ * The type Access denied handler.
+ */
 public class AccessDeniedHandler implements org.springframework.security.web.access.AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {

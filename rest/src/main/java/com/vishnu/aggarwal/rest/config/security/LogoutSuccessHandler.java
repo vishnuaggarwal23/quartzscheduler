@@ -9,6 +9,9 @@ import java.io.IOException;
 
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 
+/**
+ * The type Logout success handler.
+ */
 /*
 Created by vishnu on 21/4/18 5:39 PM
 */

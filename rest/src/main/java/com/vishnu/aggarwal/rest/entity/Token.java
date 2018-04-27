@@ -17,6 +17,9 @@ import static com.vishnu.aggarwal.core.util.DateUtils.getEnd;
 import static java.util.Objects.nonNull;
 import static javax.persistence.GenerationType.AUTO;
 
+/**
+ * The type Token.
+ */
 @Entity
 @Table(name = "TOKEN")
 @Getter
@@ -58,6 +61,11 @@ public class Token extends BaseEntity<Long> implements org.springframework.secur
         return null;
     }
 
+    /**
+     * Sets expiration date.
+     *
+     * @param expirationDate the expiration date
+     */
     public void setExpirationDate(Date expirationDate) {
         if(nonNull(expirationDate)) {
             this.expirationDate = getEnd(expirationDate);

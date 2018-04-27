@@ -19,8 +19,14 @@ import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.springframework.security.core.context.SecurityContextHolder.clearContext;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
+/**
+ * The type Logout handler.
+ */
 public class LogoutHandler implements org.springframework.security.web.authentication.logout.LogoutHandler {
 
+    /**
+     * The Token authentication service.
+     */
     @Autowired
     TokenAuthenticationService tokenAuthenticationService;
 

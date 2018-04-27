@@ -47,6 +47,11 @@ public class ApplicationConfig extends WebConfig {
         registry.addInterceptor(logoutInterceptor).addPathPatterns("/**/api/user/logout", "/**/api/user/logout/").excludePathPatterns("/**/js/**/", "/**/css/**/", "/**/img/**/", "/**/font/**/", "/**/fonts/**/", "/**/webjars/**/", "/**/webjar/**/");
     }
 
+    /**
+     * Layout dialect layout dialect.
+     *
+     * @return the layout dialect
+     */
     @Bean
     public LayoutDialect layoutDialect() {
         return new LayoutDialect();

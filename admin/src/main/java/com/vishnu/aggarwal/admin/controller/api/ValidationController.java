@@ -25,14 +25,29 @@ import static org.springframework.http.HttpStatus.valueOf;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
+/**
+ * The type Validation controller.
+ */
 @RestController(value = "apiValidationController")
 @RequestMapping(value = BASE_URI, produces = {APPLICATION_JSON_UTF8_VALUE})
 @CommonsLog
 public class ValidationController extends BaseController {
 
+    /**
+     * The Validation service.
+     */
     @Autowired
     ValidationService validationService;
 
+    /**
+     * Is job key unique response entity.
+     *
+     * @param keyName    the key name
+     * @param xAuthToken the x auth token
+     * @param request    the request
+     * @param response   the response
+     * @return the response entity
+     */
     @RequestMapping(value = UNIQUE_JOB_KEY_PER_GROUP, method = GET)
     @ResponseBody
     public ResponseEntity<RestResponseVO<Boolean>> isJobKeyUnique(@RequestParam("keyName") String keyName, @CookieValue(X_AUTH_TOKEN) Cookie xAuthToken, HttpServletRequest request, HttpServletResponse response) {
@@ -48,6 +63,15 @@ public class ValidationController extends BaseController {
         return new ResponseEntity<RestResponseVO<Boolean>>(validationResponse, valueOf(response.getStatus()));
     }
 
+    /**
+     * Is trigger key unique response entity.
+     *
+     * @param keyName    the key name
+     * @param xAuthToken the x auth token
+     * @param request    the request
+     * @param response   the response
+     * @return the response entity
+     */
     @RequestMapping(value = UNIQUE_TRIGGER_KEY_PER_GROUP, method = GET)
     @ResponseBody
     public ResponseEntity<RestResponseVO<Boolean>> isTriggerKeyUnique(@RequestParam("keyName") String keyName, @CookieValue(X_AUTH_TOKEN) Cookie xAuthToken, HttpServletRequest request, HttpServletResponse response) {

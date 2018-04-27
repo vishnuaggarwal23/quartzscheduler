@@ -13,9 +13,15 @@ import org.springframework.stereotype.Service;
 Created by vishnu on 20/4/18 2:55 PM
 */
 
+/**
+ * The type User authority repo service.
+ */
 @Service
 @CommonsLog
 public class UserAuthorityRepoService extends BaseRepoService<UserAuthority, Long> {
+    /**
+     * The User authority repository.
+     */
     @Autowired
     UserAuthorityRepository userAuthorityRepository;
 
@@ -34,6 +40,14 @@ public class UserAuthorityRepoService extends BaseRepoService<UserAuthority, Lon
         return userAuthorityRepository.save(userAuthority);
     }
 
+    /**
+     * Find by user and authority and is deleted user authority.
+     *
+     * @param user      the user
+     * @param authority the authority
+     * @param isDeleted the is deleted
+     * @return the user authority
+     */
     public UserAuthority findByUserAndAuthorityAndIsDeleted(User user, Authority authority, Boolean isDeleted) {
         return userAuthorityRepository.findByUserAndAuthorityAndIsDeleted(user, authority, isDeleted);
     }

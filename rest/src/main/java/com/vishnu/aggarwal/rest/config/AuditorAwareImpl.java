@@ -22,6 +22,11 @@ public class AuditorAwareImpl implements AuditorAware<User> {
 
     private UserService userService;
 
+    /**
+     * Instantiates a new Auditor aware.
+     *
+     * @param userService the user service
+     */
     public AuditorAwareImpl(UserService userService) {
         this.userService = userService;
     }

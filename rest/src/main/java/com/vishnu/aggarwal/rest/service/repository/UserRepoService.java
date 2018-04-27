@@ -21,10 +21,16 @@ import static java.lang.Boolean.TRUE;
 import static java.util.Objects.nonNull;
 import static org.hibernate.criterion.Restrictions.eq;
 
+/**
+ * The type User repo service.
+ */
 @Service
 @CommonsLog
 public class UserRepoService extends BaseRepoService<User, Long> {
 
+    /**
+     * The User repository.
+     */
     @Autowired
     UserRepository userRepository;
 
@@ -38,6 +44,12 @@ public class UserRepoService extends BaseRepoService<User, Long> {
         return userRepository;
     }
 
+    /**
+     * Check if username is unique boolean.
+     *
+     * @param username the username
+     * @return the boolean
+     */
     public Boolean checkIfUsernameIsUnique(String username) {
         return userRepository.countByUsernameAndIsDeletedAndAccountEnabledAndAccountExpiredAndAccountLockedAndCredentialsExpired(username, FALSE, TRUE, FALSE, FALSE, FALSE) == 0;
     }
@@ -47,6 +59,13 @@ public class UserRepoService extends BaseRepoService<User, Long> {
         return super.save(user);
     }
 
+    /**
+     * Find by username user.
+     *
+     * @param username the username
+     * @return the user
+     * @throws HibernateException the hibernate exception
+     */
     @Transactional(readOnly = true)
     public User findByUsername(String username) throws HibernateException {
         Criteria criteria = getBaseCriteriaImpl()
@@ -62,6 +81,12 @@ public class UserRepoService extends BaseRepoService<User, Long> {
         return (User) criteria.uniqueResult();
     }
 
+    /**
+     * Is valid user for system access boolean.
+     *
+     * @param user the user
+     * @return the boolean
+     */
     public Boolean isValidUserForSystemAccess(User user) {
         return nonNull(user) ? user.isAccountNonExpired() && user.isAccountNonLocked() && user.isCredentialsNonExpired() && user.isEnabled() && !user.getIsDeleted() : FALSE;
     }

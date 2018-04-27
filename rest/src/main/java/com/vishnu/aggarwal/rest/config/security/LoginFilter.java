@@ -38,6 +38,9 @@ import static org.springframework.security.core.context.SecurityContextHolder.ge
 Created by vishnu on 20/4/18 1:21 PM
 */
 
+/**
+ * The type Login filter.
+ */
 @CommonsLog
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -46,6 +49,15 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final ObjectMapper objectMapper;
     private final AuthenticationManager authenticationManager;
 
+    /**
+     * Instantiates a new Login filter.
+     *
+     * @param requestMatcher             the request matcher
+     * @param tokenAuthenticationService the token authentication service
+     * @param baseMessageResolver        the base message resolver
+     * @param objectMapper               the object mapper
+     * @param authenticationManager      the authentication manager
+     */
     public LoginFilter(RequestMatcher requestMatcher, TokenAuthenticationService tokenAuthenticationService, BaseMessageResolver baseMessageResolver, ObjectMapper objectMapper, AuthenticationManager authenticationManager) {
         this.tokenAuthenticationService = tokenAuthenticationService;
         this.baseMessageResolver = baseMessageResolver;

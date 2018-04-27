@@ -44,9 +44,17 @@ public class QuartzService extends BaseService {
     @Autowired
     RestService restService;
 
+    /**
+     * The Rest application config.
+     */
     @Autowired
     RestApplicationConfig restApplicationConfig;
 
+    /**
+     * Quartz feign api service quartz feign api service.
+     *
+     * @return the quartz feign api service
+     */
     @Bean
     @Primary
     QuartzFeignApiService quartzFeignApiService() {
@@ -59,8 +67,7 @@ public class QuartzService extends BaseService {
      * @param quartzDTO the quartz dto
      * @param cookie    the cookie
      * @return the rest response vo
-     * @throws RestServiceCallException the rest service call exception
-     * @throws Exception                the exception
+     * @throws Exception the exception
      */
     public RestResponseVO<String> createNewJob(QuartzDTO quartzDTO, Cookie cookie) throws Exception {
 //        return (RestResponseVO<String>) restService.getResponseFromBackendService(quartzDTO, cookie.getValue(), CREATE_NEW_JOB.getApiEndPoint(), (HttpMethod) CREATE_NEW_JOB.getHttpMethods(), CREATE_NEW_JOB.getResponseTypeClass());
