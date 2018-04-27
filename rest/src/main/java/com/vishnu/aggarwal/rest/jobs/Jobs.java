@@ -48,7 +48,7 @@ public class Jobs {
                 out.println(it.toString());
             });
             log.info("**********");
-            if(userTokenRepoService.inactivateExpiredUserTokens(tokens)){
+            if (userTokenRepoService.inactivateExpiredUserTokens(tokens)) {
                 log.info("*********** Expired tokens inactivated *************");
             }
         }

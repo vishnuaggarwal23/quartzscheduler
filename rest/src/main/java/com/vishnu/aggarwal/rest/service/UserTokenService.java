@@ -42,7 +42,7 @@ public class UserTokenService extends BaseService {
      * @param user the user
      * @return the boolean
      */
-    public Boolean updateTokenStatus(User user){
+    public Boolean updateTokenStatus(User user) {
         return userTokenRepoService.inactivatePreviousUserTokens(user);
     }
 
@@ -62,7 +62,7 @@ public class UserTokenService extends BaseService {
      * @param user the user
      * @return the list
      */
-    public List<UserToken> findAllUserTokens(User user){
+    public List<UserToken> findAllUserTokens(User user) {
         return userTokenRepoService.findAllUserTokens(user);
     }
 
@@ -73,7 +73,7 @@ public class UserTokenService extends BaseService {
      * @param status the status
      * @return the user token
      */
-    public UserToken findByUserAndStatus(User user, Status status){
+    public UserToken findByUserAndStatus(User user, Status status) {
         return userTokenRepoService.findByUserAndStatus(user, status);
     }
 }

@@ -7,7 +7,7 @@ import org.springframework.security.core.AuthenticationException;
  */
 /*
 Created by vishnu on 21/4/18 6:16 PM
-*/public class JwtException extends AuthenticationException{
+*/public class JwtException extends AuthenticationException {
 
     /**
      * Instantiates a new Jwt exception.

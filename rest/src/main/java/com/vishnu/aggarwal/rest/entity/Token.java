@@ -24,8 +24,8 @@ import static javax.persistence.GenerationType.AUTO;
 @Table(name = "TOKEN")
 @Getter
 @Setter
-@ToString(of={"id", "token", "issueId", "expirationDate", "issuedDate"})
-public class Token extends BaseEntity<Long> implements org.springframework.security.core.token.Token{
+@ToString(of = {"id", "token", "issueId", "expirationDate", "issuedDate"})
+public class Token extends BaseEntity<Long> implements org.springframework.security.core.token.Token {
 
     @Id
     @GeneratedValue(strategy = AUTO)
@@ -67,7 +67,7 @@ public class Token extends BaseEntity<Long> implements org.springframework.secur
      * @param expirationDate the expiration date
      */
     public void setExpirationDate(Date expirationDate) {
-        if(nonNull(expirationDate)) {
+        if (nonNull(expirationDate)) {
             this.expirationDate = getEnd(expirationDate);
         }
     }

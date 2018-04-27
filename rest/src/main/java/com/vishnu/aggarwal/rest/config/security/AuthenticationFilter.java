@@ -58,7 +58,7 @@ public class AuthenticationFilter extends GenericFilterBean {
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
         httpServletResponse.setCharacterEncoding("UTF-8");
 
-        if(httpServletRequest.getRequestURI().contains("/user/login")){
+        if (httpServletRequest.getRequestURI().contains("/user/login")) {
             chain.doFilter(httpServletRequest, httpServletResponse);
         } else {
             Authentication authentication = tokenAuthenticationService.getAuthentication(httpServletRequest, httpServletResponse);

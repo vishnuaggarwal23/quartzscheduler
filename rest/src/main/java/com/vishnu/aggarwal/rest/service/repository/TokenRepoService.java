@@ -58,7 +58,7 @@ public class TokenRepoService extends BaseRepoService<Token, Long> {
      * @param isDeleted the is deleted
      * @return the token
      */
-    public Token findByTokenAndIsDeleted(String token, Boolean isDeleted){
+    public Token findByTokenAndIsDeleted(String token, Boolean isDeleted) {
         return tokenRepository.findByTokenAndIsDeleted(token, isDeleted);
     }
 

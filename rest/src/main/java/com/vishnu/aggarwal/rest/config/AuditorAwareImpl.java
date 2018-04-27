@@ -35,9 +35,9 @@ public class AuditorAwareImpl implements AuditorAware<User> {
     public Optional<User> getCurrentAuditor() {
         Authentication authentication = getContext().getAuthentication();
         User user = null;
-        if(nonNull(authentication)){
+        if (nonNull(authentication)) {
             String username = (String) authentication.getPrincipal();
-            if(isNotBlank(username)){
+            if (isNotBlank(username)) {
                 user = userService.findByUsername(username);
             }
         }

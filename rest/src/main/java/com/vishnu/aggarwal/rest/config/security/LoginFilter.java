@@ -69,17 +69,17 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        log.info("********************* [Request Interceptor Id "+request.getParameter(CUSTOM_REQUEST_ID)+"] Attempting Authentication **********************");
-        try{
+        log.info("********************* [Request Interceptor Id " + request.getParameter(CUSTOM_REQUEST_ID) + "] Attempting Authentication **********************");
+        try {
             Authentication authentication = tokenAuthenticationService.getAuthenticationForLogin(request, response, authenticationManager);
             if (isFalse(authentication.isAuthenticated())) {
                 throw new AuthenticationServiceException(baseMessageResolver.getMessage("user.authentication.failed"));
             }
             return authentication;
-        } catch (IOException e){
+        } catch (IOException e) {
             log.error("*********** " + e.getClass() + " ***************");
             throw new InternalAuthenticationServiceException(baseMessageResolver.getMessage(""));
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("*********** " + e.getClass() + " ***************");
             throw e;
         }
@@ -91,7 +91,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         Map<String, Object> responseWriteMap = new HashMap<String, Object>();
         userToken = tokenAuthenticationService.addAuthentication(response, (UsernamePasswordAuthenticationToken) authResult);
         if (nonNull(userToken)) {
-            log.info("********************* [Request Interceptor Id "+request.getParameter(CUSTOM_REQUEST_ID)+"] Fetched UserToken " + userToken + " **********************");
+            log.info("********************* [Request Interceptor Id " + request.getParameter(CUSTOM_REQUEST_ID) + "] Fetched UserToken " + userToken + " **********************");
             ((UsernamePasswordAuthenticationToken) authResult).setDetails(userToken.getToken());
             getContext().setAuthentication(authResult);
             User user = userToken.getUser();
@@ -107,12 +107,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             responseWriteMap.put("user", userDTO);
             response.setCharacterEncoding("UTF-8");
             response.setStatus(SC_OK);
-            log.info("********************* [Request Interceptor Id "+request.getParameter(CUSTOM_REQUEST_ID)+"] Successful Authentication **********************");
+            log.info("********************* [Request Interceptor Id " + request.getParameter(CUSTOM_REQUEST_ID) + "] Successful Authentication **********************");
         } else {
             responseWriteMap.put("isAuthenticated", FALSE);
             responseWriteMap.put(X_AUTH_TOKEN, null);
             response.setStatus(SC_UNAUTHORIZED);
-            log.error("********************* [Request Interceptor Id "+request.getParameter(CUSTOM_REQUEST_ID)+"] Unsuccessful Authentication **********************");
+            log.error("********************* [Request Interceptor Id " + request.getParameter(CUSTOM_REQUEST_ID) + "] Unsuccessful Authentication **********************");
         }
         response.getWriter().write(objectMapper.writeValueAsString(responseWriteMap));
     }
@@ -126,6 +126,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         responseWriteMap.put(X_AUTH_TOKEN, null);
         response.getWriter().write(objectMapper.writeValueAsString(responseWriteMap));
 
-        log.error("********************* [Request Interceptor Id "+request.getParameter(CUSTOM_REQUEST_ID)+"] Unsuccessful Authentication **********************");
+        log.error("********************* [Request Interceptor Id " + request.getParameter(CUSTOM_REQUEST_ID) + "] Unsuccessful Authentication **********************");
     }
 }

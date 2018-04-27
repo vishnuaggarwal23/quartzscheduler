@@ -93,7 +93,7 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
      * @param tokens the tokens
      * @return the boolean
      */
-    public Boolean inactivateExpiredUserTokens(List<Token> tokens){
+    public Boolean inactivateExpiredUserTokens(List<Token> tokens) {
         CriteriaUpdate<UserToken> criteriaUpdate = getBaseCriteriaUpdateImpl();
         Root<UserToken> root = criteriaUpdate.from(getEntityClass());
         criteriaUpdate

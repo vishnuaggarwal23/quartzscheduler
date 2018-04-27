@@ -91,7 +91,7 @@ public class ApplicationConfig extends WebConfig {
      */
     @Bean
     @Primary
-    LogoutSuccessHandler logoutSuccessHandler(){
+    LogoutSuccessHandler logoutSuccessHandler() {
         return new LogoutSuccessHandler();
     }
 
@@ -102,7 +102,7 @@ public class ApplicationConfig extends WebConfig {
      */
     @Bean
     @Primary
-    AccessDeniedHandler accessDeniedHandler(){
+    AccessDeniedHandler accessDeniedHandler() {
         return new AccessDeniedHandler();
     }
 

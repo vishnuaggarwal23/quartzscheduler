@@ -65,7 +65,7 @@ public class TokenHandlerService extends BaseService implements com.vishnu.aggar
     public User parseToken(String token) throws AuthenticationException {
         log.info("***************** Parsing X-AUTH-TOKEN " + token + " ********************\n");
         try {
-            if(isEmpty(token)){
+            if (isEmpty(token)) {
                 throw new JwtException(formatMessage(getMessage("")));
             }
 
@@ -148,10 +148,10 @@ public class TokenHandlerService extends BaseService implements com.vishnu.aggar
     public Boolean isValidToken(String token) {
         final User user = this.parseToken(token);
         if (nonNull(user)) {
-            try{
+            try {
                 accountStatusUserDetailsCheck.check(user);
                 return !this.isTokenExpired(token);
-            } catch (AuthenticationException e){
+            } catch (AuthenticationException e) {
                 log.error("******************* Error while checking validity of JWT Token " + token + " ***************** \n");
                 log.error("******************* Stacktrace ****************** \n");
                 log.error(getStackTrace(e));

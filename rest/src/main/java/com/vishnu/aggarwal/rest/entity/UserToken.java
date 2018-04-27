@@ -23,8 +23,8 @@ Created by vishnu on 20/4/18 11:10 AM
 @Table(name = "USER_TOKEN")
 @Getter
 @Setter
-@ToString(of={"id", "user", "token", "status"})
-public class UserToken extends BaseEntity<Long> implements Serializable{
+@ToString(of = {"id", "user", "token", "status"})
+public class UserToken extends BaseEntity<Long> implements Serializable {
     private static final long serialVersionUID = -4720986982733184274L;
 
     @Id
