@@ -1,37 +1,25 @@
 package com.vishnu.aggarwal.rest.service.repository;
 
-import com.vishnu.aggarwal.core.dto.JobTriggerResponseDTO;
 import com.vishnu.aggarwal.core.enums.Status;
 import com.vishnu.aggarwal.rest.entity.Token;
 import com.vishnu.aggarwal.rest.entity.User;
 import com.vishnu.aggarwal.rest.entity.UserToken;
 import com.vishnu.aggarwal.rest.repository.UserTokenRepository;
 import lombok.extern.apachecommons.CommonsLog;
-import org.hibernate.criterion.CriteriaSpecification;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Root;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
-import static com.vishnu.aggarwal.core.enums.Status.ACTIVE;
-import static com.vishnu.aggarwal.core.enums.Status.EXPIRED;
-import static com.vishnu.aggarwal.core.enums.Status.PASSIVE;
+import static com.vishnu.aggarwal.core.enums.Status.*;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.util.Arrays.asList;
 import static org.hibernate.criterion.CriteriaSpecification.DISTINCT_ROOT_ENTITY;
-import static org.hibernate.criterion.Restrictions.eq;
-import static org.hibernate.criterion.Restrictions.in;
-import static org.hibernate.criterion.Restrictions.not;
-import static org.hibernate.transform.Transformers.aliasToBean;
+import static org.hibernate.criterion.Restrictions.*;
 
 /*
 Created by vishnu on 20/4/18 12:20 PM

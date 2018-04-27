@@ -6,10 +6,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.Date;
 
 import static javax.persistence.EnumType.STRING;
 import static javax.persistence.FetchType.EAGER;

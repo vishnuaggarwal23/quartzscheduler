@@ -4,13 +4,9 @@ package com.vishnu.aggarwal.rest.service.repository;
 Created by vishnu on 21/4/18 2:36 PM
 */
 
-import com.vishnu.aggarwal.core.enums.Status;
-import com.vishnu.aggarwal.core.util.DateUtils;
 import com.vishnu.aggarwal.rest.entity.Token;
 import com.vishnu.aggarwal.rest.repository.TokenRepository;
 import lombok.extern.apachecommons.CommonsLog;
-import org.hibernate.criterion.CriteriaSpecification;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
@@ -24,9 +20,7 @@ import static com.vishnu.aggarwal.core.util.DateUtils.getStart;
 import static java.lang.Boolean.TRUE;
 import static java.lang.System.currentTimeMillis;
 import static org.hibernate.criterion.CriteriaSpecification.DISTINCT_ROOT_ENTITY;
-import static org.hibernate.criterion.Restrictions.eq;
-import static org.hibernate.criterion.Restrictions.isNotNull;
-import static org.hibernate.criterion.Restrictions.lt;
+import static org.hibernate.criterion.Restrictions.*;
 
 @Service
 @CommonsLog

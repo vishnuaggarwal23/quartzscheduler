@@ -4,7 +4,6 @@ package com.vishnu.aggarwal.rest.entity;
 Created by vishnu on 21/4/18 1:59 PM
 */
 
-import com.vishnu.aggarwal.core.util.DateUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -12,9 +11,7 @@ import lombok.ToString;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
 import java.util.Date;
-import java.util.Objects;
 
 import static com.vishnu.aggarwal.core.util.DateUtils.getEnd;
 import static java.util.Objects.nonNull;

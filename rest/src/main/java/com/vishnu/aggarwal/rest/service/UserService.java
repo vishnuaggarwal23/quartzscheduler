@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import static java.lang.Boolean.TRUE;
 import static java.util.Objects.isNull;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
-import static org.springframework.util.CollectionUtils.isEmpty;
 
 /**
  * The type User service.

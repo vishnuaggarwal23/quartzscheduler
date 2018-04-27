@@ -1,7 +1,6 @@
 package com.vishnu.aggarwal.rest.bootstrap;
 
 import com.vishnu.aggarwal.core.constants.RoleType;
-import com.vishnu.aggarwal.core.enums.Status;
 import com.vishnu.aggarwal.rest.entity.Authority;
 import com.vishnu.aggarwal.rest.entity.User;
 import com.vishnu.aggarwal.rest.entity.UserAuthority;
