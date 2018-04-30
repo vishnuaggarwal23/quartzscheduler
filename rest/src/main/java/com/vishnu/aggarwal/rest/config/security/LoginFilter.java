@@ -21,6 +21,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +33,7 @@ import static java.util.Objects.nonNull;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
+import static org.springframework.security.core.context.SecurityContextHolder.clearContext;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 /*
@@ -93,7 +95,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         if (nonNull(userToken)) {
             log.info("********************* [Request Interceptor Id " + request.getParameter(CUSTOM_REQUEST_ID) + "] Fetched UserToken " + userToken + " **********************");
             ((UsernamePasswordAuthenticationToken) authResult).setDetails(userToken.getToken());
-            getContext().setAuthentication(authResult);
             User user = userToken.getUser();
             UserDTO userDTO = new UserDTO();
             userDTO.setUsername(user.getUsername());
@@ -107,6 +108,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             responseWriteMap.put("user", userDTO);
             response.setCharacterEncoding("UTF-8");
             response.setStatus(SC_OK);
+            getContext().setAuthentication(authResult);
             log.info("********************* [Request Interceptor Id " + request.getParameter(CUSTOM_REQUEST_ID) + "] Successful Authentication **********************");
         } else {
             responseWriteMap.put("isAuthenticated", FALSE);
@@ -125,7 +127,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         responseWriteMap.put("isAuthenticated", FALSE);
         responseWriteMap.put(X_AUTH_TOKEN, null);
         response.getWriter().write(objectMapper.writeValueAsString(responseWriteMap));
-
+        HttpSession session = request.getSession(FALSE);
+        if (nonNull(session)) {
+            session.invalidate();
+        }
+        getContext().setAuthentication(null);
+        clearContext();
         log.error("********************* [Request Interceptor Id " + request.getParameter(CUSTOM_REQUEST_ID) + "] Unsuccessful Authentication **********************");
     }
 }

@@ -78,6 +78,8 @@ spring:
   output:
     ansi:
       enabled: detect
+  banner:
+    charset: UTF-8
 hibernate:
   dialect: org.hibernate.dialect.MySQL5Dialect
   show_sql: true

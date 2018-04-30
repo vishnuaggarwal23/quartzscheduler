@@ -10,6 +10,7 @@ import com.vishnu.aggarwal.rest.service.ValidationService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -32,6 +33,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @RestController
 @RequestMapping(value = BASE_URI, produces = {APPLICATION_JSON_UTF8_VALUE})
 @CommonsLog
+@Secured({"ROLE_ADMIN", "ROLE_USER"})
 public class ValidationController extends BaseController {
 
     /**

@@ -14,6 +14,7 @@ import lombok.extern.apachecommons.CommonsLog;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,6 +40,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 @RestController
 @CommonsLog
 @RequestMapping(value = BASE_URI, produces = APPLICATION_JSON_UTF8_VALUE)
+@Secured({"ROLE_ADMIN", "ROLE_USER"})
 public class QuartzController extends BaseController {
 
     /**

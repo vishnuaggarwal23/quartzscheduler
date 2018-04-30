@@ -14,11 +14,14 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import static java.lang.Boolean.FALSE;
+import static java.util.Objects.nonNull;
+import static org.springframework.security.core.context.SecurityContextHolder.clearContext;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 /*
@@ -73,6 +76,12 @@ public class AuthenticationFilter extends GenericFilterBean {
                 responseWriteMap.put("authenticated", FALSE);
                 responseWriteMap.put("path", httpServletRequest.getRequestURI());
                 httpServletResponse.getWriter().write(objectMapper.writeValueAsString(responseWriteMap));
+                HttpSession session = ((HttpServletRequest) request).getSession(FALSE);
+                if (nonNull(session)) {
+                    session.invalidate();
+                }
+                getContext().setAuthentication(null);
+                clearContext();
             }
         }
     }

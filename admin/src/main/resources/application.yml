@@ -12,19 +12,23 @@ spring:
       enabled: true
     restart:
       enabled: true
+  output:
+    ansi:
+      enabled: detect
+  banner:
+    charset: UTF-8
 logging:
   level:
-    org:
-      springframework:
-        web: info
-      hibernate:
-        sql: info
-        type: info
-    com:
-      vishnu:
-        aggarwal: info
+    root: info
+    org.quartz: info
+    org.springframework.web: info
+    com.vishnu.aggarwal: info
+  file: "/home/vishnu/quartzscheduler/logging/admin.log"
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
+    dateformat: "yyyy-MMM-dd HH:mm:ss"
+    level: "%5p"
 rest:
   application:
     baseUrl: "${REST_APPLICATION_URL:http://localhost:8080}"
