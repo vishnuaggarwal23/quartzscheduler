@@ -1,0 +1,142 @@
+server:
+  port: 8080
+  servlet:
+    context-path: "/oauth2"
+bootstrap:
+  enabled: true
+spring:
+  session:
+    store-type: jdbc
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: "UTC"
+        dialect: com.vishnu.aggarwal.rest.config.MySqlDialect
+        show_sql: true
+        format_sql: true
+        sql: info
+        type: info
+        use_sql_comments: true
+        naming:
+          implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
+        hbm2ddl:
+          auto: update
+    database: mysql
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+  datasource:
+    url: "${JDBC_DATABASE_URL:jdbc:mysql://localhost:3306/quartz_job_scheduler?useSSL=false&autoReconnect=true&useUnicode=yes&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&serverTimezone=UTC&useLegacyDatetimeCode=false&user=root&password=igdefault}"
+    pooled: true
+    jmxExport: true
+    driverClassName: com.mysql.cj.jdbc.Driver
+    dialect: org.hibernate.dialect.MySQL5Dialect
+    dbCreate: update
+    logSql: true
+    testWhileIdle: true
+    validationQuery: SELECT 1
+    properties:
+     jmxEnabled: true
+     initialSize: 10
+     maxActive: "${JDBC_MAX_ACTIVE:75}"
+     minIdle: 10
+     maxWait: 10000
+     timeBetweenEvictionRunsMillis: 5000
+     minEvictableIdleTimeMillis: 60000
+     validationQuery: SELECT 1
+     validationQueryTimeout: 3
+     validationInterval: 3000
+     testOnBorrow: true
+     testWhileIdle: true
+     testOnReturn: false
+     abandonWhenPercentageFull: 100
+     removeAbandoned: true
+     logAbandoned: false
+     dbProperties:
+       autoReconnect: true
+       zeroDateTimeBehavior: convertToNull # mysql 0-date conversion
+       dontTrackOpenResources: true # Tomcat JDBC Pool's StatementFinalizer keeps track
+       holdResultsOpenOverStatementClose: false
+       useServerPrepStmts: false
+       cacheServerConfiguration: true # metadata caching
+       cacheResultSetMetadata: true # metadata caching
+       metadataCacheSize: 100 # metadata caching
+       maintainTimeStats: false # timer tuning (disable)
+       enableQueryTimeouts: false
+       noDatetimeStringSync: true
+    platform: mysql
+    initialization-mode: embedded
+  devtools:
+    livereload:
+      enabled: true
+    restart:
+      enabled: true
+  output:
+    ansi:
+      enabled: detect
+  banner:
+    charset: UTF-8
+hibernate:
+  dialect: org.hibernate.dialect.MySQL5Dialect
+  show_sql: true
+  format_sql: true
+  sql: info
+  type: info
+  use_sql_comments: true
+  jdbc:
+    time_zone: "UTC"
+  hbm2ddl:
+    auto: update
+  ddl-auto: update
+  naming:
+    implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
+    physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    strategy: org.hibernate.cfg.ImprovedNamingStrategy
+logging:
+  level:
+    root: info
+    org.quartz: info
+    org.springframework.web: info
+    org.springframework.security: debug
+    org.hibernate.tool.hbm2ddl: info
+    org.hibernate.sql: info
+    org.hibernate.type: info
+    com.vishnu.aggarwal: info
+  file: "/home/vishnu/quartzscheduler/logging/rest.log"
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
+    dateformat: "yyyy-MMM-dd HH:mm:ss"
+    level: "%5p"
+management:
+  health:
+    db:
+      enabled: true
+    defaults:
+      enabled: true
+    diskspace:
+      enabled: true
+  info:
+    build:
+      enabled: true
+    git:
+      enabled: true
+      mode: full
+    defaults:
+      enabled: true
+    env:
+      enabled: true
+  trace:
+    http:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+jwt:
+  secret: MyJwtSecretStringKeyToBeUsedInSpringSecurityRest
+  expirationTime: "100000000"
