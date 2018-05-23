@@ -361,6 +361,9 @@ local.properties
 /stacktrace.log
 /test/reports
 /logs
+logs/
+*.log
+*.logs
 
 # project release file
 /*.war

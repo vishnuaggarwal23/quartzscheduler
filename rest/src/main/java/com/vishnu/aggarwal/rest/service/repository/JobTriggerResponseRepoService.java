@@ -5,15 +5,19 @@ import com.vishnu.aggarwal.rest.entity.JobTriggerResponse;
 import com.vishnu.aggarwal.rest.repository.JobTriggerResponseRepository;
 import lombok.extern.apachecommons.CommonsLog;
 import org.hibernate.criterion.Criterion;
-import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
 
+import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.hibernate.criterion.Restrictions.*;
@@ -72,14 +76,34 @@ public class JobTriggerResponseRepoService extends BaseRepoService<JobTriggerRes
      */
     @SuppressWarnings("unchecked")
     public List<JobTriggerResponseDTO> fetch(JobTriggerResponseDTO jobTriggerResponseDTO) {
-        return (List<JobTriggerResponseDTO>) getBaseCriteriaImpl()
+        CriteriaQuery<JobTriggerResponse> criteriaQuery = getBaseCriteriaSelectImpl();
+        CriteriaBuilder criteriaBuilder = getCriteriaBuilder();
+        Root<JobTriggerResponse> jobTriggerResponseRoot = getRoot(criteriaQuery);
+        criteriaQuery.where(getRestrictionQuery(jobTriggerResponseDTO, criteriaBuilder, jobTriggerResponseRoot));
+        return (List<JobTriggerResponseDTO>) selectQuery(criteriaQuery, TRUE, FALSE, jobTriggerResponseDTO);
+
+        /*return (List<JobTriggerResponseDTO>) getBaseCriteriaSelectImpl()
                 .addOrder(getCriteriaOrder(jobTriggerResponseDTO))
                 .setReadOnly(TRUE)
                 .setFirstResult(jobTriggerResponseDTO.getOffset())
                 .setMaxResults(jobTriggerResponseDTO.getMax())
                 .add(getRestrictionQuery(jobTriggerResponseDTO))
                 .setResultTransformer(Transformers.aliasToBean(JobTriggerResponseDTO.class))
-                .list();
+                .list();*/
+    }
+
+    private Predicate getRestrictionQuery(JobTriggerResponseDTO jobTriggerResponseDTO, CriteriaBuilder criteriaBuilder, Root<JobTriggerResponse> root) {
+        if (isNotEmpty(jobTriggerResponseDTO.getJobKeyName()) && isNotEmpty(jobTriggerResponseDTO.getTriggerKeyName())) {
+            return criteriaBuilder.and(
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("jobName")), jobTriggerResponseDTO.getJobKeyName().toLowerCase()),
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("triggerName")), jobTriggerResponseDTO.getTriggerKeyName().toLowerCase())
+            );
+        } else if (isNotEmpty(jobTriggerResponseDTO.getJobKeyName())) {
+            return criteriaBuilder.like(criteriaBuilder.lower(root.get("jobName")), jobTriggerResponseDTO.getJobKeyName());
+        } else if (isNotEmpty(jobTriggerResponseDTO.getTriggerKeyName())) {
+            return criteriaBuilder.like(criteriaBuilder.lower(root.get("triggerName")), jobTriggerResponseDTO.getTriggerKeyName());
+        }
+        return criteriaBuilder.isNotNull(root.get("id"));
     }
 
     private Criterion getRestrictionQuery(JobTriggerResponseDTO jobTriggerResponseDTO) {

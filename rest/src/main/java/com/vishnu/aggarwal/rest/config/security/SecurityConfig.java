@@ -65,7 +65,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      * @param accessDeniedHandler        the access denied handler
      */
     @Autowired
-    public SecurityConfig(ObjectMapper objectMapper, TokenAuthenticationService tokenAuthenticationService, BaseMessageResolver baseMessageResolver, BCryptPasswordEncoder bCryptPasswordEncoder, UserService userService, com.vishnu.aggarwal.rest.config.security.LogoutSuccessHandler logoutSuccessHandler, com.vishnu.aggarwal.rest.config.security.LogoutHandler logoutHandler, com.vishnu.aggarwal.rest.config.security.AccessDeniedHandler accessDeniedHandler) {
+    public SecurityConfig(
+            ObjectMapper objectMapper,
+            TokenAuthenticationService tokenAuthenticationService,
+            BaseMessageResolver baseMessageResolver,
+            BCryptPasswordEncoder bCryptPasswordEncoder,
+            UserService userService,
+            com.vishnu.aggarwal.rest.config.security.LogoutSuccessHandler logoutSuccessHandler,
+            com.vishnu.aggarwal.rest.config.security.LogoutHandler logoutHandler,
+            com.vishnu.aggarwal.rest.config.security.AccessDeniedHandler accessDeniedHandler) {
         super();
         this.objectMapper = objectMapper;
         this.tokenAuthenticationService = tokenAuthenticationService;

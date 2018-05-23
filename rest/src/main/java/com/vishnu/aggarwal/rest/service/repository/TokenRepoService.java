@@ -12,15 +12,17 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.Date;
 import java.util.List;
 
 import static com.vishnu.aggarwal.core.enums.Status.ACTIVE;
 import static com.vishnu.aggarwal.core.util.DateUtils.getStart;
+import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.lang.System.currentTimeMillis;
-import static org.hibernate.criterion.CriteriaSpecification.DISTINCT_ROOT_ENTITY;
-import static org.hibernate.criterion.Restrictions.*;
 
 /**
  * The type Token repo service.
@@ -68,12 +70,23 @@ public class TokenRepoService extends BaseRepoService<Token, Long> {
      * @return the list
      */
     public List<Token> findAllExpiredTokens() {
-        return (List<Token>) getBaseCriteriaImpl()
+        CriteriaQuery<Token> criteriaQuery = getBaseCriteriaSelectImpl();
+        CriteriaBuilder criteriaBuilder = getCriteriaBuilder();
+        Root<Token> tokenRoot = getRoot(criteriaQuery);
+        criteriaQuery
+                .where(
+                        criteriaBuilder.equal(tokenRoot.get("status"), ACTIVE),
+                        criteriaBuilder.isNotNull(tokenRoot.get("expirationDate")),
+                        criteriaBuilder.lessThan(tokenRoot.get("expirationDate"), getStart(new Date(currentTimeMillis())))
+                );
+        return (List<Token>) selectQuery(criteriaQuery, TRUE, FALSE, null);
+
+        /*return (List<Token>) getBaseCriteriaSelectImpl()
                 .setReadOnly(TRUE)
                 .add(eq("status", ACTIVE))
                 .add(isNotNull("expirationDate"))
                 .add(lt("expirationDate", getStart(new Date(currentTimeMillis()))))
                 .setResultTransformer(DISTINCT_ROOT_ENTITY)
-                .list();
+                .list();*/
     }
 }

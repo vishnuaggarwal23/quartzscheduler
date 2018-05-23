@@ -33,6 +33,7 @@ import static java.util.Objects.nonNull;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
+import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.security.core.context.SecurityContextHolder.clearContext;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
@@ -71,7 +72,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        log.info("********************* [Request Interceptor Id " + request.getParameter(CUSTOM_REQUEST_ID) + "] Attempting Authentication **********************");
+        log.info("********************* [Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Attempting Authentication **********************");
         try {
             Authentication authentication = tokenAuthenticationService.getAuthenticationForLogin(request, response, authenticationManager);
             if (isFalse(authentication.isAuthenticated())) {
@@ -93,7 +94,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         Map<String, Object> responseWriteMap = new HashMap<String, Object>();
         userToken = tokenAuthenticationService.addAuthentication(response, (UsernamePasswordAuthenticationToken) authResult);
         if (nonNull(userToken)) {
-            log.info("********************* [Request Interceptor Id " + request.getParameter(CUSTOM_REQUEST_ID) + "] Fetched UserToken " + userToken + " **********************");
+            log.info("********************* [Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Fetched UserToken " + userToken + " **********************");
             ((UsernamePasswordAuthenticationToken) authResult).setDetails(userToken.getToken());
             User user = userToken.getUser();
             UserDTO userDTO = new UserDTO();
@@ -109,13 +110,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             response.setCharacterEncoding("UTF-8");
             response.setStatus(SC_OK);
             getContext().setAuthentication(authResult);
-            log.info("********************* [Request Interceptor Id " + request.getParameter(CUSTOM_REQUEST_ID) + "] Successful Authentication **********************");
+            log.info("********************* [Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Successful Authentication **********************");
         } else {
             responseWriteMap.put("isAuthenticated", FALSE);
             responseWriteMap.put(X_AUTH_TOKEN, null);
             response.setStatus(SC_UNAUTHORIZED);
-            log.error("********************* [Request Interceptor Id " + request.getParameter(CUSTOM_REQUEST_ID) + "] Unsuccessful Authentication **********************");
+            log.error("********************* [Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Unsuccessful Authentication **********************");
         }
+        response.setContentType(APPLICATION_JSON_UTF8_VALUE);
         response.getWriter().write(objectMapper.writeValueAsString(responseWriteMap));
     }
 
@@ -133,6 +135,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         }
         getContext().setAuthentication(null);
         clearContext();
-        log.error("********************* [Request Interceptor Id " + request.getParameter(CUSTOM_REQUEST_ID) + "] Unsuccessful Authentication **********************");
+        log.error("********************* [Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Unsuccessful Authentication **********************");
     }
 }

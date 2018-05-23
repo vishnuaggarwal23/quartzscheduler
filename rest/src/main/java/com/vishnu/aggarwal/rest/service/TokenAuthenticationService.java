@@ -20,7 +20,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,44 +53,57 @@ public class TokenAuthenticationService extends BaseService implements com.vishn
     /**
      * The User service.
      */
-    @Autowired
-    UserService userService;
+    private final UserService userService;
 
     /**
      * The Token handler service.
      */
-    @Autowired
-    TokenHandlerService tokenHandlerService;
+    private final TokenHandlerService tokenHandlerService;
 
     /**
      * The User token service.
      */
-    @Autowired
-    UserTokenService userTokenService;
-
-    /**
-     * The B crypt password encoder.
-     */
-    @Autowired
-    BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final UserTokenService userTokenService;
 
     /**
      * The Token service.
      */
-    @Autowired
-    TokenService tokenService;
+    private final TokenService tokenService;
 
     /**
      * The Object mapper.
      */
-    @Autowired
-    ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     /**
      * The Account status user details check.
      */
+    private final UserDetailsChecker accountStatusUserDetailsCheck;
+
+    /**
+     * Instantiates a new Token authentication service.
+     *
+     * @param userService                   the user service
+     * @param tokenHandlerService           the token handler service
+     * @param userTokenService              the user token service
+     * @param tokenService                  the token service
+     * @param objectMapper                  the object mapper
+     * @param accountStatusUserDetailsCheck the account status user details check
+     */
     @Autowired
-    UserDetailsChecker accountStatusUserDetailsCheck;
+    public TokenAuthenticationService(UserService userService,
+                                      TokenHandlerService tokenHandlerService,
+                                      UserTokenService userTokenService,
+                                      TokenService tokenService,
+                                      ObjectMapper objectMapper,
+                                      UserDetailsChecker accountStatusUserDetailsCheck) {
+        this.userService = userService;
+        this.tokenHandlerService = tokenHandlerService;
+        this.userTokenService = userTokenService;
+        this.tokenService = tokenService;
+        this.objectMapper = objectMapper;
+        this.accountStatusUserDetailsCheck = accountStatusUserDetailsCheck;
+    }
 
     @Override
     public Authentication getAuthenticationForLogin(HttpServletRequest request, HttpServletResponse response, AuthenticationManager authenticationManager) throws AuthenticationException, IOException {
@@ -103,7 +115,7 @@ public class TokenAuthenticationService extends BaseService implements com.vishn
         UsernamePasswordAuthenticationToken authenticatedUser = null;
 
         if (isNotBlank(login.getUsername()) && isNotBlank(login.getUsername()) && nonNull(userService.findByUsername(login.getUsername()))) {
-            log.info("********************* [Request Interceptor Id " + request.getParameter(CUSTOM_REQUEST_ID) + "] Attempting Authentication for [Username : " + login.getUsername() + "] and [Password : " + login.getPassword() + "] **********************");
+            log.info("********************* [Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Attempting Authentication for [Username : " + login.getUsername() + "] and [Password : " + login.getPassword() + "] **********************");
             authenticatedUser = (UsernamePasswordAuthenticationToken) authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login.getUsername(), login.getPassword()));
         }
 
@@ -112,14 +124,14 @@ public class TokenAuthenticationService extends BaseService implements com.vishn
             user = (User) authenticatedUser.getPrincipal();
         }
 
-        log.debug("********************* [Request Interceptor Id " + request.getParameter(CUSTOM_REQUEST_ID) + "] Authentication Result : " + isAuthentic + " for [Username : " + login.getUsername() + "] and [Password : " + login.getPassword() + "] **********************");
+        log.debug("********************* [Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Authentication Result : " + isAuthentic + " for [Username : " + login.getUsername() + "] and [Password : " + login.getPassword() + "] **********************");
 
         if (isTrue(isAuthentic) && nonNull(user)) {
             usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities());
         } else {
             usernamePasswordAuthenticationToken = nonNull(user) ? new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities()) : new UsernamePasswordAuthenticationToken(null, null, null);
             usernamePasswordAuthenticationToken.setAuthenticated(FALSE);
-            log.error("********************* [Request Interceptor Id " + request.getParameter(CUSTOM_REQUEST_ID) + "] Authentication failed **********************");
+            log.error("********************* [Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Authentication failed **********************");
         }
 
         return usernamePasswordAuthenticationToken;

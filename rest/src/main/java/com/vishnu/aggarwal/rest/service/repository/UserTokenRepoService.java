@@ -10,16 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.List;
 
 import static com.vishnu.aggarwal.core.enums.Status.*;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.util.Arrays.asList;
-import static org.hibernate.criterion.CriteriaSpecification.DISTINCT_ROOT_ENTITY;
-import static org.hibernate.criterion.Restrictions.*;
 
 /*
 Created by vishnu on 20/4/18 12:20 PM
@@ -35,8 +32,17 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
     /**
      * The User token repository.
      */
+    private final UserTokenRepository userTokenRepository;
+
+    /**
+     * Instantiates a new User token repo service.
+     *
+     * @param userTokenRepository the user token repository
+     */
     @Autowired
-    UserTokenRepository userTokenRepository;
+    public UserTokenRepoService(UserTokenRepository userTokenRepository) {
+        this.userTokenRepository = userTokenRepository;
+    }
 
     @Override
     protected Class<UserToken> getEntityClass() {
@@ -48,6 +54,7 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
         return userTokenRepository;
     }
 
+    @SuppressWarnings("unchecked")
     public UserToken save(UserToken userToken) {
         return super.save(userToken);
     }
@@ -55,11 +62,24 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
     /**
      * Find by token user token.
      *
-     * @param token the token
+     * @param xAuthToken the x auth token
      * @return the user token
      */
-    public UserToken findByToken(String token) {
-        return (UserToken) getBaseCriteriaImpl()
+    @SuppressWarnings("unchecked")
+    public UserToken findByToken(String xAuthToken) {
+        CriteriaQuery<UserToken> criteriaQuery = getBaseCriteriaSelectImpl();
+        CriteriaBuilder criteriaBuilder = getCriteriaBuilder();
+        Root<UserToken> userToken = getRoot(criteriaQuery);
+        Join<UserToken, Token> token = userToken.join("token");
+        criteriaQuery
+                .where(
+                        criteriaBuilder.equal(userToken.get("status"), ACTIVE),
+                        criteriaBuilder.isFalse(userToken.get("isDeleted")),
+                        criteriaBuilder.isFalse(token.get("isDeleted")),
+                        criteriaBuilder.equal(token.get("token"), xAuthToken)
+                );
+        return (UserToken) selectQuery(criteriaQuery, TRUE, TRUE, null);
+        /*return (UserToken) getBaseCriteriaSelectImpl()
                 .setReadOnly(TRUE)
                 .createAlias("token", "t")
                 .add(eq("t.token", token))
@@ -67,7 +87,7 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
                 .add(eq("isDeleted", FALSE))
                 .add(eq("t.isDeleted", FALSE))
                 .setResultTransformer(DISTINCT_ROOT_ENTITY)
-                .uniqueResult();
+                .uniqueResult();*/
     }
 
     /**
@@ -78,12 +98,13 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
      */
     public Boolean inactivatePreviousUserTokens(User user) {
         CriteriaUpdate<UserToken> criteriaUpdate = getBaseCriteriaUpdateImpl();
-        Root<UserToken> root = criteriaUpdate.from(getEntityClass());
+        CriteriaBuilder criteriaBuilder = getCriteriaBuilder();
+        Root<UserToken> root = getRoot(criteriaUpdate);
         criteriaUpdate
                 .set("status", EXPIRED)
-                .where(getCriteriaBuilder().not(root.get("status").in(asList(EXPIRED, PASSIVE))))
-                .where(getCriteriaBuilder().equal(root.get("status"), ACTIVE))
-                .where(getCriteriaBuilder().equal(root.get("user"), user));
+                .where(criteriaBuilder.not(root.get("status").in(asList(EXPIRED, PASSIVE))))
+                .where(criteriaBuilder.equal(root.get("status"), ACTIVE))
+                .where(criteriaBuilder.equal(root.get("user"), user));
         return updateQuery(criteriaUpdate) > 0;
     }
 
@@ -95,7 +116,7 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
      */
     public Boolean inactivateExpiredUserTokens(List<Token> tokens) {
         CriteriaUpdate<UserToken> criteriaUpdate = getBaseCriteriaUpdateImpl();
-        Root<UserToken> root = criteriaUpdate.from(getEntityClass());
+        Root<UserToken> root = getRoot(criteriaUpdate);
         criteriaUpdate
                 .set("status", EXPIRED)
                 .where(getCriteriaBuilder().in(root.get("tokens").in(tokens)));
@@ -108,13 +129,26 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
      * @param user the user
      * @return the list
      */
+    @SuppressWarnings("unchecked")
     public List<UserToken> findAllUserTokens(User user) {
-        return (List<UserToken>) getBaseCriteriaImpl().setReadOnly(TRUE)
+        CriteriaQuery<UserToken> criteriaQuery = getBaseCriteriaSelectImpl();
+        CriteriaBuilder criteriaBuilder = getCriteriaBuilder();
+        Root<UserToken> userToken = getRoot(criteriaQuery);
+        criteriaQuery
+                .where(
+                        criteriaBuilder.not(userToken.get("status").in(EXPIRED, PASSIVE)),
+                        criteriaBuilder.isFalse(userToken.get("isDeleted")),
+                        criteriaBuilder.equal(userToken.get("user"), user)
+                );
+        return (List<UserToken>) selectQuery(criteriaQuery, TRUE, FALSE, null);
+
+
+        /*return (List<UserToken>) getBaseCriteriaSelectImpl().setReadOnly(TRUE)
                 .add(eq("user", user))
                 .add(not(in("status", asList(EXPIRED, PASSIVE))))
                 .add(eq("isDeleted", FALSE))
                 .setResultTransformer(DISTINCT_ROOT_ENTITY)
-                .list();
+                .list();*/
     }
 
     /**
@@ -124,13 +158,26 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
      * @param status the status
      * @return the user token
      */
+    @SuppressWarnings("unchecked")
     public UserToken findByUserAndStatus(User user, Status status) {
-        return (UserToken) getBaseCriteriaImpl()
+        CriteriaQuery<UserToken> criteriaQuery = getBaseCriteriaSelectImpl();
+        CriteriaBuilder criteriaBuilder = getCriteriaBuilder();
+        Root<UserToken> userToken = getRoot(criteriaQuery);
+        criteriaQuery
+                .where(
+                        criteriaBuilder.equal(userToken.get("status"), status),
+                        criteriaBuilder.isFalse(userToken.get("isDeleted")),
+                        criteriaBuilder.equal(userToken.get("user"), user)
+                );
+        return (UserToken) selectQuery(criteriaQuery, TRUE, TRUE, null);
+
+
+        /*return (UserToken) getBaseCriteriaSelectImpl()
                 .setReadOnly(TRUE)
                 .add(eq("user", user))
                 .add(eq("status", status))
                 .add(eq("isDeleted", FALSE))
                 .setResultTransformer(DISTINCT_ROOT_ENTITY)
-                .uniqueResult();
+                .uniqueResult();*/
     }
 }

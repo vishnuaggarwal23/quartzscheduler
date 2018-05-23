@@ -80,6 +80,7 @@ public class UserService extends BaseService implements com.vishnu.aggarwal.rest
             if (isNull(user)) {
                 throw new UsernameNotFoundException(getMessage("username.not.found"));
             }
+            user.setUserAuthorities(user.getUserAuthorities());
             return user;
         } catch (HibernateException e) {
             throw new UsernameNotFoundException(getMessage("multiple.usernames.found"));

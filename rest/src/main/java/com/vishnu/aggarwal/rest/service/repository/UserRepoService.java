@@ -7,19 +7,19 @@ Created by vishnu on 6/3/18 10:35 AM
 import com.vishnu.aggarwal.rest.entity.User;
 import com.vishnu.aggarwal.rest.repository.UserRepository;
 import lombok.extern.apachecommons.CommonsLog;
-import org.hibernate.Criteria;
-import org.hibernate.FetchMode;
 import org.hibernate.HibernateException;
-import org.hibernate.criterion.CriteriaSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.util.Objects.nonNull;
-import static org.hibernate.criterion.Restrictions.eq;
 
 /**
  * The type User repo service.
@@ -68,7 +68,21 @@ public class UserRepoService extends BaseRepoService<User, Long> {
      */
     @Transactional(readOnly = true)
     public User findByUsername(String username) throws HibernateException {
-        Criteria criteria = getBaseCriteriaImpl()
+        CriteriaQuery<User> criteriaQuery = getBaseCriteriaSelectImpl();
+        CriteriaBuilder criteriaBuilder = getCriteriaBuilder();
+        Root<User> userToken = getRoot(criteriaQuery);
+        criteriaQuery
+                .where(
+                        criteriaBuilder.equal(userToken.get("username"), username),
+                        criteriaBuilder.isFalse(userToken.get("isDeleted")),
+                        criteriaBuilder.isTrue(userToken.get("accountEnabled")),
+                        criteriaBuilder.isFalse(userToken.get("accountExpired")),
+                        criteriaBuilder.isFalse(userToken.get("accountLocked")),
+                        criteriaBuilder.isFalse(userToken.get("credentialsExpired"))
+                );
+        return (User) selectQuery(criteriaQuery, TRUE, TRUE, null);
+
+        /*Criteria criteria = getBaseCriteriaSelectImpl()
                 .setFetchMode("roles", FetchMode.JOIN)
                 .setReadOnly(TRUE)
                 .add(eq("username", username))
@@ -78,7 +92,7 @@ public class UserRepoService extends BaseRepoService<User, Long> {
                 .add(eq("accountLocked", FALSE))
                 .add(eq("credentialsExpired", FALSE))
                 .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
-        return (User) criteria.uniqueResult();
+        return (User) criteria.uniqueResult();*/
     }
 
     /**

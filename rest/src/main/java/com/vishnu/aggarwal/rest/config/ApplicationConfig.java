@@ -5,9 +5,12 @@ import com.vishnu.aggarwal.core.config.WebConfig;
 import com.vishnu.aggarwal.rest.config.security.AccessDeniedHandler;
 import com.vishnu.aggarwal.rest.config.security.LogoutHandler;
 import com.vishnu.aggarwal.rest.config.security.LogoutSuccessHandler;
+import com.vishnu.aggarwal.rest.filters.RequestFilter;
+import com.vishnu.aggarwal.rest.filters.ResponseFilter;
 import com.vishnu.aggarwal.rest.interceptor.RequestInterceptor;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -22,8 +25,11 @@ import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static java.lang.Boolean.TRUE;
 import static java.time.ZoneId.of;
 import static java.util.TimeZone.getTimeZone;
+import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
+import static org.springframework.core.Ordered.LOWEST_PRECEDENCE;
 
 /**
  * The type Web config.
@@ -36,14 +42,18 @@ public class ApplicationConfig extends WebConfig {
      */
     private final RequestInterceptor requestInterceptor;
 
+    private final ObjectMapper objectMapper;
+
     /**
      * Instantiates a new Application config.
      *
      * @param requestInterceptor the request interceptor
+     * @param objectMapper
      */
     @Autowired
-    public ApplicationConfig(RequestInterceptor requestInterceptor) {
+    public ApplicationConfig(RequestInterceptor requestInterceptor, ObjectMapper objectMapper) {
         this.requestInterceptor = requestInterceptor;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -119,5 +129,27 @@ public class ApplicationConfig extends WebConfig {
         objectMapper.setSerializationInclusion(NON_EMPTY);
         converters.add(mappingJackson2HttpMessageConverter);
         super.configureMessageConverters(converters);
+    }
+
+    @Bean
+    @Primary
+    public FilterRegistrationBean<RequestFilter> requestFilter() {
+        FilterRegistrationBean<RequestFilter> filterRegistrationBean = new FilterRegistrationBean<RequestFilter>();
+        filterRegistrationBean.setName(RequestFilter.class.getName());
+        filterRegistrationBean.setFilter(new RequestFilter(objectMapper));
+        filterRegistrationBean.setOrder(HIGHEST_PRECEDENCE);
+        filterRegistrationBean.setEnabled(TRUE);
+        return filterRegistrationBean;
+    }
+
+    @Bean
+    @Primary
+    public FilterRegistrationBean<ResponseFilter> responseFilter() {
+        FilterRegistrationBean<ResponseFilter> filterRegistrationBean = new FilterRegistrationBean<ResponseFilter>();
+        filterRegistrationBean.setName(ResponseFilter.class.getName());
+        filterRegistrationBean.setFilter(new ResponseFilter());
+        filterRegistrationBean.setOrder(LOWEST_PRECEDENCE);
+        filterRegistrationBean.setEnabled(TRUE);
+        return filterRegistrationBean;
     }
 }

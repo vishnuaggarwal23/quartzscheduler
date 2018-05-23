@@ -3,7 +3,7 @@ server:
   servlet:
     context-path: "/rest/api"
 bootstrap:
-  enabled: true
+  enabled: "${BOOTSTRAP_ENABLED:true}"
 spring:
   session:
     store-type: jdbc
@@ -106,7 +106,7 @@ logging:
     org.hibernate.sql: info
     org.hibernate.type: info
     com.vishnu.aggarwal: info
-  file: "/home/vishnu/quartzscheduler/logging/rest.log"
+  file: "/home/vishnu/Desktop/quartzscheduler/logs/rest.log"
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} -- [%thread] -- %-5level -- %logger{36} --- %msg%n"

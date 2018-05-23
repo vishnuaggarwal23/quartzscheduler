@@ -7,18 +7,20 @@ Created by vishnu on 1/3/18 1:00 PM
 import com.vishnu.aggarwal.core.co.DataTableCO;
 import com.vishnu.aggarwal.core.service.BaseService;
 import lombok.extern.apachecommons.CommonsLog;
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
+import org.hibernate.query.Query;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.*;
 import java.io.Serializable;
 
+import static java.lang.Boolean.TRUE;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.BooleanUtils.isTrue;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
@@ -51,6 +53,36 @@ public abstract class BaseRepoService<T, ID extends Serializable> extends BaseSe
     protected abstract JpaRepository<T, ID> getJpaRepository();
 
     /**
+     * Gets root.
+     *
+     * @param criteriaQuery the criteria query
+     * @return the root
+     */
+    Root<T> getRoot(CriteriaQuery<T> criteriaQuery) {
+        return criteriaQuery.from(getEntityClass());
+    }
+
+    /**
+     * Gets root.
+     *
+     * @param criteriaDelete the criteria delete
+     * @return the root
+     */
+    Root<T> getRoot(CriteriaDelete<T> criteriaDelete) {
+        return criteriaDelete.from(getEntityClass());
+    }
+
+    /**
+     * Gets root.
+     *
+     * @param criteriaUpdate the criteria update
+     * @return the root
+     */
+    Root<T> getRoot(CriteriaUpdate<T> criteriaUpdate) {
+        return criteriaUpdate.from(getEntityClass());
+    }
+
+    /**
      * Gets criteria builder.
      *
      * @return the criteria builder
@@ -64,8 +96,12 @@ public abstract class BaseRepoService<T, ID extends Serializable> extends BaseSe
      *
      * @return the criteria
      */
-    protected Criteria getBaseCriteriaImpl() {
+/*
+    protected Criteria getBaseCriteriaSelectImpl() {
         return getSession().createCriteria(getEntityClass());
+    }*/
+    protected CriteriaQuery<T> getBaseCriteriaSelectImpl() {
+        return this.getCriteriaBuilder().createQuery(getEntityClass());
     }
 
     /**
@@ -75,6 +111,15 @@ public abstract class BaseRepoService<T, ID extends Serializable> extends BaseSe
      */
     protected CriteriaUpdate<T> getBaseCriteriaUpdateImpl() {
         return this.getCriteriaBuilder().createCriteriaUpdate(getEntityClass());
+    }
+
+    /**
+     * Gets base criteria delete.
+     *
+     * @return the base criteria delete
+     */
+    protected CriteriaDelete<T> getBaseCriteriaDeleteImpl() {
+        return this.getCriteriaBuilder().createCriteriaDelete(getEntityClass());
     }
 
     /**
@@ -92,6 +137,21 @@ public abstract class BaseRepoService<T, ID extends Serializable> extends BaseSe
     }
 
     /**
+     * Gets criteria order.
+     *
+     * @param criteriaBuilder the criteria builder
+     * @param dataTableCO     the data table co
+     * @return the criteria order
+     */
+    javax.persistence.criteria.Order getCriteriaOrder(CriteriaBuilder criteriaBuilder, DataTableCO dataTableCO) {
+        if (dataTableCO.getOrderBy().equalsIgnoreCase("desc")) {
+            return criteriaBuilder.desc(getRoot(getBaseCriteriaSelectImpl()).get(isEmpty(dataTableCO.getSortBy()) ? "id" : dataTableCO.getSortBy()));
+        } else {
+            return criteriaBuilder.asc(getRoot(getBaseCriteriaSelectImpl()).get(isEmpty(dataTableCO.getSortBy()) ? "id" : dataTableCO.getSortBy()));
+        }
+    }
+
+    /**
      * Update query integer.
      *
      * @param criteriaUpdate the criteria update
@@ -100,6 +160,40 @@ public abstract class BaseRepoService<T, ID extends Serializable> extends BaseSe
     @Transactional
     Integer updateQuery(CriteriaUpdate<T> criteriaUpdate) {
         return getSession().createQuery(criteriaUpdate).executeUpdate();
+    }
+
+    /**
+     * Select query object.
+     *
+     * @param criteriaQuery          the criteria query
+     * @param isDistinct             the is distinct
+     * @param isSingleResultExpected the is single result expected
+     * @param dataTableCO            the data table co
+     * @return the object
+     */
+    Object selectQuery(CriteriaQuery<T> criteriaQuery, Boolean isDistinct, Boolean isSingleResultExpected, DataTableCO dataTableCO) {
+        criteriaQuery.distinct(isDistinct);
+        if (nonNull(dataTableCO)) {
+            criteriaQuery.orderBy(getCriteriaOrder(getCriteriaBuilder(), dataTableCO));
+        }
+        Query<T> query = getSession().createQuery(criteriaQuery);
+        query.setReadOnly(TRUE);
+        if (nonNull(dataTableCO)) {
+            query.setFirstResult(dataTableCO.getOffset());
+            query.setMaxResults(dataTableCO.getMax());
+        }
+        return isTrue(isSingleResultExpected) ? query.getSingleResult() : query.getResultList();
+    }
+
+    /**
+     * Delete query integer.
+     *
+     * @param criteriaDelete the criteria delete
+     * @return the integer
+     */
+    @Transactional
+    Integer deleteQuery(CriteriaDelete<T> criteriaDelete) {
+        return getSession().createQuery(criteriaDelete).executeUpdate();
     }
 
     /**
