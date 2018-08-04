@@ -30,9 +30,7 @@ import static java.lang.System.currentTimeMillis;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
-import static org.springframework.util.Assert.hasText;
-import static org.springframework.util.Assert.notNull;
-import static org.springframework.util.Assert.state;
+import static org.springframework.util.Assert.*;
 
 /**
  * The type Token handler service.
@@ -41,26 +39,22 @@ import static org.springframework.util.Assert.state;
 @CommonsLog
 public class TokenHandlerService extends BaseService implements com.vishnu.aggarwal.rest.interfaces.TokenHandlerService {
 
-    @Value("${jwt.secret}")
-    private String SECRET;
-
-    @Value("${jwt.expirationTime:''}")
-    private String EXPIRATION_TIME;
-
     /**
      * The User service.
      */
     private final UserService userService;
-
     /**
      * The User token service.
      */
     private final UserTokenService userTokenService;
-
     /**
      * The Account status user details check.
      */
     private final UserDetailsChecker accountStatusUserDetailsCheck;
+    @Value("${jwt.secret}")
+    private String SECRET;
+    @Value("${jwt.expirationTime:''}")
+    private String EXPIRATION_TIME;
 
     /**
      * Instantiates a new Token handler service.

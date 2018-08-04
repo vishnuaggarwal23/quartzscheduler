@@ -61,10 +61,11 @@ public class AuthenticationFilter extends GenericFilterBean {
 
     /**
      * Instantiates a new Authentication filter.
-     *  @param tokenAuthenticationService the token authentication service
-     * @param objectMapper               the object mapper
-     * @param baseMessageResolver        the base message resolver
-     * @param authenticationManager      the authentication manager
+     *
+     * @param tokenAuthenticationService   the token authentication service
+     * @param objectMapper                 the object mapper
+     * @param baseMessageResolver          the base message resolver
+     * @param authenticationManager        the authentication manager
      * @param userService
      * @param ignoredRequestMatcher
      * @param loginRequestMatcher
@@ -89,9 +90,9 @@ public class AuthenticationFilter extends GenericFilterBean {
             response.setCharacterEncoding("UTF-8");
             response.setContentType(APPLICATION_JSON_UTF8_VALUE);
 
-            if(!ignoredRequestMatcher.matches(httpServletRequest)) {
+            if (!ignoredRequestMatcher.matches(httpServletRequest)) {
                 if (loginRequestMatcher.matches(httpServletRequest)) {
-                    chain.doFilter(httpServletRequest, (HttpServletResponse) response);
+                    chain.doFilter(httpServletRequest, response);
                 } else {
                     Authentication authentication = tokenAuthenticationService.getAuthentication(httpServletRequest, (HttpServletResponse) response);
                     getContext().setAuthentication(authentication);

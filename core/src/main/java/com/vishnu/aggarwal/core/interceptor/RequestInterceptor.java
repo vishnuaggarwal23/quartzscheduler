@@ -27,13 +27,12 @@ import static java.util.TimeZone.getDefault;
 @CommonsLog
 public abstract class RequestInterceptor implements HandlerInterceptor {
 
+    private static String ID;
     /**
      * The Object mapper.
      */
     @Autowired
     ObjectMapper objectMapper;
-
-    private static String ID;
     private LocalDateTime startTime;
 
     @Override
@@ -79,12 +78,12 @@ public abstract class RequestInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
 
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
         Duration duration = between(startTime, now(getDefault().toZoneId()));
         log.info("*************************************************************************************");
         log.info("[AFTERCOMPLETION Request Interceptor ID " + ID + "] Total Running Time for Request Interceptor ID " + ID + " is " + Math.abs(duration.toMinutes()) + " Minutes and " + Math.abs(duration.getSeconds()) + " seconds");

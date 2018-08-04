@@ -2,7 +2,7 @@ import static java.lang.System.properties
 
 buildscript {
     ext {
-        projectVersion='0.0.1-SNAPSHOT'
+        projectVersion = '0.0.1-SNAPSHOT'
         projectGroup = 'com.vishnu.aggarwal.rest'
         projectBaseName = 'quartz-rest'
     }

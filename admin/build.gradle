@@ -2,7 +2,7 @@ import static java.lang.System.getProperties
 
 buildscript {
     ext {
-        projectVersion='0.0.1-SNAPSHOT'
+        projectVersion = '0.0.1-SNAPSHOT'
         projectGroup = 'com.vishnu.aggarwal.admin'
         projectBaseName = 'quartz-admin'
     }

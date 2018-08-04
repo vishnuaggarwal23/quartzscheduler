@@ -35,14 +35,6 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 public abstract class BaseEntity<ID> implements Serializable {
 
     private static final long serialVersionUID = -2248190721476487645L;
-
-    /**
-     * Gets id.
-     *
-     * @return the id
-     */
-    protected abstract ID getId();
-
     private Boolean isDeleted = Boolean.FALSE;
     @Version
     private Long version;
@@ -56,5 +48,12 @@ public abstract class BaseEntity<ID> implements Serializable {
     private User createdBy;
     @LastModifiedBy
     private User lastModifiedBy;
+
+    /**
+     * Gets id.
+     *
+     * @return the id
+     */
+    protected abstract ID getId();
 
 }

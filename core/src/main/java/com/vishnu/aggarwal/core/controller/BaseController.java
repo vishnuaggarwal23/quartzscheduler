@@ -30,16 +30,6 @@ public class BaseController {
     BaseMessageResolver baseMessageResolver;
 
     /**
-     * Get message string.
-     *
-     * @param messageCode the message code
-     * @return the string
-     */
-    public String getMessage(String messageCode) {
-        return isNotEmpty(messageCode) ? baseMessageResolver.getMessage(messageCode) : EMPTY;
-    }
-
-    /**
      * Set rest response vo.
      *
      * @param restResponseVO the rest response vo
@@ -73,5 +63,15 @@ public class BaseController {
         dataTableVO.setRecordsTotal(recordsTotal);
         dataTableVO.setRecordsFiltered(recordsFiltered);
         dataTableVO.setData(data);
+    }
+
+    /**
+     * Get message string.
+     *
+     * @param messageCode the message code
+     * @return the string
+     */
+    public String getMessage(String messageCode) {
+        return isNotEmpty(messageCode) ? baseMessageResolver.getMessage(messageCode) : EMPTY;
     }
 }

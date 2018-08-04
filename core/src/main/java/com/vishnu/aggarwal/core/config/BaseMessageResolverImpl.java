@@ -4,7 +4,6 @@ package com.vishnu.aggarwal.core.config;
 Created by vishnu on 1/3/18 2:42 PM
 */
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Configuration;

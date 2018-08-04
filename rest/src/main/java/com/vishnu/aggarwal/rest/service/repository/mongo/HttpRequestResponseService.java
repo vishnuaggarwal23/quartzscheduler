@@ -9,23 +9,21 @@ import com.vishnu.aggarwal.rest.document.HttpRequestResponse;
 import com.vishnu.aggarwal.rest.document.HttpResponse;
 import com.vishnu.aggarwal.rest.repository.mongo.HttpRequestResponseRepository;
 import lombok.extern.apachecommons.CommonsLog;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
-import org.springframework.web.util.WebUtils;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.CUSTOM_REQUEST_ID;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
-import static org.springframework.web.util.WebUtils.getNativeRequest;
-import static org.springframework.web.util.WebUtils.getNativeResponse;
-import static org.springframework.web.util.WebUtils.getSessionId;
+import static org.springframework.web.util.WebUtils.*;
 
 @Service
 @CommonsLog
@@ -106,7 +104,7 @@ public class HttpRequestResponseService {
         String payload = EMPTY;
         ContentCachingResponseWrapper contentCachingResponseWrapper = getNativeResponse(httpServletResponseToLog, ContentCachingResponseWrapper.class);
         byte[] bytes = contentCachingResponseWrapper.getContentAsByteArray();
-        if(bytes.length > 0) {
+        if (bytes.length > 0) {
             payload = new String(bytes, 0, bytes.length, contentCachingResponseWrapper.getCharacterEncoding());
         }
         contentCachingResponseWrapper.copyBodyToResponse();
@@ -117,7 +115,7 @@ public class HttpRequestResponseService {
         String payload = EMPTY;
         ContentCachingRequestWrapper contentCachingRequestWrapper = getNativeRequest(httpServletRequestToLog, ContentCachingRequestWrapper.class);
         byte[] bytes = contentCachingRequestWrapper.getContentAsByteArray();
-        if(bytes.length > 0) {
+        if (bytes.length > 0) {
             payload = new String(bytes, 0, bytes.length, contentCachingRequestWrapper.getCharacterEncoding());
         }
         return payload;

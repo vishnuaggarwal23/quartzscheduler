@@ -9,7 +9,6 @@ import com.vishnu.aggarwal.core.dto.UserAuthenticationDTO;
 import com.vishnu.aggarwal.core.dto.UserDTO;
 import com.vishnu.aggarwal.rest.entity.Token;
 import com.vishnu.aggarwal.rest.entity.User;
-import com.vishnu.aggarwal.rest.entity.UserToken;
 import com.vishnu.aggarwal.rest.interfaces.TokenAuthenticationService;
 import com.vishnu.aggarwal.rest.interfaces.UserService;
 import lombok.extern.apachecommons.CommonsLog;
@@ -22,13 +21,10 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.CUSTOM_REQUEST_ID;
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.X_AUTH_TOKEN;
@@ -36,7 +32,6 @@ import static java.lang.Boolean.FALSE;
 import static java.util.Objects.nonNull;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
-import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.security.core.context.SecurityContextHolder.clearContext;
@@ -101,7 +96,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
         try {
             response.setCharacterEncoding("UTF-8");
             response.setContentType(APPLICATION_JSON_UTF8_VALUE);
@@ -112,9 +107,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
             Assert.notNull(principal, baseMessageResolver.getMessage(""));
             User user = null;
-            if(principal instanceof String) {
+            if (principal instanceof String) {
                 user = userService.findByUsername(principal.toString());
-            } else if(principal instanceof User) {
+            } else if (principal instanceof User) {
                 user = (User) principal;
             }
 
@@ -139,7 +134,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
         try {
             response.setStatus(SC_UNAUTHORIZED);
             response.setCharacterEncoding("UTF-8");

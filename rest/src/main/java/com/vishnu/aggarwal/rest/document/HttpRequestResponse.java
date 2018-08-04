@@ -18,9 +18,8 @@ Created by vishnu on 24/5/18 9:59 AM
 @ToString
 public class HttpRequestResponse extends BaseDocument<String> {
 
-    @Id
-    private String id;
-
     HttpRequest httpRequest;
     HttpResponse httpResponse;
+    @Id
+    private String id;
 }

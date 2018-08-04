@@ -86,7 +86,7 @@ public class LogoutFilter extends org.springframework.security.web.authenticatio
         HttpServletResponse response = (HttpServletResponse) res;
 
         try {
-            if(super.requiresLogout(request, response)) {
+            if (super.requiresLogout(request, response)) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) ofNullable(getContext().getAuthentication()).orElse((tokenAuthenticationService.getAuthentication(request, response)));
                 isTrue(usernamePasswordAuthenticationToken.isAuthenticated(), baseMessageResolver.getMessage(""));
 

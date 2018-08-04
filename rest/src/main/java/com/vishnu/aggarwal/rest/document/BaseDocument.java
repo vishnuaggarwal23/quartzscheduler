@@ -9,11 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.apachecommons.CommonsLog;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.annotation.Version;
+import org.springframework.data.annotation.*;
 
 import javax.persistence.Temporal;
 import java.io.Serializable;
@@ -28,8 +24,6 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 public abstract class BaseDocument<ID> implements Serializable {
 
     private static final long serialVersionUID = -2248190721476487645L;
-
-    protected abstract ID getId();
     @Version
     private Long version;
     @CreatedDate
@@ -42,5 +36,7 @@ public abstract class BaseDocument<ID> implements Serializable {
     private User createdBy;
     @LastModifiedBy
     private User lastModifiedBy;
+
+    protected abstract ID getId();
 
 }
