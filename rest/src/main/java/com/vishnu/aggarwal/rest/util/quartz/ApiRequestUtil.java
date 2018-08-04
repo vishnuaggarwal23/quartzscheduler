@@ -3,7 +3,7 @@ package com.vishnu.aggarwal.rest.util.quartz;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vishnu.aggarwal.core.dto.JobTriggerResponseDTO;
-import com.vishnu.aggarwal.rest.service.repository.JobTriggerResponseRepoService;
+import com.vishnu.aggarwal.rest.service.repository.jpa.JobTriggerResponseRepoService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;

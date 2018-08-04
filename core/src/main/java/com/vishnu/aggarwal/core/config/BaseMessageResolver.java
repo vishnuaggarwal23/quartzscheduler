@@ -17,4 +17,6 @@ public interface BaseMessageResolver {
      * @return the message
      */
     String getMessage(String messageCode);
+
+    String getMessage(String messageCode, Object... args);
 }

@@ -1,0 +1,38 @@
+allprojects {
+    buildscript {
+        ext {
+            springBootVersion = springBootVersion
+            jdkSource = javaSourceVersion
+            jdkTarget = javaTargetVersion
+            springLoadedVersion = springLoadedVersion
+            gradleVersion = gradleVersion
+        }
+        repositories {
+            mavenCentral()
+            mavenLocal()
+        }
+        dependencies {
+            classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+            classpath "org.springframework:springloaded:${springLoadedVersion}"
+        }
+    }
+
+    apply plugin: 'java'
+    apply plugin: 'eclipse-wtp'
+    apply plugin: 'application'
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+    apply plugin: 'war'
+
+    sourceCompatibility = jdkSource
+    targetCompatibility = jdkTarget
+
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+
+    task wrapper(type: Wrapper) {
+        gradleVersion = gradleVersion
+    }
+}

@@ -29,6 +29,21 @@ public class UserDTO {
     private Boolean accountEnabled = TRUE;
     private Boolean isDeleted = FALSE;
 
+    public UserDTO() {
+    }
+
+    public UserDTO(Long id, String username, String email, String password, Boolean accountExpired, Boolean accountLocked, Boolean credentialsExpired, Boolean accountEnabled, Boolean isDeleted) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.accountExpired = accountExpired;
+        this.accountLocked = accountLocked;
+        this.credentialsExpired = credentialsExpired;
+        this.accountEnabled = accountEnabled;
+        this.isDeleted = isDeleted;
+    }
+
     /**
      * Is account non expired boolean.
      *

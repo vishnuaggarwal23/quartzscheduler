@@ -8,10 +8,11 @@ import com.vishnu.aggarwal.core.enums.Status;
 import com.vishnu.aggarwal.core.service.BaseService;
 import com.vishnu.aggarwal.rest.entity.User;
 import com.vishnu.aggarwal.rest.entity.UserToken;
-import com.vishnu.aggarwal.rest.service.repository.UserTokenRepoService;
+import com.vishnu.aggarwal.rest.service.repository.jpa.UserTokenRepoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.NoResultException;
 import java.util.List;
 
 /**
@@ -52,7 +53,7 @@ public class UserTokenService extends BaseService {
      * @param token the token
      * @return the user token
      */
-    public UserToken findByToken(String token) {
+    public UserToken findByToken(String token) throws NoResultException {
         return userTokenRepoService.findByToken(token);
     }
 

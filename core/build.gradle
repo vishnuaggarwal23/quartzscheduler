@@ -1,63 +1,44 @@
 buildscript {
     ext {
-        springBootVersion = '2.0.1.RELEASE'
-        projectVersion = '0.0.1-SNAPSHOT'
         projectGroup = 'com.vishnu.aggarwal.core'
-        jdkSource = 1.8
-        jdkTarget = 1.8
-    }
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath 'org.springframework:springloaded:1.2.8.RELEASE'
+        projectVersion='0.0.1-SNAPSHOT'
+        projectBaseName = 'quartz-core'
     }
 }
 
-apply plugin: 'java'
-apply plugin: 'eclipse-wtp'
 apply plugin: 'org.springframework.boot'
-apply plugin: 'war'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
 apply plugin: 'io.spring.dependency-management'
 
 group = projectGroup
 version = projectVersion
-sourceCompatibility = jdkSource
-targetCompatibility = jdkTarget
+mainClassName = 'com.vishnu.aggarwal.core.main.Core'
 
 war {
     enabled = true
-    baseName = 'quartz-core'
+    baseName = projectBaseName
     version = projectVersion
+    exclude('application.yml', 'application-dev.yml', 'banner.txt')
 }
 
 jar {
     enabled = true
-    baseName = 'quartz-core'
+    baseName = projectBaseName
     version = projectVersion
+    exclude('application.yml', 'application-dev.yml', 'banner.txt')
 }
 
 bootJar {
     enabled = true
-    baseName = 'quartz-core'
+    baseName = projectBaseName
     version = projectVersion
+    exclude('application.yml', 'application-dev.yml', 'banner.txt')
 }
 
 bootWar {
     enabled = true
-    baseName = 'quartz-core'
+    baseName = projectBaseName
     version = projectVersion
-}
-
-repositories {
-    mavenCentral()
-}
-
-configurations {
-    providedRuntime
+    exclude('application.yml', 'application-dev.yml', 'banner.txt')
 }
 
 dependencies {

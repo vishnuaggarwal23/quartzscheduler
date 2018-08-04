@@ -7,7 +7,7 @@ Created by vishnu on 6/3/18 10:33 AM
 import com.vishnu.aggarwal.core.dto.UserDTO;
 import com.vishnu.aggarwal.core.service.BaseService;
 import com.vishnu.aggarwal.rest.entity.User;
-import com.vishnu.aggarwal.rest.service.repository.UserRepoService;
+import com.vishnu.aggarwal.rest.service.repository.jpa.UserRepoService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hibernate.HibernateException;

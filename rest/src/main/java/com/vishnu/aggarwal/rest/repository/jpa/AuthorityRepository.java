@@ -1,4 +1,4 @@
-package com.vishnu.aggarwal.rest.repository;
+package com.vishnu.aggarwal.rest.repository.jpa;
 
 import com.vishnu.aggarwal.rest.entity.Authority;
 import org.springframework.data.jpa.repository.JpaRepository;

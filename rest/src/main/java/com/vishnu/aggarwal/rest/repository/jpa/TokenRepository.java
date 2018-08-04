@@ -1,4 +1,4 @@
-package com.vishnu.aggarwal.rest.repository;
+package com.vishnu.aggarwal.rest.repository.jpa;
 
 /*
 Created by vishnu on 21/4/18 2:37 PM

@@ -1,21 +1,25 @@
 package com.vishnu.aggarwal.rest.config.security;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vishnu.aggarwal.core.config.BaseMessageResolver;
+import com.vishnu.aggarwal.core.dto.UserAuthenticationDTO;
 import com.vishnu.aggarwal.core.dto.UserDTO;
 import com.vishnu.aggarwal.rest.entity.Token;
 import com.vishnu.aggarwal.rest.entity.User;
 import com.vishnu.aggarwal.rest.entity.UserToken;
 import com.vishnu.aggarwal.rest.interfaces.TokenAuthenticationService;
+import com.vishnu.aggarwal.rest.interfaces.UserService;
 import lombok.extern.apachecommons.CommonsLog;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.authentication.InternalAuthenticationServiceException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.hibernate.HibernateException;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.util.Assert;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -33,6 +37,7 @@ import static java.util.Objects.nonNull;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
+import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.security.core.context.SecurityContextHolder.clearContext;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
@@ -51,6 +56,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final BaseMessageResolver baseMessageResolver;
     private final ObjectMapper objectMapper;
     private final AuthenticationManager authenticationManager;
+    private final UserService userService;
 
     /**
      * Instantiates a new Login filter.
@@ -60,81 +66,94 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
      * @param baseMessageResolver        the base message resolver
      * @param objectMapper               the object mapper
      * @param authenticationManager      the authentication manager
+     * @param userService                the user service
      */
-    public LoginFilter(RequestMatcher requestMatcher, TokenAuthenticationService tokenAuthenticationService, BaseMessageResolver baseMessageResolver, ObjectMapper objectMapper, AuthenticationManager authenticationManager) {
+    public LoginFilter(
+            RequestMatcher requestMatcher,
+            TokenAuthenticationService tokenAuthenticationService,
+            BaseMessageResolver baseMessageResolver,
+            ObjectMapper objectMapper,
+            AuthenticationManager authenticationManager,
+            UserService userService) {
         this.tokenAuthenticationService = tokenAuthenticationService;
         this.baseMessageResolver = baseMessageResolver;
         this.objectMapper = objectMapper;
         this.authenticationManager = authenticationManager;
+        this.userService = userService;
         this.setRequiresAuthenticationRequestMatcher(requestMatcher);
         this.setAuthenticationManager(this.authenticationManager);
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        log.info("********************* [Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Attempting Authentication **********************");
         try {
-            Authentication authentication = tokenAuthenticationService.getAuthenticationForLogin(request, response, authenticationManager);
-            if (isFalse(authentication.isAuthenticated())) {
-                throw new AuthenticationServiceException(baseMessageResolver.getMessage("user.authentication.failed"));
-            }
-            return authentication;
-        } catch (IOException e) {
-            log.error("*********** " + e.getClass() + " ***************");
-            throw new InternalAuthenticationServiceException(baseMessageResolver.getMessage(""));
-        } catch (Exception e) {
-            log.error("*********** " + e.getClass() + " ***************");
-            throw e;
+            log.info("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Attempting User Authentication");
+            return tokenAuthenticationService.getAuthenticationForLogin(request, response, authenticationManager);
+        } catch (JsonParseException | JsonMappingException | IllegalArgumentException | HibernateException | LockedException | DisabledException | AccountExpiredException | CredentialsExpiredException | IllegalStateException e) {
+            log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] User authentication failed.");
+            log.error(getStackTrace(e));
+            throw new AuthenticationServiceException(baseMessageResolver.getMessage("user.authentication.failed"));
+        } catch (IOException | AuthenticationException e) {
+            log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] User authentication failed.");
+            log.error(getStackTrace(e));
+            throw new AuthenticationServiceException(baseMessageResolver.getMessage("user.authentication.failed"));
         }
     }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        UserToken userToken;
-        Map<String, Object> responseWriteMap = new HashMap<String, Object>();
-        userToken = tokenAuthenticationService.addAuthentication(response, (UsernamePasswordAuthenticationToken) authResult);
-        if (nonNull(userToken)) {
-            log.info("********************* [Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Fetched UserToken " + userToken + " **********************");
-            ((UsernamePasswordAuthenticationToken) authResult).setDetails(userToken.getToken());
-            User user = userToken.getUser();
-            UserDTO userDTO = new UserDTO();
-            userDTO.setUsername(user.getUsername());
-            userDTO.setEmail(user.getEmail());
-            userDTO.setAccountEnabled(user.getAccountEnabled());
-            userDTO.setAccountLocked(user.getAccountLocked());
-            userDTO.setAccountExpired(user.getAccountExpired());
-            userDTO.setCredentialsExpired(user.getCredentialsExpired());
-            responseWriteMap.put("isAuthenticated", authResult.isAuthenticated());
-            responseWriteMap.put(X_AUTH_TOKEN, ((Token) authResult.getDetails()).getKey());
-            responseWriteMap.put("user", userDTO);
+        try {
             response.setCharacterEncoding("UTF-8");
-            response.setStatus(SC_OK);
+            response.setContentType(APPLICATION_JSON_UTF8_VALUE);
+
+            log.info("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Fetched UserToken " + authResult.getDetails() + "");
+
+            final Object principal = authResult.getPrincipal();
+
+            Assert.notNull(principal, baseMessageResolver.getMessage(""));
+            User user = null;
+            if(principal instanceof String) {
+                user = userService.findByUsername(principal.toString());
+            } else if(principal instanceof User) {
+                user = (User) principal;
+            }
+
+            Assert.notNull(user, baseMessageResolver.getMessage(""));
+
             getContext().setAuthentication(authResult);
-            log.info("********************* [Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Successful Authentication **********************");
-        } else {
-            responseWriteMap.put("isAuthenticated", FALSE);
-            responseWriteMap.put(X_AUTH_TOKEN, null);
+            response.getWriter().write(objectMapper.writeValueAsString(new UserAuthenticationDTO(new UserDTO(user.getId(), user.getUsername(), user.getEmail(), null, user.getAccountExpired(), user.getAccountLocked(), user.getCredentialsExpired(), user.getAccountEnabled(), user.getIsDeleted()), authResult.isAuthenticated(), ((Token) authResult.getDetails()).getKey())));
+            response.setStatus(SC_OK);
+            response.addHeader(X_AUTH_TOKEN, ((Token) authResult.getDetails()).getKey());
+            log.info("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Successful Authentication");
+        } catch (IllegalArgumentException | HibernateException | JsonProcessingException e) {
+            log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while Successful Authentication");
+            log.error(getStackTrace(e));
             response.setStatus(SC_UNAUTHORIZED);
-            log.error("********************* [Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Unsuccessful Authentication **********************");
+            throw e;
+        } catch (IOException e) {
+            log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while Successful Authentication");
+            log.error(getStackTrace(e));
+            response.setStatus(SC_UNAUTHORIZED);
+            throw e;
         }
-        response.setContentType(APPLICATION_JSON_UTF8_VALUE);
-        response.getWriter().write(objectMapper.writeValueAsString(responseWriteMap));
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        Map<String, Object> responseWriteMap = new HashMap<String, Object>();
-        response.setStatus(SC_UNAUTHORIZED);
-        response.setCharacterEncoding("UTF-8");
-        responseWriteMap.put("isAuthenticated", FALSE);
-        responseWriteMap.put(X_AUTH_TOKEN, null);
-        response.getWriter().write(objectMapper.writeValueAsString(responseWriteMap));
-        HttpSession session = request.getSession(FALSE);
-        if (nonNull(session)) {
-            session.invalidate();
+        try {
+            response.setStatus(SC_UNAUTHORIZED);
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType(APPLICATION_JSON_UTF8_VALUE);
+            HttpSession session = request.getSession(FALSE);
+            if (nonNull(session)) {
+                session.invalidate();
+            }
+            getContext().setAuthentication(null);
+            clearContext();
+            log.info("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Unsuccessful Authentication");
+        } catch (IllegalStateException e) {
+            log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while Unsuccessful Authentication");
+            throw e;
         }
-        getContext().setAuthentication(null);
-        clearContext();
-        log.error("********************* [Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Unsuccessful Authentication **********************");
     }
 }

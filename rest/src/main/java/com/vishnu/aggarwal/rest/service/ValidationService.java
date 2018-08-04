@@ -1,6 +1,6 @@
 package com.vishnu.aggarwal.rest.service;
 
-import com.vishnu.aggarwal.rest.service.repository.QuartzDAOService;
+import com.vishnu.aggarwal.rest.service.dao.jpa.QuartzDAOService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

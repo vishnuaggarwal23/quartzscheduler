@@ -1,11 +1,11 @@
-package com.vishnu.aggarwal.rest.service.repository;
+package com.vishnu.aggarwal.rest.service.repository.jpa;
 
 /*
 Created by vishnu on 6/3/18 10:35 AM
 */
 
 import com.vishnu.aggarwal.rest.entity.User;
-import com.vishnu.aggarwal.rest.repository.UserRepository;
+import com.vishnu.aggarwal.rest.repository.jpa.UserRepository;
 import lombok.extern.apachecommons.CommonsLog;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +13,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -67,7 +68,7 @@ public class UserRepoService extends BaseRepoService<User, Long> {
      * @throws HibernateException the hibernate exception
      */
     @Transactional(readOnly = true)
-    public User findByUsername(String username) throws HibernateException {
+    public User findByUsername(String username) throws HibernateException, NoResultException {
         CriteriaQuery<User> criteriaQuery = getBaseCriteriaSelectImpl();
         CriteriaBuilder criteriaBuilder = getCriteriaBuilder();
         Root<User> userToken = getRoot(criteriaQuery);

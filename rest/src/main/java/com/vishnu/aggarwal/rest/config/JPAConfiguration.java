@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @Configuration("jpaConfiguration")
 @EntityScan("com.vishnu.aggarwal.rest.entity")
-@EnableJpaRepositories("com.vishnu.aggarwal.rest.repository")
+@EnableJpaRepositories("com.vishnu.aggarwal.rest.repository.jpa")
 @EnableJpaAuditing(auditorAwareRef = "auditorAware")
 @EnableTransactionManagement
 public class JPAConfiguration {

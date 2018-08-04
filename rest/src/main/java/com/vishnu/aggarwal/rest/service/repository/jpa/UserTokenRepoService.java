@@ -1,15 +1,16 @@
-package com.vishnu.aggarwal.rest.service.repository;
+package com.vishnu.aggarwal.rest.service.repository.jpa;
 
 import com.vishnu.aggarwal.core.enums.Status;
 import com.vishnu.aggarwal.rest.entity.Token;
 import com.vishnu.aggarwal.rest.entity.User;
 import com.vishnu.aggarwal.rest.entity.UserToken;
-import com.vishnu.aggarwal.rest.repository.UserTokenRepository;
+import com.vishnu.aggarwal.rest.repository.jpa.UserTokenRepository;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.NoResultException;
 import javax.persistence.criteria.*;
 import java.util.List;
 
@@ -66,17 +67,18 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
      * @return the user token
      */
     @SuppressWarnings("unchecked")
-    public UserToken findByToken(String xAuthToken) {
+    public UserToken findByToken(String xAuthToken) throws NoResultException {
         CriteriaQuery<UserToken> criteriaQuery = getBaseCriteriaSelectImpl();
         CriteriaBuilder criteriaBuilder = getCriteriaBuilder();
         Root<UserToken> userToken = getRoot(criteriaQuery);
-        Join<UserToken, Token> token = userToken.join("token");
+        Join<UserToken, Token> token = userToken.join("token", JoinType.LEFT);
         criteriaQuery
+                .select(userToken)
                 .where(
                         criteriaBuilder.equal(userToken.get("status"), ACTIVE),
                         criteriaBuilder.isFalse(userToken.get("isDeleted")),
                         criteriaBuilder.isFalse(token.get("isDeleted")),
-                        criteriaBuilder.equal(token.get("token"), xAuthToken)
+                        criteriaBuilder.like(criteriaBuilder.lower(token.<String>get("token")), xAuthToken.toLowerCase())
                 );
         return (UserToken) selectQuery(criteriaQuery, TRUE, TRUE, null);
         /*return (UserToken) getBaseCriteriaSelectImpl()
@@ -130,7 +132,7 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
      * @return the list
      */
     @SuppressWarnings("unchecked")
-    public List<UserToken> findAllUserTokens(User user) {
+    public List<UserToken> findAllUserTokens(User user) throws NoResultException {
         CriteriaQuery<UserToken> criteriaQuery = getBaseCriteriaSelectImpl();
         CriteriaBuilder criteriaBuilder = getCriteriaBuilder();
         Root<UserToken> userToken = getRoot(criteriaQuery);
@@ -159,7 +161,7 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
      * @return the user token
      */
     @SuppressWarnings("unchecked")
-    public UserToken findByUserAndStatus(User user, Status status) {
+    public UserToken findByUserAndStatus(User user, Status status) throws NoResultException {
         CriteriaQuery<UserToken> criteriaQuery = getBaseCriteriaSelectImpl();
         CriteriaBuilder criteriaBuilder = getCriteriaBuilder();
         Root<UserToken> userToken = getRoot(criteriaQuery);

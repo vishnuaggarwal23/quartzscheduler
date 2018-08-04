@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 7070
   servlet:
     context-path: "/rest/api"
 bootstrap:
@@ -80,6 +80,9 @@ spring:
       enabled: detect
   banner:
     charset: UTF-8
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/quartz_job_scheduler
 hibernate:
   dialect: org.hibernate.dialect.MySQL5Dialect
   show_sql: true
@@ -103,7 +106,8 @@ logging:
     org.springframework.web: info
     org.springframework.security: debug
     org.hibernate.tool.hbm2ddl: info
-    org.hibernate.sql: info
+    org.hibernate.sql: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
     org.hibernate.type: info
     com.vishnu.aggarwal: info
   file: "/home/vishnu/Desktop/quartzscheduler/logs/rest.log"

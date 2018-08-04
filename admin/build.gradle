@@ -2,56 +2,45 @@ import static java.lang.System.getProperties
 
 buildscript {
     ext {
-        springBootVersion = '2.0.1.RELEASE'
-        projectVersion = '0.0.1-SNAPSHOT'
+        projectVersion='0.0.1-SNAPSHOT'
         projectGroup = 'com.vishnu.aggarwal.admin'
-        jdkSource = 1.8
-        jdkTarget = 1.8
-    }
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath 'org.springframework:springloaded:1.2.8.RELEASE'
+        projectBaseName = 'quartz-admin'
     }
 }
 
-apply plugin: 'java'
-apply plugin: 'eclipse-wtp'
 apply plugin: 'org.springframework.boot'
-apply plugin: 'war'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
 apply plugin: 'io.spring.dependency-management'
 
 group = projectGroup
 version = projectVersion
-sourceCompatibility = jdkSource
-targetCompatibility = jdkTarget
+mainClassName = 'com.vishnu.aggarwal.admin.main.Admin'
 
 war {
-    baseName = 'quartz-admin'
-    version = projectVersion
     enabled = true
+    baseName = projectBaseName
+    version = projectVersion
+    exclude('application-dev.yml', 'banner.txt')
 }
 
 jar {
-    baseName = 'quartz-admin'
-    version = projectVersion
     enabled = true
-}
-
-bootWar {
-    baseName = 'quartz-admin'
+    baseName = projectBaseName
     version = projectVersion
-    enabled = true
+    exclude('application-dev.yml', 'banner.txt')
 }
 
 bootJar {
-    baseName = 'quartz-admin'
-    version = projectVersion
     enabled = true
+    baseName = projectBaseName
+    version = projectVersion
+    exclude('application-dev.yml', 'banner.txt')
+}
+
+bootWar {
+    enabled = true
+    baseName = projectBaseName
+    version = projectVersion
+    exclude('application-dev.yml', 'banner.txt')
 }
 
 bootRun {
@@ -60,14 +49,6 @@ bootRun {
     jvmArgs = [
             "-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5007",
     ]
-}
-
-repositories {
-    mavenCentral()
-}
-
-configurations {
-    providedRuntime
 }
 
 dependencies {

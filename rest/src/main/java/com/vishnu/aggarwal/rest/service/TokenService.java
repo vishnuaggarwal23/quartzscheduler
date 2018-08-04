@@ -6,7 +6,7 @@ Created by vishnu on 21/4/18 2:36 PM
 
 import com.vishnu.aggarwal.core.service.BaseService;
 import com.vishnu.aggarwal.rest.entity.Token;
-import com.vishnu.aggarwal.rest.service.repository.TokenRepoService;
+import com.vishnu.aggarwal.rest.service.repository.jpa.TokenRepoService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,8 +20,18 @@ public class TokenService extends BaseService {
     /**
      * The Token repo service.
      */
-    @Autowired
+    private final
     TokenRepoService tokenRepoService;
+
+    /**
+     * Instantiates a new Token service.
+     *
+     * @param tokenRepoService the token repo service
+     */
+    @Autowired
+    public TokenService(TokenRepoService tokenRepoService) {
+        this.tokenRepoService = tokenRepoService;
+    }
 
     /**
      * Save token.

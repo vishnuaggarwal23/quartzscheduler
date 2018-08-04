@@ -1,4 +1,4 @@
-package com.vishnu.aggarwal.rest.service.repository;
+package com.vishnu.aggarwal.rest.service.repository.jpa;
 
 /*
 Created by vishnu on 1/3/18 1:00 PM
@@ -14,6 +14,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
 import java.io.Serializable;
@@ -171,7 +172,7 @@ public abstract class BaseRepoService<T, ID extends Serializable> extends BaseSe
      * @param dataTableCO            the data table co
      * @return the object
      */
-    Object selectQuery(CriteriaQuery<T> criteriaQuery, Boolean isDistinct, Boolean isSingleResultExpected, DataTableCO dataTableCO) {
+    Object selectQuery(CriteriaQuery<T> criteriaQuery, Boolean isDistinct, Boolean isSingleResultExpected, DataTableCO dataTableCO) throws NoResultException {
         criteriaQuery.distinct(isDistinct);
         if (nonNull(dataTableCO)) {
             criteriaQuery.orderBy(getCriteriaOrder(getCriteriaBuilder(), dataTableCO));

@@ -1,7 +1,7 @@
-package com.vishnu.aggarwal.rest.service.repository;
+package com.vishnu.aggarwal.rest.service.repository.jpa;
 
 import com.vishnu.aggarwal.rest.entity.Authority;
-import com.vishnu.aggarwal.rest.repository.AuthorityRepository;
+import com.vishnu.aggarwal.rest.repository.jpa.AuthorityRepository;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;

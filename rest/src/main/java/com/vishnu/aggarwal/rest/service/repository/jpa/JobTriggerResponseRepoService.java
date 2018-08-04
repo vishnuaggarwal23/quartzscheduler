@@ -1,14 +1,15 @@
-package com.vishnu.aggarwal.rest.service.repository;
+package com.vishnu.aggarwal.rest.service.repository.jpa;
 
 import com.vishnu.aggarwal.core.dto.JobTriggerResponseDTO;
 import com.vishnu.aggarwal.rest.entity.JobTriggerResponse;
-import com.vishnu.aggarwal.rest.repository.JobTriggerResponseRepository;
+import com.vishnu.aggarwal.rest.repository.jpa.JobTriggerResponseRepository;
 import lombok.extern.apachecommons.CommonsLog;
 import org.hibernate.criterion.Criterion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -75,7 +76,7 @@ public class JobTriggerResponseRepoService extends BaseRepoService<JobTriggerRes
      * @return the list
      */
     @SuppressWarnings("unchecked")
-    public List<JobTriggerResponseDTO> fetch(JobTriggerResponseDTO jobTriggerResponseDTO) {
+    public List<JobTriggerResponseDTO> fetch(JobTriggerResponseDTO jobTriggerResponseDTO) throws NoResultException {
         CriteriaQuery<JobTriggerResponse> criteriaQuery = getBaseCriteriaSelectImpl();
         CriteriaBuilder criteriaBuilder = getCriteriaBuilder();
         Root<JobTriggerResponse> jobTriggerResponseRoot = getRoot(criteriaQuery);

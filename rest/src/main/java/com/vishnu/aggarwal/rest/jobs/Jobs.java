@@ -5,8 +5,8 @@ Created by vishnu on 24/4/18 12:03 PM
 */
 
 import com.vishnu.aggarwal.rest.entity.Token;
-import com.vishnu.aggarwal.rest.service.repository.TokenRepoService;
-import com.vishnu.aggarwal.rest.service.repository.UserTokenRepoService;
+import com.vishnu.aggarwal.rest.service.repository.jpa.TokenRepoService;
+import com.vishnu.aggarwal.rest.service.repository.jpa.UserTokenRepoService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;

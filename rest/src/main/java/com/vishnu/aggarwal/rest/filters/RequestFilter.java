@@ -6,6 +6,7 @@ Created by vishnu on 22/5/18 2:02 PM
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.apachecommons.CommonsLog;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.util.WebUtils;
 
@@ -21,6 +22,7 @@ import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
+@Configuration
 @Order(HIGHEST_PRECEDENCE)
 @CommonsLog
 public class RequestFilter implements Filter {
@@ -40,7 +42,7 @@ public class RequestFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         String ID = randomNumeric(10);
         request.setAttribute(CUSTOM_REQUEST_ID, ID);
-        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+        /*HttpServletRequest httpServletRequest = (HttpServletRequest) request;
 
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("requestUrl", httpServletRequest.getRequestURL());
@@ -64,7 +66,7 @@ public class RequestFilter implements Filter {
             log.info(convertMapToJsonString(data) + "\n");
         } catch (Exception e) {
             log.error(getStackTrace(e) + "\n");
-        }
+        }*/
         chain.doFilter(request, response);
     }
 

@@ -1,11 +1,11 @@
-package com.vishnu.aggarwal.rest.service.repository;
+package com.vishnu.aggarwal.rest.service.repository.jpa;
 
 /*
 Created by vishnu on 21/4/18 2:36 PM
 */
 
 import com.vishnu.aggarwal.rest.entity.Token;
-import com.vishnu.aggarwal.rest.repository.TokenRepository;
+import com.vishnu.aggarwal.rest.repository.jpa.TokenRepository;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -34,8 +34,18 @@ public class TokenRepoService extends BaseRepoService<Token, Long> {
     /**
      * The Token repository.
      */
-    @Autowired
+    private final
     TokenRepository tokenRepository;
+
+    /**
+     * Instantiates a new Token repo service.
+     *
+     * @param tokenRepository the token repository
+     */
+    @Autowired
+    public TokenRepoService(TokenRepository tokenRepository) {
+        this.tokenRepository = tokenRepository;
+    }
 
     @Override
     protected Class<Token> getEntityClass() {

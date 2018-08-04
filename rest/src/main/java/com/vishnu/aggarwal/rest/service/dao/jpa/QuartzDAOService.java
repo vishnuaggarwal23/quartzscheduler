@@ -1,4 +1,4 @@
-package com.vishnu.aggarwal.rest.service.repository;
+package com.vishnu.aggarwal.rest.service.dao.jpa;
 
 /*
 Created by vishnu on 18/4/18 11:33 AM

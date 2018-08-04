@@ -33,6 +33,16 @@ public abstract class BaseService {
         return isNotBlank(messageCode) ? baseMessageResolver.getMessage(messageCode) : EMPTY;
     }
 
+    protected String getMessage(String messageCode, Object... messageArgs) {
+        if (isNotBlank(messageCode)) {
+            if (allNotNull(messageArgs)) {
+                return baseMessageResolver.getMessage(messageCode, messageArgs);
+            }
+            return baseMessageResolver.getMessage(messageCode);
+        }
+        return EMPTY;
+    }
+
     /**
      * Format message string.
      *
@@ -42,7 +52,7 @@ public abstract class BaseService {
      */
     protected String formatMessage(String messagePattern, Object... messageArguments) {
         if (isNotBlank(messagePattern)) {
-            if (allNotNull(messagePattern)) {
+            if (allNotNull(messageArguments)) {
                 return format(messagePattern, messageArguments);
             }
             return format(messagePattern);
