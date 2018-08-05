@@ -114,26 +114,26 @@ public class TokenAuthenticationService extends BaseService implements com.vishn
     }
 
     @Override
-    public Authentication getAuthenticationForLogin(HttpServletRequest request, HttpServletResponse response, AuthenticationManager authenticationManager) throws JsonParseException, JsonMappingException, HibernateException, LockedException, DisabledException, AccountExpiredException, CredentialsExpiredException, IllegalStateException, AuthenticationException, IllegalArgumentException, IOException {
+    public Authentication getAuthenticationForLogin(HttpServletRequest request, HttpServletResponse response, AuthenticationManager authenticationManager) throws HibernateException, IllegalStateException, AuthenticationException, IllegalArgumentException, IOException {
         try {
             UserDTO login = objectMapper.readValue(IOUtils.toString(request.getReader()), UserDTO.class);
 
-            hasLength(login.getUsername(), formatMessage(getMessage("")));
-            hasLength(login.getPassword(), formatMessage(getMessage("")));
-            notNull(userService.findByUsername(login.getUsername()), formatMessage(getMessage("")));
+            hasLength(login.getUsername(), formatMessage(getMessage("username.not.found.in.login.request")));
+            hasLength(login.getPassword(), formatMessage(getMessage("password.not.found.in.login.request")));
+            notNull(userService.findByUsername(login.getUsername()), formatMessage(getMessage("no.user.found.for.username"), login.getUsername()));
 
             log.info("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Attempting Authentication for [Username : " + login.getUsername() + "] and [Password : " + login.getPassword() + "]");
             UsernamePasswordAuthenticationToken authenticatedUser = (UsernamePasswordAuthenticationToken) authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login.getUsername(), login.getPassword()));
 
-            notNull(authenticatedUser, formatMessage(getMessage("")));
+            notNull(authenticatedUser, formatMessage(getMessage("unable.to.authenticate.user")));
 
             Boolean isAuthentic = authenticatedUser.isAuthenticated();
             User user = (User) authenticatedUser.getPrincipal();
 
             log.debug("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Authentication Result : " + isAuthentic + " for [Username : " + login.getUsername() + "] and [Password : " + login.getPassword() + "]");
 
-            notNull(user, formatMessage(getMessage("")));
-            isTrue(isAuthentic, formatMessage(getMessage("")));
+            notNull(user, formatMessage(getMessage("principal.not.found.in.authentication")));
+            isTrue(isAuthentic, formatMessage(getMessage("user.authentication.failed")));
 
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities());
             usernamePasswordAuthenticationToken.setDetails(addAuthentication(request, usernamePasswordAuthenticationToken).getToken());
@@ -153,17 +153,17 @@ public class TokenAuthenticationService extends BaseService implements com.vishn
     public Authentication getAuthentication(HttpServletRequest request, HttpServletResponse response) throws ExpiredJwtException, UnsupportedJwtException, MalformedJwtException, SignatureException, IllegalArgumentException, LockedException, DisabledException, AccountExpiredException, CredentialsExpiredException, NoResultException {
         try {
             final String xAuthToken = request.getHeader(X_AUTH_TOKEN);
-            hasText(xAuthToken, formatMessage(getMessage("")));
+            hasText(xAuthToken, formatMessage(getMessage("xAuthToken.not.found.request")));
             log.info("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Authenticating user associated for JWT token " + xAuthToken);
 
             Boolean isValidToken = tokenHandlerService.isValidToken(xAuthToken);
 
-            isTrue(isValidToken, formatMessage(getMessage("")));
+            isTrue(isValidToken, formatMessage(getMessage("xAuthToken.invalid"), xAuthToken));
 
             log.info("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] JWT token " + xAuthToken + " is found to be valid.");
 
             User user = tokenHandlerService.parseToken(xAuthToken);
-            notNull(user, formatMessage(getMessage("")));
+            notNull(user, formatMessage(getMessage("user.not.found.for.token"), xAuthToken));
 
             accountStatusUserDetailsCheck.check(user);
 
@@ -185,24 +185,24 @@ public class TokenAuthenticationService extends BaseService implements com.vishn
             String username = "";
             User user = null;
 
-            notNull(principal, formatMessage(getMessage("")));
+            notNull(principal, formatMessage(getMessage("principal.not.found.in.authentication")));
 
             if (principal instanceof String) {
                 username = (String) principal;
                 log.info("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Generating JWT Token for username " + username);
-                hasText(username, formatMessage(getMessage("")));
+                hasText(username, formatMessage(getMessage("username.not.found")));
                 user = userService.findByUsername(username);
             } else if (principal instanceof User) {
                 user = (User) principal;
                 username = user.getUsername();
             }
 
-            notNull(user, formatMessage(getMessage("")));
-            hasText(username, formatMessage(getMessage("")));
+            notNull(user, formatMessage(getMessage("user.not.found.for.principal")));
+            hasText(username, formatMessage(getMessage("username.not.found")));
             accountStatusUserDetailsCheck.check(user);
 
             Map<String, Object> tokenMap = tokenHandlerService.generateToken(user);
-            notEmpty(tokenMap, formatMessage(getMessage("")));
+            notEmpty(tokenMap, formatMessage(getMessage("token.not.generated"), user));
 
             log.info("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] JWT Token " + tokenMap.get("key") + " generated for user " + user);
 
@@ -215,7 +215,7 @@ public class TokenAuthenticationService extends BaseService implements com.vishn
                 token.setIssuedDate((Date) tokenMap.get("issuedDate"));
                 token = tokenService.save(token);
             }
-            notNull(token, formatMessage(getMessage("")));
+            notNull(token, formatMessage(getMessage("generated.token.not.saved")));
 
             UserToken userToken = new UserToken();
             userToken.setUser(user);
@@ -223,7 +223,7 @@ public class TokenAuthenticationService extends BaseService implements com.vishn
             userToken.setStatus(ACTIVE);
             userTokenService.updateTokenStatus(user);
             userToken = userTokenService.save(userToken);
-            notNull(userToken, formatMessage(getMessage("")));
+            notNull(userToken, formatMessage(getMessage("generated.token.not.saved.for.user"), token, user));
 
             return userToken;
         } catch (IllegalArgumentException | HibernateException | LockedException | DisabledException | AccountExpiredException | CredentialsExpiredException | IllegalStateException e) {

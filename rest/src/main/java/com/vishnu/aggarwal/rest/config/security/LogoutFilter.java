@@ -88,10 +88,10 @@ public class LogoutFilter extends org.springframework.security.web.authenticatio
         try {
             if (super.requiresLogout(request, response)) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) ofNullable(getContext().getAuthentication()).orElse((tokenAuthenticationService.getAuthentication(request, response)));
-                isTrue(usernamePasswordAuthenticationToken.isAuthenticated(), baseMessageResolver.getMessage(""));
+                isTrue(usernamePasswordAuthenticationToken.isAuthenticated(), baseMessageResolver.getMessage("user.authentication.failed"));
 
                 this.logoutHandler.logout(request, response, usernamePasswordAuthenticationToken);
-                isTrue(response.getStatus() == SC_OK, baseMessageResolver.getMessage(""));
+                isTrue(response.getStatus() == SC_OK, baseMessageResolver.getMessage("unauthorized.logout.access", logoutUrl));
 
                 new CookieClearingLogoutHandler("JSESSIONID", X_AUTH_TOKEN, "localhost").logout(request, response, usernamePasswordAuthenticationToken);
                 this.logoutSuccessHandler.onLogoutSuccess(request, response, usernamePasswordAuthenticationToken);

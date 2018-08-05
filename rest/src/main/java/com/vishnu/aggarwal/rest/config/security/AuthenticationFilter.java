@@ -98,10 +98,10 @@ public class AuthenticationFilter extends GenericFilterBean {
                     getContext().setAuthentication(authentication);
 
                     if (authenticationRequestMatcher.matches(httpServletRequest)) {
-                        Assert.isTrue(authentication.isAuthenticated(), baseMessageResolver.getMessage(""));
+                        Assert.isTrue(authentication.isAuthenticated(), baseMessageResolver.getMessage("user.authentication.failed"));
                         final Object principal = authentication.getPrincipal();
 
-                        Assert.notNull(principal, baseMessageResolver.getMessage(""));
+                        Assert.notNull(principal, baseMessageResolver.getMessage("principal.not.found.in.authentication"));
                         User user = null;
                         if (principal instanceof String) {
                             user = userService.findByUsername(principal.toString());
@@ -109,7 +109,7 @@ public class AuthenticationFilter extends GenericFilterBean {
                             user = (User) principal;
                         }
 
-                        Assert.notNull(user, baseMessageResolver.getMessage(""));
+                        Assert.notNull(user, baseMessageResolver.getMessage("user.not.found.for.principal"));
 
                         ((HttpServletResponse) response).setStatus(SC_OK);
                         response.getWriter().write(objectMapper.writeValueAsString(
@@ -127,7 +127,7 @@ public class AuthenticationFilter extends GenericFilterBean {
                                         ((Token) authentication.getDetails()).getKey())));
 
                     } else {
-                        Assert.isTrue(authentication.isAuthenticated(), baseMessageResolver.getMessage(""));
+                        Assert.isTrue(authentication.isAuthenticated(), baseMessageResolver.getMessage("user.authentication.failed"));
                         chain.doFilter(httpServletRequest, response);
                     }
                 }

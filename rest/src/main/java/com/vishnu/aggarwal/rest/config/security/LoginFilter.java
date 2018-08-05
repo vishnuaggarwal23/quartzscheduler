@@ -18,7 +18,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.util.Assert;
 
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +35,7 @@ import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.security.core.context.SecurityContextHolder.clearContext;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
+import static org.springframework.util.Assert.notNull;
 
 /*
 Created by vishnu on 20/4/18 1:21 PM
@@ -101,11 +101,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             response.setCharacterEncoding("UTF-8");
             response.setContentType(APPLICATION_JSON_UTF8_VALUE);
 
-            log.info("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Fetched UserToken " + authResult.getDetails() + "");
+            log.info("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Fetched UserToken " + authResult.getDetails());
 
             final Object principal = authResult.getPrincipal();
 
-            Assert.notNull(principal, baseMessageResolver.getMessage(""));
+            notNull(principal, baseMessageResolver.getMessage("principal.not.found.in.authentication"));
             User user = null;
             if (principal instanceof String) {
                 user = userService.findByUsername(principal.toString());
@@ -113,7 +113,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                 user = (User) principal;
             }
 
-            Assert.notNull(user, baseMessageResolver.getMessage(""));
+            notNull(user, baseMessageResolver.getMessage("user.not.found.for.principal"));
 
             getContext().setAuthentication(authResult);
             response.getWriter().write(objectMapper.writeValueAsString(new UserAuthenticationDTO(new UserDTO(user.getId(), user.getUsername(), user.getEmail(), null, user.getAccountExpired(), user.getAccountLocked(), user.getCredentialsExpired(), user.getAccountEnabled(), user.getIsDeleted()), authResult.isAuthenticated(), ((Token) authResult.getDetails()).getKey())));
