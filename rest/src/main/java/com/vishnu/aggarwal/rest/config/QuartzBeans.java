@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -21,6 +22,7 @@ import java.util.Properties;
 @Configuration(value = "quartzBeans")
 @EnableTransactionManagement
 @EnableJpaRepositories({"com.vishnu.aggarwal.rest.entity"})
+@EnableMongoRepositories({"com.vishnu.aggarwal.rest.document"})
 public class QuartzBeans {
 
     /**
