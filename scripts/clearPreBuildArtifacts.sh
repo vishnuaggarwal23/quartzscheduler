@@ -9,13 +9,16 @@ function clearPreBuildArtifacts(){
         rest)
             rm -rf build/
             rm -rf out/
+            rm -rf bin/
             ;;
         admin)
             rm -rf build/
             rm -rf out/
+            rm -rf bin/
             ;;
         core)
             rm -rf build/
+            rm -rf out/
             rm -rf bin/
             ;;
     esac
