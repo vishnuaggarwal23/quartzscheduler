@@ -40,34 +40,34 @@ spring:
     testWhileIdle: true
     validationQuery: SELECT 1
     properties:
-     jmxEnabled: true
-     initialSize: 10
-     maxActive: "${JDBC_MAX_ACTIVE:75}"
-     minIdle: 10
-     maxWait: 10000
-     timeBetweenEvictionRunsMillis: 5000
-     minEvictableIdleTimeMillis: 60000
-     validationQuery: SELECT 1
-     validationQueryTimeout: 3
-     validationInterval: 3000
-     testOnBorrow: true
-     testWhileIdle: true
-     testOnReturn: false
-     abandonWhenPercentageFull: 100
-     removeAbandoned: true
-     logAbandoned: false
-     dbProperties:
-       autoReconnect: true
-       zeroDateTimeBehavior: convertToNull # mysql 0-date conversion
-       dontTrackOpenResources: true # Tomcat JDBC Pool's StatementFinalizer keeps track
-       holdResultsOpenOverStatementClose: false
-       useServerPrepStmts: false
-       cacheServerConfiguration: true # metadata caching
-       cacheResultSetMetadata: true # metadata caching
-       metadataCacheSize: 100 # metadata caching
-       maintainTimeStats: false # timer tuning (disable)
-       enableQueryTimeouts: false
-       noDatetimeStringSync: true
+      jmxEnabled: true
+      initialSize: 10
+      maxActive: "${JDBC_MAX_ACTIVE:75}"
+      minIdle: 10
+      maxWait: 10000
+      timeBetweenEvictionRunsMillis: 5000
+      minEvictableIdleTimeMillis: 60000
+      validationQuery: SELECT 1
+      validationQueryTimeout: 3
+      validationInterval: 3000
+      testOnBorrow: true
+      testWhileIdle: true
+      testOnReturn: false
+      abandonWhenPercentageFull: 100
+      removeAbandoned: true
+      logAbandoned: false
+      dbProperties:
+        autoReconnect: true
+        zeroDateTimeBehavior: convertToNull # mysql 0-date conversion
+        dontTrackOpenResources: true # Tomcat JDBC Pool's StatementFinalizer keeps track
+        holdResultsOpenOverStatementClose: false
+        useServerPrepStmts: false
+        cacheServerConfiguration: true # metadata caching
+        cacheResultSetMetadata: true # metadata caching
+        metadataCacheSize: 100 # metadata caching
+        maintainTimeStats: false # timer tuning (disable)
+        enableQueryTimeouts: false
+        noDatetimeStringSync: true
     platform: mysql
     initialization-mode: embedded
   devtools:
