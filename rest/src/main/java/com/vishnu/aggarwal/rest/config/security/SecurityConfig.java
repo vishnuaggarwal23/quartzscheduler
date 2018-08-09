@@ -109,13 +109,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/**/quartz/**/", "/**/validation/**/").hasAnyAuthority(ROLE_ADMIN, ROLE_USER)
                 .antMatchers("/**/user/authenticate").permitAll()
                 .antMatchers(POST, "/**/user/logout").authenticated()
+                .antMatchers("/**/actuator/**/").hasAuthority(ROLE_ADMIN)
                 .antMatchers("/**/error").denyAll()
                 .anyRequest().authenticated();
     }
 
     @Override
-    public void configure(WebSecurity web) throws Exception {
-        String[] urlPatterns = {"/**/actuator/**/", "/**/js/**/", "/**/css/**/", "/**/img/**/", "/**/font/**/", "/**/fonts/**/", "/**/webjars/**/", "/**/webjar/**/"};
+    public void configure(WebSecurity web) {
+        String[] urlPatterns = {"/**/js/**/", "/**/css/**/", "/**/img/**/", "/**/font/**/", "/**/fonts/**/", "/**/webjars/**/", "/**/webjar/**/"};
         web
                 .ignoring()
                 .antMatchers(urlPatterns)
