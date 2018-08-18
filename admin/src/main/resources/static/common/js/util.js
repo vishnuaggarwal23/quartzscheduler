@@ -28,6 +28,10 @@ function removeCookie(cookieName) {
     Cookies.remove(cookieName, {path: '/', expires: 0});
 }
 
+function getCookie(cookieName) {
+    return Cookies.get(cookieName);
+}
+
 function showSuccessMessage(message, timeout) {
     message && toastr.success(message, "", {timeout: timeout || 3500});
     changeToasterPositionFromTop($('.toast-top-full-width'));
