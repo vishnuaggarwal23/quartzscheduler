@@ -36,8 +36,12 @@ public class ValidationController extends BaseController {
     /**
      * The Validation service.
      */
+    private final ValidationService validationService;
+
     @Autowired
-    ValidationService validationService;
+    public ValidationController(ValidationService validationService) {
+        this.validationService = validationService;
+    }
 
     /**
      * Is job key unique response entity.
@@ -55,8 +59,7 @@ public class ValidationController extends BaseController {
         try {
             validationResponse = validationService.isJobKeyUnique(keyName, xAuthToken);
         } catch (Exception e) {
-            log.error("************* Error while fetching unique job key validation response **************** \n");
-            log.error("************* [Request ID " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Stacktrace ****************** \n");
+            log.error("[Request ID " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while fetching unique job key validation response");
             log.error(getStackTrace(e));
             setRestResponseVO(validationResponse, FALSE, valueOf(response.getStatus()), getMessage(""));
         }
@@ -79,8 +82,7 @@ public class ValidationController extends BaseController {
         try {
             validationResponse = validationService.isTriggerKeyUnique(keyName, xAuthToken);
         } catch (Exception e) {
-            log.error("************* [Request ID " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while fetching unique trigger key validation response **************** \n");
-            log.error("************* [Request ID " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Stacktrace ****************** \n");
+            log.error("[Request ID " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while fetching unique trigger key validation response");
             log.error(getStackTrace(e));
             setRestResponseVO(validationResponse, FALSE, valueOf(response.getStatus()), getMessage(""));
         }
