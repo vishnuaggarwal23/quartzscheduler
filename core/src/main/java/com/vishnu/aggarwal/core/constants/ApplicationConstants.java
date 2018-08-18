@@ -39,4 +39,6 @@ public class ApplicationConstants {
      * The constant CUSTOM_REQUEST_ID.
      */
     public static final String CUSTOM_REQUEST_ID = "customRequestId";
+
+    public static final String USER = "USER-DETAILS";
 }
