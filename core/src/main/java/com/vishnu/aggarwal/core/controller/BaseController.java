@@ -13,9 +13,11 @@ import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
+import static java.text.MessageFormat.format;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.ObjectUtils.allNotNull;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
  * The type Base controller.
@@ -66,12 +68,46 @@ public class BaseController {
     }
 
     /**
-     * Get message string.
+     * Gets message.
      *
      * @param messageCode the message code
-     * @return the string
+     * @return the message
      */
     public String getMessage(String messageCode) {
-        return isNotEmpty(messageCode) ? baseMessageResolver.getMessage(messageCode) : EMPTY;
+        return isNotBlank(messageCode) ? baseMessageResolver.getMessage(messageCode) : EMPTY;
+    }
+
+    /**
+     * Gets message.
+     *
+     * @param messageCode the message code
+     * @param messageArgs the message args
+     * @return the message
+     */
+    public String getMessage(String messageCode, Object... messageArgs) {
+        if (isNotBlank(messageCode)) {
+            if (allNotNull(messageArgs)) {
+                return baseMessageResolver.getMessage(messageCode, messageArgs);
+            }
+            return baseMessageResolver.getMessage(messageCode);
+        }
+        return EMPTY;
+    }
+
+    /**
+     * Format message string.
+     *
+     * @param messagePattern   the message pattern
+     * @param messageArguments the message arguments
+     * @return the string
+     */
+    public String formatMessage(String messagePattern, Object... messageArguments) {
+        if (isNotBlank(messagePattern)) {
+            if (allNotNull(messageArguments)) {
+                return format(messagePattern, messageArguments);
+            }
+            return format(messagePattern);
+        }
+        return EMPTY;
     }
 }
