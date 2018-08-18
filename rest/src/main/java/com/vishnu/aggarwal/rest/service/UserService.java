@@ -4,21 +4,19 @@ package com.vishnu.aggarwal.rest.service;
 Created by vishnu on 6/3/18 10:33 AM
 */
 
-import com.vishnu.aggarwal.core.dto.UserDTO;
 import com.vishnu.aggarwal.core.service.BaseService;
 import com.vishnu.aggarwal.rest.entity.User;
 import com.vishnu.aggarwal.rest.service.repository.jpa.UserRepoService;
 import lombok.extern.apachecommons.CommonsLog;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import static java.lang.Boolean.TRUE;
 import static java.util.Objects.isNull;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
+import static org.springframework.util.Assert.notNull;
 
 /**
  * The type User service.
@@ -30,16 +28,34 @@ public class UserService extends BaseService implements com.vishnu.aggarwal.rest
     /**
      * The User repo service.
      */
+    private final UserRepoService userRepoService;
+
+    /**
+     * Instantiates a new User service.
+     *
+     * @param userRepoService the user repo service
+     */
     @Autowired
-    UserRepoService userRepoService;
+    public UserService(UserRepoService userRepoService) {
+        this.userRepoService = userRepoService;
+    }
 
     /**
      * Gets current logged in user.
      *
      * @return the current logged in user
      */
-    public User getCurrentLoggedInUser() {
-        return userRepoService.findByUsername((String) getContext().getAuthentication().getPrincipal());
+    public User getCurrentLoggedInUser() throws HibernateException {
+        User user = null;
+        Object principal = getContext().getAuthentication().getPrincipal();
+        if (principal instanceof String) {
+            user = findByUsername(((String) principal).trim());
+        } else if (principal instanceof User) {
+            user = (User) principal;
+        }
+        notNull(user, formatMessage(getMessage("")));
+
+        return user;
     }
 
     /**
@@ -51,26 +67,6 @@ public class UserService extends BaseService implements com.vishnu.aggarwal.rest
      */
     public User findByUsername(String username) throws HibernateException {
         return userRepoService.findByUsername(username);
-    }
-
-    /**
-     * Authenticate user boolean.
-     *
-     * @param xAuthToken the x auth token
-     * @return the boolean
-     */
-    public Boolean authenticateUser(String xAuthToken) {
-        return TRUE;
-    }
-
-    /**
-     * Login string.
-     *
-     * @param login the login
-     * @return the string
-     */
-    public String login(UserDTO login) {
-        return RandomStringUtils.randomAlphanumeric(10);
     }
 
     @Override
