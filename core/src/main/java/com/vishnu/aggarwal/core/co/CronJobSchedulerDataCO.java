@@ -1,13 +1,15 @@
 package com.vishnu.aggarwal.core.co;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 /**
  * The type Cron job scheduler data co.
  */
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
 public class CronJobSchedulerDataCO {
     private TriggerCO trigger;
     private String second;

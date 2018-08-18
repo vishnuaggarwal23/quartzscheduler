@@ -8,6 +8,8 @@ import lombok.Setter;
 
 import java.util.Map;
 
+import static java.lang.Boolean.FALSE;
+
 /**
  * The type Job details co.
  */
@@ -21,9 +23,9 @@ public class JobDetailsCO {
     private String description;
     private JobExecutorClass executorClass;
     private Map data;
-    private Boolean durability;
-    private Boolean scheduled;
-    private Boolean recover;
-    private Boolean concurrentExecutionDisallowed;
-    private Boolean persistJobDataAfterExecution;
+    private Boolean durability = FALSE;
+    private Boolean scheduled = FALSE;
+    private Boolean recover = FALSE;
+    private Boolean concurrentExecutionDisallowed = FALSE;
+    private Boolean persistJobDataAfterExecution = FALSE;
 }

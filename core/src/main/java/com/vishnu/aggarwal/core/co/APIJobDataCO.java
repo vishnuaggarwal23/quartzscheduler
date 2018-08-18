@@ -1,8 +1,7 @@
 package com.vishnu.aggarwal.core.co;
 
 import com.vishnu.aggarwal.core.enums.JobExecutorClass;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.http.HttpMethod;
 
 import java.util.List;
@@ -12,6 +11,9 @@ import java.util.List;
  */
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
 public class APIJobDataCO {
     private JobExecutorClass executorClass;
     private HttpMethod requestType;

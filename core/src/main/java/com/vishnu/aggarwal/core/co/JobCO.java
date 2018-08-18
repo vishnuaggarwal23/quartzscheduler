@@ -1,20 +1,23 @@
 package com.vishnu.aggarwal.core.co;
 
+import com.vishnu.aggarwal.core.dto.KeyGroupDescriptionDTO;
 import com.vishnu.aggarwal.core.enums.JobType;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
+import static java.lang.Boolean.FALSE;
 
 /**
  * The type Job co.
  */
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
 public class JobCO {
-    private String keyName;
-    private String groupName;
-    private String description;
-    private Boolean durability;
-    private Boolean recover;
+    private KeyGroupDescriptionDTO details;
+    private Boolean durability = FALSE;
+    private Boolean recover = FALSE;
     private JobType type;
-    private Boolean scheduled;
+    private Boolean scheduled = FALSE;
 }

@@ -1,8 +1,8 @@
 package com.vishnu.aggarwal.core.co;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+import static java.lang.Boolean.FALSE;
 import static java.util.Objects.isNull;
 
 /**
@@ -10,9 +10,12 @@ import static java.util.Objects.isNull;
  */
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
 public class RepeatIntervalCO {
     private Integer repeatValue;
-    private Boolean repeatForever;
+    private Boolean repeatForever = FALSE;
     private Integer repeatCount;
 
     /**
