@@ -11,7 +11,7 @@ var App = function () {
 
     var resizeHandlers = [];
 
-    var assetsPath = 'admin/common/';
+    var assetsPath = '/admin/common/';
 
     var globalImgPath = 'img/';
 
@@ -65,7 +65,7 @@ var App = function () {
         if (isIE8) {
             var currheight;
             $(window).resize(function () {
-                if (currheight == document.documentElement.clientHeight) {
+                if (currheight === document.documentElement.clientHeight) {
                     return; //quite event since only body resized not window.
                 }
                 if (resize) {
@@ -154,9 +154,9 @@ var App = function () {
                     error: function (xhr, ajaxOptions, thrownError) {
                         App.unblockUI(el);
                         var msg = 'Error on reloading the content. Please check your connection and try again.';
-                        if (error == "toastr" && toastr) {
+                        if (error === "toastr" && toastr) {
                             toastr.error(msg);
-                        } else if (error == "notific8" && $.notific8) {
+                        } else if (error === "notific8" && $.notific8) {
                             $.notific8('zindex', 11500);
                             $.notific8(msg, {
                                 theme: 'ruby',
@@ -241,7 +241,7 @@ var App = function () {
             $('body').on('click', 'a.btn, button.btn, input.btn, label.btn', function (e) {
                 element = $(this);
 
-                if (element.find(".md-click-circle").length == 0) {
+                if (element.find(".md-click-circle").length === 0) {
                     element.prepend("<span class='md-click-circle'></span>");
                 }
 
@@ -266,12 +266,12 @@ var App = function () {
 
         // Floating labels
         var handleInput = function (el) {
-            if (el.val() != "") {
+            if (el.val() !== "") {
                 el.addClass('edited');
             } else {
                 el.removeClass('edited');
             }
-        }
+        };
 
         $('body').on('keydown', '.form-md-floating-label .form-control', function (e) {
             handleInput($(this));
@@ -285,7 +285,7 @@ var App = function () {
                 $(this).addClass('edited');
             }
         });
-    }
+    };
 
     // Handles custom checkboxes & radios using jQuery iCheck plugin
     var handleiCheck = function () {
@@ -330,7 +330,7 @@ var App = function () {
             btnOkClass: 'btn btn-sm btn-success',
             btnCancelClass: 'btn btn-sm btn-danger'
         });
-    }
+    };
 
     // Handles Bootstrap Accordions.
     var handleAccordions = function () {
@@ -453,10 +453,10 @@ var App = function () {
 
     // Handle textarea autosize 
     var handleTextareaAutosize = function () {
-        if (typeof(autosize) == "function") {
+        if (typeof(autosize) === "function") {
             autosize(document.querySelector('textarea.autosizeme'));
         }
-    }
+    };
 
     // Handles Bootstrap Popovers
 
@@ -526,13 +526,13 @@ var App = function () {
                 }
 
                 input.focus(function () {
-                    if (input.val() == input.attr('placeholder')) {
+                    if (input.val() === input.attr('placeholder')) {
                         input.val('');
                     }
                 });
 
                 input.blur(function () {
-                    if (input.val() === '' || input.val() == input.attr('placeholder')) {
+                    if (input.val() === '' || input.val() === input.attr('placeholder')) {
                         input.val(input.attr('placeholder'));
                     }
                 });
@@ -562,13 +562,13 @@ var App = function () {
             var offset = parseInt(parent.attr('data-offset') ? parent.attr('data-offset') : 0);
 
             items.each(function () {
-                if ($(this).attr('data-height') == "height") {
+                if ($(this).attr('data-height') === "height") {
                     $(this).css('height', '');
                 } else {
                     $(this).css('min-height', '');
                 }
 
-                var height_ = (mode == 'base-height' ? $(this).outerHeight() : $(this).outerHeight(true));
+                var height_ = (mode === 'base-height' ? $(this).outerHeight() : $(this).outerHeight(true));
                 if (height_ > height) {
                     height = height_;
                 }
@@ -577,7 +577,7 @@ var App = function () {
             height = height + offset;
 
             items.each(function () {
-                if ($(this).attr('data-height') == "height") {
+                if ($(this).attr('data-height') === "height") {
                     $(this).css('height', height);
                 } else {
                     $(this).css('min-height', height);
@@ -588,7 +588,7 @@ var App = function () {
                 $(parent.attr('data-related')).css('height', parent.height());
             }
         });
-    }
+    };
 
     //* END:CORE HANDLERS *//
 
@@ -707,8 +707,8 @@ var App = function () {
                     railColor: ($(this).attr("data-rail-color") ? $(this).attr("data-rail-color") : '#eaeaea'),
                     position: isRTL ? 'left' : 'right',
                     height: height,
-                    alwaysVisible: ($(this).attr("data-always-visible") == "1" ? true : false),
-                    railVisible: ($(this).attr("data-rail-visible") == "1" ? true : false),
+                    alwaysVisible: ($(this).attr("data-always-visible") === "1"),
+                    railVisible: ($(this).attr("data-rail-visible") === "1"),
                     disableFadeOut: true
                 });
 
@@ -876,7 +876,7 @@ var App = function () {
                     }
                 }
             } else {
-                if (options.place == "append") {
+                if (options.place === "append") {
                     $(options.container).append(html);
                 } else {
                     $(options.container).prepend(html);
@@ -936,7 +936,7 @@ var App = function () {
 
             for (i = 0; i < params.length; i++) {
                 val = params[i].split("=");
-                if (val[0] == paramName) {
+                if (val[0] === paramName) {
                     return unescape(val[1]);
                 }
             }
@@ -989,7 +989,7 @@ var App = function () {
 
         // check IE8 mode
         isAngularJsApp: function () {
-            return (typeof angular == 'undefined') ? false : true;
+            return (typeof angular !== 'undefined');
         },
 
         getAssetsPath: function () {
@@ -1045,5 +1045,5 @@ var App = function () {
 }();
 
 jQuery(document).ready(function () {
-    App.init(); // init metronic core componets
+    App.init();
 });
