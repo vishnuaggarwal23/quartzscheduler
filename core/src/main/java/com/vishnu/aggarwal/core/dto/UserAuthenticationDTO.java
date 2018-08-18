@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import static java.lang.Boolean.FALSE;
+
 /**
  * The type User authentication dto.
  */
@@ -16,7 +18,7 @@ import lombok.ToString;
 @ToString
 public class UserAuthenticationDTO {
     private UserDTO user;
-    private Boolean isAuthenticated;
+    private Boolean isAuthenticated = FALSE;
     private String xAuthToken;
 
     public UserAuthenticationDTO() {
