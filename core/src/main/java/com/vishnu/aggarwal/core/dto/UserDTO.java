@@ -11,6 +11,9 @@ import lombok.ToString;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+import static java.lang.String.format;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
  * The type User dto.
@@ -28,11 +31,13 @@ public class UserDTO {
     private Boolean credentialsExpired = FALSE;
     private Boolean accountEnabled = TRUE;
     private Boolean isDeleted = FALSE;
+    private String firstName;
+    private String lastName;
 
     public UserDTO() {
     }
 
-    public UserDTO(Long id, String username, String email, String password, Boolean accountExpired, Boolean accountLocked, Boolean credentialsExpired, Boolean accountEnabled, Boolean isDeleted) {
+    public UserDTO(Long id, String username, String email, String password, Boolean accountExpired, Boolean accountLocked, Boolean credentialsExpired, Boolean accountEnabled, Boolean isDeleted, String firstName, String lastName) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -42,6 +47,8 @@ public class UserDTO {
         this.credentialsExpired = credentialsExpired;
         this.accountEnabled = accountEnabled;
         this.isDeleted = isDeleted;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
     /**
@@ -82,5 +89,16 @@ public class UserDTO {
     @JsonIgnore
     public Boolean isEnabled() {
         return this.accountEnabled;
+    }
+
+    public String getFullName() {
+        String fullName = EMPTY;
+        if (isNotBlank(this.firstName)) {
+            fullName = this.firstName;
+        }
+        if (isNotBlank(this.lastName)) {
+            fullName = format("%s %s", fullName, this.lastName);
+        }
+        return fullName;
     }
 }
