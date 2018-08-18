@@ -2,10 +2,12 @@ package com.vishnu.aggarwal.admin.interceptor;
 
 import com.vishnu.aggarwal.admin.service.AuthenticationService;
 import com.vishnu.aggarwal.core.config.BaseMessageResolver;
+import com.vishnu.aggarwal.core.dto.UserAuthenticationDTO;
 import com.vishnu.aggarwal.core.exceptions.UserNotAuthenticatedException;
-import com.vishnu.aggarwal.core.vo.RestResponseVO;
 import lombok.extern.apachecommons.CommonsLog;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -20,6 +22,7 @@ import static com.vishnu.aggarwal.core.constants.ApplicationConstants.*;
 import static java.util.Objects.nonNull;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 import static org.springframework.web.util.WebUtils.getCookie;
 
@@ -37,36 +40,41 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     /**
      * The Authentication service.
      */
-    @Autowired
-    AuthenticationService authenticationService;
+    private final AuthenticationService authenticationService;
 
     /**
      * The Base message resolver.
      */
+    private final BaseMessageResolver baseMessageResolver;
+
     @Autowired
-    BaseMessageResolver baseMessageResolver;
+    public AuthenticationInterceptor(
+            AuthenticationService authenticationService,
+            BaseMessageResolver baseMessageResolver) {
+        this.authenticationService = authenticationService;
+        this.baseMessageResolver = baseMessageResolver;
+    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        Cookie cookie = getCookie(request, X_AUTH_TOKEN);
-
         response.setHeader("Pragma", "no-cache");
         response.setDateHeader("Expires", 1L);
         response.setHeader("Cache-Control", "no-cache");
         response.addHeader("Cache-Control", "no-store");
 
         try {
-            RestResponseVO<Boolean> restResponseVO = authenticationService.isAuthenticatedUser(cookie);
+            Cookie cookie = getCookie(request, X_AUTH_TOKEN);
+
+            ResponseEntity<UserAuthenticationDTO> userAuthenticationDTOResponseEntity = nonNull(cookie) && isNotBlank(cookie.getValue()) ? authenticationService.isAuthenticatedUser(cookie) : null;
             List<String> loginPageUris = Arrays.asList(request.getContextPath() + "/web", request.getContextPath() + "/web/");
 
-            if (nonNull(cookie) && nonNull(restResponseVO) && isTrue(restResponseVO.getData())) {
+            if (nonNull(userAuthenticationDTOResponseEntity) && BooleanUtils.isTrue(userAuthenticationDTOResponseEntity.hasBody() && isTrue(userAuthenticationDTOResponseEntity.getBody().getIsAuthenticated()))) {
                 if (loginPageUris.contains(request.getRequestURI())) {
                     response.sendRedirect(request.getContextPath() + "/web/user/dashboard");
                     return true;
                 } else {
                     return true;
                 }
-
             } else {
                 if (loginPageUris.contains(request.getRequestURI())) {
                     response.sendRedirect(request.getContextPath() + "/web");
@@ -76,9 +84,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                 }
             }
         } catch (Exception e) {
-            log.error("************** [Request ID " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while authenticating user *************** \n", e);
-            log.error("***************** [Request ID " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while logging in user *************************");
-            log.error("************* [Request ID " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Stacktrace ****************** \n");
+            log.error("[Request ID " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while authenticating user");
             log.error(getStackTrace(e));
             response.setStatus(SC_UNAUTHORIZED);
             response.sendRedirect(request.getContextPath() + "/web");
@@ -87,7 +93,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
         response.setHeader("Pragma", "no-cache");
         response.setDateHeader("Expires", 1L);
         response.setHeader("Cache-Control", "no-cache");
@@ -96,7 +102,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
         response.setHeader("Pragma", "no-cache");
         response.setDateHeader("Expires", 1L);
         response.setHeader("Cache-Control", "no-cache");
