@@ -30,12 +30,8 @@ var Login = function () {
                     }),
                     complete: function (response) {
                         if (response && response.responseJSON) {
-                            var data = $.parseJSON(response.responseJSON.data);
-                            if (response.responseJSON) {
-                                if (data.path) {
-                                    // $('form.redirect-login-form').attr('action', data.path).submit();
-                                    window.location.href = data.path;
-                                }
+                            if (response.responseJSON.path) {
+                                window.location.href = response.responseJSON.path.trim().toString();
                             } else {
                                 alert(response.responseJSON.message);
                             }
