@@ -33,6 +33,13 @@ public abstract class BaseService {
         return isNotBlank(messageCode) ? baseMessageResolver.getMessage(messageCode) : EMPTY;
     }
 
+    /**
+     * Gets message.
+     *
+     * @param messageCode the message code
+     * @param messageArgs the message args
+     * @return the message
+     */
     protected String getMessage(String messageCode, Object... messageArgs) {
         if (isNotBlank(messageCode)) {
             if (allNotNull(messageArgs)) {
