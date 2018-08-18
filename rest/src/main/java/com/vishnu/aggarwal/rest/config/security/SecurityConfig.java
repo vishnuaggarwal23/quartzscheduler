@@ -106,7 +106,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(OPTIONS).permitAll()
                 .antMatchers(POST, "/**/user/login").permitAll()
-                .antMatchers("/**/quartz/**/", "/**/validation/**/").hasAnyAuthority(ROLE_ADMIN, ROLE_USER)
+                .antMatchers("/**/quartz/**", "/**/validation/**").hasAuthority(ROLE_USER)
                 .antMatchers("/**/user/authenticate").permitAll()
                 .antMatchers(POST, "/**/user/logout").authenticated()
                 .antMatchers("/**/actuator/**/").hasAuthority(ROLE_ADMIN)
