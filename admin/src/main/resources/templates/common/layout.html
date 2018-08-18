@@ -26,7 +26,11 @@
 
 <body>
 
+<input type="hidden" id="isUserLoggedIn" th:value="${#bools.isTrue(userLoggedIn)}"/>
+
 <div th:if="${#bools.isTrue(userLoggedIn)}">
+    <input type="hidden" th:value="@{/api/user/current}" name="currentLoggedInUserApi" id="currentLoggedInUserApi"/>
+    <input type="hidden" id="currentLoggedInUserJson"/>
     <header class="page-header">
         <nav class="navbar" role="navigation">
             <div class="container-fluid">

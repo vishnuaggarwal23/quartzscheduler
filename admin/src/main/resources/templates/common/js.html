@@ -27,6 +27,26 @@
     <script type="text/javascript" th:src="@{/common/js/app.js}"></script>
     <script type="text/javascript" th:src="@{/common/js/layout.js}"></script>
     <script type="text/javascript" th:src="@{/common/js/logout.js}"></script>
+
+    <script>
+        $(document).ready(function () {
+            if ($('input#isUserLoggedIn').length > 0 && ($('input#isUserLoggedIn').val() === true || $('input#isUserLoggedIn').val() === 'true' || $('input#isUserLoggedIn').val() === "true") && $('input#currentLoggedInUserJson').length > 0) {
+                $.ajax({
+                    url: $('input[name=currentLoggedInUserApi]').val(),
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    cache: true,
+                    type: 'GET',
+                    async: false,
+                    complete: function (response) {
+                        if (response && response.responseJSON) {
+                            $('input#currentLoggedInUserJson').val(response.responseText);
+                        }
+                    }
+                })
+            }
+        });
+    </script>
 </div>
 </body>
 </html>
