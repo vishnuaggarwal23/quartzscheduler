@@ -1,14 +1,17 @@
 package com.vishnu.aggarwal.core.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 /**
  * The type Key group name dto.
  */
 @Getter
 @Setter
-public class KeyGroupNameDTO {
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+public class KeyGroupDescriptionDTO {
     private String keyName;
     private String groupName;
+    private String description;
 }
