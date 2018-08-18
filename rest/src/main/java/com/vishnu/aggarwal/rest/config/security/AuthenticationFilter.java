@@ -113,19 +113,24 @@ public class AuthenticationFilter extends GenericFilterBean {
 
                         ((HttpServletResponse) response).setStatus(SC_OK);
                         response.getWriter().write(objectMapper.writeValueAsString(
-                                new UserAuthenticationDTO(new UserDTO(
-                                        user.getId(),
-                                        user.getUsername(),
-                                        user.getEmail(),
-                                        null,
-                                        user.getAccountExpired(),
-                                        user.getAccountLocked(),
-                                        user.getCredentialsExpired(),
-                                        user.getAccountEnabled(),
-                                        user.getIsDeleted()),
+                                new UserAuthenticationDTO(new UserDTO
+                                        (
+                                                user.getId(),
+                                                user.getUsername(),
+                                                user.getEmail(),
+                                                null,
+                                                user.getAccountExpired(),
+                                                user.getAccountLocked(),
+                                                user.getCredentialsExpired(),
+                                                user.getAccountEnabled(),
+                                                user.getIsDeleted(),
+                                                user.getFirstName(),
+                                                user.getLastName()
+                                        ),
                                         authentication.isAuthenticated(),
-                                        ((Token) authentication.getDetails()).getKey())));
-
+                                        ((Token) authentication.getDetails()).getKey())
+                                )
+                        );
                     } else {
                         Assert.isTrue(authentication.isAuthenticated(), baseMessageResolver.getMessage("user.authentication.failed"));
                         chain.doFilter(httpServletRequest, response);

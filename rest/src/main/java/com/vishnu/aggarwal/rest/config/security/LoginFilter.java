@@ -116,7 +116,25 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             notNull(user, baseMessageResolver.getMessage("user.not.found.for.principal"));
 
             getContext().setAuthentication(authResult);
-            response.getWriter().write(objectMapper.writeValueAsString(new UserAuthenticationDTO(new UserDTO(user.getId(), user.getUsername(), user.getEmail(), null, user.getAccountExpired(), user.getAccountLocked(), user.getCredentialsExpired(), user.getAccountEnabled(), user.getIsDeleted()), authResult.isAuthenticated(), ((Token) authResult.getDetails()).getKey())));
+            response.getWriter().write(objectMapper.writeValueAsString(
+                    new UserAuthenticationDTO(new UserDTO
+                            (
+                                    user.getId(),
+                                    user.getUsername(),
+                                    user.getEmail(),
+                                    null,
+                                    user.getAccountExpired(),
+                                    user.getAccountLocked(),
+                                    user.getCredentialsExpired(),
+                                    user.getAccountEnabled(),
+                                    user.getIsDeleted(),
+                                    user.getFirstName(),
+                                    user.getLastName()
+                            ),
+                            authResult.isAuthenticated(),
+                            ((Token) authResult.getDetails()).getKey())
+                    )
+            );
             response.setStatus(SC_OK);
             response.addHeader(X_AUTH_TOKEN, ((Token) authResult.getDetails()).getKey());
             log.info("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Successful Authentication");
