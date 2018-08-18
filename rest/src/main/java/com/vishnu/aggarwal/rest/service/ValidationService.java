@@ -2,6 +2,7 @@ package com.vishnu.aggarwal.rest.service;
 
 import com.vishnu.aggarwal.rest.service.dao.jpa.QuartzDAOService;
 import lombok.extern.apachecommons.CommonsLog;
+import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +20,17 @@ public class ValidationService {
     /**
      * The Quartz dao service.
      */
+    private final QuartzDAOService quartzDAOService;
+
+    private final UserService userService;
+
     @Autowired
-    QuartzDAOService quartzDAOService;
+    public ValidationService(
+            QuartzDAOService quartzDAOService,
+            UserService userService) {
+        this.quartzDAOService = quartzDAOService;
+        this.userService = userService;
+    }
 
     /**
      * Is job key unique boolean.
@@ -28,8 +38,8 @@ public class ValidationService {
      * @param keyName the key name
      * @return the boolean
      */
-    public Boolean isJobKeyUnique(String keyName) {
-        return quartzDAOService.isUniqueJobKey(keyName, "DEFAULT");
+    public Boolean isJobKeyUnique(String keyName) throws HibernateException {
+        return quartzDAOService.isUniqueJobKey(keyName, userService.getCurrentLoggedInUser().getId().toString());
     }
 
     /**
@@ -39,6 +49,6 @@ public class ValidationService {
      * @return the boolean
      */
     public Boolean isTriggerKeyUnique(String keyName) {
-        return quartzDAOService.isUniqueTriggerKey(keyName, "DEFAULT");
+        return quartzDAOService.isUniqueTriggerKey(keyName, userService.getCurrentLoggedInUser().getId().toString());
     }
 }
