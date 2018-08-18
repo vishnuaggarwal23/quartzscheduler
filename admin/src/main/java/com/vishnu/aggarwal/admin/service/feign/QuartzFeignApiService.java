@@ -7,7 +7,7 @@ Created by vishnu on 17/4/18 1:08 PM
 
 import com.vishnu.aggarwal.core.co.JobDetailsCO;
 import com.vishnu.aggarwal.core.co.TriggerDetailsCO;
-import com.vishnu.aggarwal.core.dto.KeyGroupNameDTO;
+import com.vishnu.aggarwal.core.dto.KeyGroupDescriptionDTO;
 import com.vishnu.aggarwal.core.dto.QuartzDTO;
 import com.vishnu.aggarwal.core.vo.DataTableVO;
 import com.vishnu.aggarwal.core.vo.RestResponseVO;
@@ -71,22 +71,22 @@ public interface QuartzFeignApiService {
     /**
      * Delete jobs rest response vo.
      *
-     * @param keyGroupNameDTO the key group name dto
+     * @param keyGroupDescriptionDTO the key group name dto
      * @param xAuthToken      the x auth token
      * @return the rest response vo
      */
     @RequestLine("DELETE /job")
-    RestResponseVO<Boolean> deleteJobs(@RequestBody KeyGroupNameDTO keyGroupNameDTO, @Param("xAuthToken") String xAuthToken);
+    RestResponseVO<Boolean> deleteJobs(@RequestBody KeyGroupDescriptionDTO keyGroupDescriptionDTO, @Param("xAuthToken") String xAuthToken);
 
     /**
      * Delete triggers rest response vo.
      *
-     * @param keyGroupNameDTO the key group name dto
+     * @param keyGroupDescriptionDTO the key group name dto
      * @param xAuthToken      the x auth token
      * @return the rest response vo
      */
     @RequestLine("DELETE /trigger")
-    RestResponseVO<Boolean> deleteTriggers(@RequestBody KeyGroupNameDTO keyGroupNameDTO, @Param("xAuthToken") String xAuthToken);
+    RestResponseVO<Boolean> deleteTriggers(@RequestBody KeyGroupDescriptionDTO keyGroupDescriptionDTO, @Param("xAuthToken") String xAuthToken);
 
     /**
      * Gets jobs by group name.

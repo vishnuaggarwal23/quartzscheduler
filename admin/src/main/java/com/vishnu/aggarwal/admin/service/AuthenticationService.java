@@ -5,21 +5,20 @@ Created by vishnu on 13/3/18 11:40 AM
 */
 
 import com.vishnu.aggarwal.admin.service.feign.AuthenticationApiService;
+import com.vishnu.aggarwal.core.dto.UserAuthenticationDTO;
 import com.vishnu.aggarwal.core.dto.UserDTO;
-import com.vishnu.aggarwal.core.exceptions.RestServiceCallException;
-import com.vishnu.aggarwal.core.vo.RestResponseVO;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
-import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 
 import javax.servlet.http.Cookie;
 
 import static com.vishnu.aggarwal.core.constants.UrlMapping.Rest.User.BASE_URI;
-import static com.vishnu.aggarwal.core.enums.RestApiEndPoint.CURRENT_LOGGED_IN_USER;
-import static com.vishnu.aggarwal.core.enums.RestApiEndPoint.LOGOUT_USER;
+import static com.vishnu.aggarwal.core.enums.RestApiEndPoint.*;
 
 /**
  * The type Authentication service.
@@ -32,8 +31,17 @@ public class AuthenticationService extends FeignService {
     /**
      * The Rest service.
      */
+    private final RestService restService;
+
+    /**
+     * Instantiates a new Authentication service.
+     *
+     * @param restService the rest service
+     */
     @Autowired
-    RestService restService;
+    public AuthenticationService(RestService restService) {
+        this.restService = restService;
+    }
 
     /**
      * Authentication api service authentication api service.
@@ -51,12 +59,10 @@ public class AuthenticationService extends FeignService {
      *
      * @param cookie the cookie
      * @return the rest response vo
-     * @throws RestServiceCallException the rest service call exception
-     * @throws Exception                the exception
+     * @throws RestClientException the rest client exception
      */
-    public RestResponseVO<Boolean> isAuthenticatedUser(Cookie cookie) throws RestServiceCallException, Exception {
-//        return (RestResponseVO<Boolean>) restService.getResponseFromBackendService(null, cookie.getValue(), USER_AUTHENTICATION.getApiEndPoint(), (HttpMethod) USER_AUTHENTICATION.getHttpMethods(), USER_AUTHENTICATION.getResponseTypeClass());
-        return authenticationApiService().isAuthenticatedUser(cookie.getValue());
+    public ResponseEntity<UserAuthenticationDTO> isAuthenticatedUser(Cookie cookie) throws RestClientException {
+        return restService.getResponseFromBackendService(null, cookie.getValue(), USER_AUTHENTICATION.getApiEndPoint(), USER_AUTHENTICATION.getHttpMethod(), UserAuthenticationDTO.class);
     }
 
     /**
@@ -64,11 +70,10 @@ public class AuthenticationService extends FeignService {
      *
      * @param cookie the cookie
      * @return the current logged in user
-     * @throws RestServiceCallException the rest service call exception
-     * @throws Exception                the exception
+     * @throws RestClientException the rest client exception
      */
-    public RestResponseVO<UserDTO> getCurrentLoggedInUser(Cookie cookie) throws RestServiceCallException, Exception {
-        return (RestResponseVO<UserDTO>) restService.getResponseFromBackendService(null, cookie.getValue(), CURRENT_LOGGED_IN_USER.getApiEndPoint(), (HttpMethod) CURRENT_LOGGED_IN_USER.getHttpMethods(), CURRENT_LOGGED_IN_USER.getResponseTypeClass());
+    public ResponseEntity<UserDTO> getCurrentLoggedInUser(Cookie cookie) throws RestClientException {
+        return restService.getResponseFromBackendService(null, cookie.getValue(), CURRENT_LOGGED_IN_USER.getApiEndPoint(), CURRENT_LOGGED_IN_USER.getHttpMethod(), UserDTO.class);
     }
 
     /**
@@ -76,12 +81,10 @@ public class AuthenticationService extends FeignService {
      *
      * @param login the login
      * @return the rest response vo
-     * @throws RestServiceCallException the rest service call exception
-     * @throws Exception                the exception
+     * @throws RestClientException the rest client exception
      */
-    public RestResponseVO<String> loginUser(UserDTO login) throws RestServiceCallException, Exception {
-//        return (RestResponseVO<String>) restService.getResponseFromBackendService(userDTO, null, LOGIN_USER.getApiEndPoint(), (HttpMethod) LOGIN_USER.getHttpMethods(), LOGIN_USER.getResponseTypeClass());
-        return authenticationApiService().login(login);
+    public ResponseEntity<UserAuthenticationDTO> loginUser(UserDTO login) throws RestClientException {
+        return restService.getResponseFromBackendService(login, null, LOGIN_USER.getApiEndPoint(), LOGIN_USER.getHttpMethod(), UserAuthenticationDTO.class);
     }
 
     /**
@@ -89,10 +92,8 @@ public class AuthenticationService extends FeignService {
      *
      * @param cookie the cookie
      * @return the rest response vo
-     * @throws RestServiceCallException the rest service call exception
-     * @throws Exception                the exception
      */
-    public RestResponseVO<String> logoutUser(Cookie cookie) throws RestServiceCallException, Exception {
-        return (RestResponseVO<String>) restService.getResponseFromBackendService(null, cookie.getValue(), LOGOUT_USER.getApiEndPoint(), (HttpMethod) LOGOUT_USER.getHttpMethods(), LOGOUT_USER.getResponseTypeClass());
+    public void logoutUser(Cookie cookie) {
+        authenticationApiService().logout(cookie.getValue());
     }
 }

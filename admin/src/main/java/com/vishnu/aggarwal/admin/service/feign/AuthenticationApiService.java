@@ -4,6 +4,7 @@ package com.vishnu.aggarwal.admin.service.feign;
 Created by vishnu on 19/4/18 11:35 AM
 */
 
+import com.vishnu.aggarwal.core.dto.UserAuthenticationDTO;
 import com.vishnu.aggarwal.core.dto.UserDTO;
 import com.vishnu.aggarwal.core.vo.RestResponseVO;
 import feign.Headers;
@@ -28,7 +29,7 @@ public interface AuthenticationApiService {
      */
     @Headers(value = {X_AUTH_TOKEN + ": {xAuthToken}"})
     @RequestLine("GET /authenticate")
-    RestResponseVO<Boolean> isAuthenticatedUser(@Param("xAuthToken") String xAuthToken);
+    RestResponseVO<UserAuthenticationDTO> isAuthenticatedUser(@Param("xAuthToken") String xAuthToken);
 
     /**
      * Login rest response vo.
@@ -37,5 +38,9 @@ public interface AuthenticationApiService {
      * @return the rest response vo
      */
     @RequestLine("POST /login")
-    RestResponseVO<String> login(@RequestBody UserDTO login);
+    RestResponseVO<UserAuthenticationDTO> login(@RequestBody UserDTO login);
+
+    @Headers(value = {X_AUTH_TOKEN + ": {xAuthToken}"})
+    @RequestLine("POST /logout")
+    void logout(@Param("xAuthToken") String xAuthToken);
 }
