@@ -14,6 +14,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import static com.vishnu.aggarwal.core.constants.RoleType.ROLE_ADMIN;
+import static com.vishnu.aggarwal.core.constants.RoleType.ROLE_USER;
 import static com.vishnu.aggarwal.core.enums.Status.ACTIVE;
 import static java.lang.Boolean.FALSE;
 import static java.util.Objects.isNull;
@@ -30,37 +32,46 @@ public class ApplicationReadyEventHandlerService extends com.vishnu.aggarwal.cor
     /**
      * The User repo service.
      */
-    @Autowired
-    UserRepoService userRepoService;
+    private final UserRepoService userRepoService;
 
     /**
      * The Application context.
      */
-    @Autowired
-    ApplicationContext applicationContext;
+    private final ApplicationContext applicationContext;
 
     /**
      * The Authority repo service.
      */
-    @Autowired
-    AuthorityRepoService authorityRepoService;
+    private final AuthorityRepoService authorityRepoService;
 
     /**
      * The B crypt password encoder.
      */
-    @Autowired
-    BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     /**
      * The User authority repo service.
      */
+    private final UserAuthorityRepoService userAuthorityRepoService;
+
     @Autowired
-    UserAuthorityRepoService userAuthorityRepoService;
+    public ApplicationReadyEventHandlerService(
+            UserRepoService userRepoService,
+            ApplicationContext applicationContext,
+            AuthorityRepoService authorityRepoService,
+            BCryptPasswordEncoder bCryptPasswordEncoder,
+            UserAuthorityRepoService userAuthorityRepoService) {
+        this.userRepoService = userRepoService;
+        this.applicationContext = applicationContext;
+        this.authorityRepoService = authorityRepoService;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.userAuthorityRepoService = userAuthorityRepoService;
+    }
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
         if (getBootstrapEnabled()) {
-            log.info("*****************Application Ready Event Handler called for Rest Application.***********************");
+            log.info("Application Ready Event Handler called for Rest Application");
             createAuthorities();
             createUsers();
             createUserAuthorities();
@@ -71,7 +82,7 @@ public class ApplicationReadyEventHandlerService extends com.vishnu.aggarwal.cor
         RoleType.getValues().forEach(it -> {
             Authority authority = authorityRepoService.findByAuthorityAndIsDeleted(it, FALSE);
             if (isNull(authority)) {
-                log.info("******************* Creating " + it + " Authority ****************");
+                log.info("Creating " + it + " Authority");
                 authority = new Authority();
                 authority.setName(it);
                 authorityRepoService.save(authority);
@@ -81,7 +92,7 @@ public class ApplicationReadyEventHandlerService extends com.vishnu.aggarwal.cor
 
     private void createUsers() {
         if (isTrue(userRepoService.checkIfUsernameIsUnique("admin"))) {
-            log.info("**************** Creating admin user *****************");
+            log.info("Creating admin user ");
             User adminUser = new User();
             adminUser.setUsername("admin");
             adminUser.setPassword(bCryptPasswordEncoder.encode("admin"));
@@ -93,7 +104,7 @@ public class ApplicationReadyEventHandlerService extends com.vishnu.aggarwal.cor
         }
 
         /*if (isTrue(userRepoService.checkIfUsernameIsUnique("user"))) {
-            log.info("**************** Creating normal user *****************");
+            log.info("**************** Creating normal user ");
             User user = new User();
             user.setUsername("user");
             user.setPassword(bCryptPasswordEncoder.encode("user"));
@@ -105,8 +116,8 @@ public class ApplicationReadyEventHandlerService extends com.vishnu.aggarwal.cor
     private void createUserAuthorities() {
         User adminUser = userRepoService.findByUsername("admin");
         if (nonNull(adminUser)) {
-            Authority adminAuthority = authorityRepoService.findByAuthorityAndIsDeleted(RoleType.ROLE_ADMIN, FALSE);
-            createUserAuthority(adminUser, adminAuthority);
+            createUserAuthority(adminUser, authorityRepoService.findByAuthorityAndIsDeleted(ROLE_ADMIN, FALSE));
+            createUserAuthority(adminUser, authorityRepoService.findByAuthorityAndIsDeleted(ROLE_USER, FALSE));
         }
         /*User normalUser = userRepoService.findByUsername("user");
         if (nonNull(normalUser)) {
@@ -119,7 +130,7 @@ public class ApplicationReadyEventHandlerService extends com.vishnu.aggarwal.cor
         if (nonNull(authority)) {
             UserAuthority userAuthority = userAuthorityRepoService.findByUserAndAuthorityAndIsDeleted(user, authority, FALSE);
             if (isNull(userAuthority)) {
-                log.info("******************* Creating User Authority for [User " + user + "] and [Authority " + authority + "] *******************");
+                log.info("Creating User Authority for [User " + user + "] and [Authority " + authority + "]");
                 userAuthority = new UserAuthority();
                 userAuthority.setUser(user);
                 userAuthority.setAuthority(authority);
