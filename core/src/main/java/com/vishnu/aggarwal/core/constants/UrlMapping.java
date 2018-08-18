@@ -144,6 +144,11 @@ public class UrlMapping {
                  * The constant LOGOUT.
                  */
                 public static final String LOGOUT = "/logout";
+                /**
+                 * The constant CURRENT_LOGGED_IN_USER.
+                 */
+                public static final String CURRENT_LOGGED_IN_USER = "/current";
+
             }
 
             /**
@@ -197,15 +202,15 @@ public class UrlMapping {
             /**
              * The constant FETCH_JOB_BY_GROUP_NAME.
              */
-            public static final String FETCH_JOB_BY_GROUP_NAME = "/job/{groupName}";
+            public static final String FETCH_JOB_BY_JOB_GROUP_NAME = "/job/{jobGroupName}";
             /**
              * The constant FETCH_TRIGGER_BY_JOB_KEY_GROUP_NAME.
              */
-            public static final String FETCH_TRIGGER_BY_JOB_KEY_GROUP_NAME = "/trigger/{jobKeyName}/{groupName}";
+            public static final String FETCH_TRIGGER_BY_JOB_KEY_JOB_GROUP_NAME = "/trigger/{jobKeyName}/{jobGroupName}";
             /**
              * The constant FETCH_QUARTZ_DETAILS_GROUP_NAME.
              */
-            public static final String FETCH_QUARTZ_DETAILS_GROUP_NAME = "/details/{groupName}";
+            public static final String FETCH_QUARTZ_DETAILS_JOB_GROUP_NAME = "/details/{jobGroupName}";
             /**
              * The constant RESUME_JOBS.
              */
@@ -255,7 +260,7 @@ public class UrlMapping {
             /**
              * The constant CURRENT_LOGGED_IN_USER.
              */
-            public static final String CURRENT_LOGGED_IN_USER = "/currentLoggedInUser";
+            public static final String CURRENT_LOGGED_IN_USER = "/current";
         }
 
         /**
