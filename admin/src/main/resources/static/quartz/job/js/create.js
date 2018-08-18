@@ -111,6 +111,11 @@ $.validator.addMethod('customUniqueKey', function (value, element, options) {
 });
 
 $(document).ready(function () {
+    var userJson = JSON.parse($('input#currentLoggedInUserJson').val());
+
+    $('input#jobGroupName').val(userJson.fullName.trim().toString() + " : " + userJson.id);
+    $('input#triggerGroupName').val(userJson.fullName.trim().toString() + " : " + userJson.id);
+
     $('form#createApiJobForm input').keypress(function (e) {
         if (e.which === 13) {
             if ($('form#createApiJobForm').validate().form()) {
@@ -276,8 +281,11 @@ var formSubmitHandler = function (form) {
     var quartzDTO = {};
 
     var jobCO = {
-        keyName: $('input#jobKeyName').val().trim(),
-        description: $('textarea#jobDescription').val().trim(),
+        details: {
+            keyName: $('input#jobKeyName').val().trim(),
+            groupName: $('input#jobGroupName').val().split(':')[1].trim(),
+            description: $('textarea#jobDescription').val().trim()
+        },
         durability: $('input#jobDurability').is(':checked'),
         recover: $('input#jobRecovery').is(':checked'),
         type: $('input#jobType').val(),
@@ -310,8 +318,11 @@ var formSubmitHandler = function (form) {
 
     if ($('input#jobScheduled').is(':checked')) {
         var triggerCO = {
-            keyName: $('input#triggerKeyName').val(),
-            triggerDescription: $('input#triggerDescription').val()
+            details: {
+                keyName: $('input#triggerKeyName').val().trim(),
+                groupName: $('input#triggerGroupName').val().split(':')[1].trim(),
+                description: $('textarea#triggerDescription').val().trim()
+            }
         };
 
         if ($('input#triggerEndTime').val().trim().length > 0) {
@@ -366,9 +377,16 @@ var formSubmitHandler = function (form) {
         dataType: "json",
         data: JSON.stringify(quartzDTO),
         complete: function (response) {
-            if (response && response.responseText) {
-                var responseJson = $.parseJSON(response.responseText);
-                responseJson.responseCode in [200, 201, 202, 203, 204] ? showSuccessMessage(responseJson.message) : showErrorMessage(responseJson.message);
+            if (response && response.responseJSON) {
+                if (response.responseJSON.jobCreated === true || response.responseJSON.jobCreated === 'true') {
+                    if ($('input#jobScheduled').is(':checked')) {
+                        showSuccessMessage("Job is successfully created and scheduled at " + response.responseJSON.jobScheduledDate);
+                    } else {
+                        showSuccessMessage("Job is successfully created");
+                    }
+                } else {
+                    showErrorMessage("Unable to create the job" + response.responseJSON.errorMessage);
+                }
             }
         }
     });
