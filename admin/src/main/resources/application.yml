@@ -31,5 +31,5 @@ logging:
     level: "%5p"
 rest:
   application:
-    baseUrl: "${REST_APPLICATION_URL:http://localhost:8080}"
+    baseUrl: "${REST_APPLICATION_URL:http://localhost:7070}"
     contextPath: "/rest/api"
