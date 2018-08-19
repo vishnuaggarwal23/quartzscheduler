@@ -5,6 +5,7 @@ Created by vishnu on 5/3/18 11:01 AM
 */
 
 import com.vishnu.aggarwal.core.enums.Status;
+import com.vishnu.aggarwal.rest.annotation.CustomUniqueUsername;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -44,7 +45,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 @Table(name = "USER")
 @Getter
 @Setter
-@ToString(of = {"id", "username", "email", "status"})
+@ToString(of = {"id", "username", "email", "status", "firstName", "lastName"})
 public class User extends BaseEntity<Long> implements UserDetails, Serializable {
 
     private static final long serialVersionUID = -2248190721476487645L;
@@ -55,6 +56,7 @@ public class User extends BaseEntity<Long> implements UserDetails, Serializable 
 
     @NotNull
     @NotEmpty
+    @CustomUniqueUsername
     private String username;
 
     @Email
@@ -149,7 +151,7 @@ public class User extends BaseEntity<Long> implements UserDetails, Serializable 
             fullName = this.firstName;
         }
         if (isNotBlank(this.lastName)) {
-            fullName = format("%s %s", fullName, this.lastName);
+            fullName = format("%s %s", fullName, this.lastName).trim();
         }
         return fullName;
     }
