@@ -44,4 +44,8 @@ public class UserToken extends BaseEntity<Long> implements Serializable {
     @NotNull
     @Enumerated(STRING)
     private Status status;
+
+    public static UserToken getInstance() {
+        return new UserToken();
+    }
 }

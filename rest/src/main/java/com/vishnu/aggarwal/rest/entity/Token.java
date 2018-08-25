@@ -71,4 +71,8 @@ public class Token extends BaseEntity<Long> implements org.springframework.secur
             this.expirationDate = getEnd(expirationDate);
         }
     }
+
+    public static Token getInstance() {
+        return new Token();
+    }
 }
