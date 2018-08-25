@@ -20,7 +20,6 @@ import javax.persistence.criteria.Root;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static java.util.Objects.nonNull;
 
 /**
  * The type User repo service.
@@ -32,8 +31,12 @@ public class UserRepoService extends BaseRepoService<User, Long> {
     /**
      * The User repository.
      */
+    private final UserRepository userRepository;
+
     @Autowired
-    UserRepository userRepository;
+    public UserRepoService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     protected Class<User> getEntityClass() {
@@ -52,11 +55,12 @@ public class UserRepoService extends BaseRepoService<User, Long> {
      * @return the boolean
      */
     public Boolean checkIfUsernameIsUnique(String username) {
-        return userRepository.countByUsernameAndIsDeletedAndAccountEnabledAndAccountExpiredAndAccountLockedAndCredentialsExpired(username, FALSE, TRUE, FALSE, FALSE, FALSE) == 0;
+        return userRepository.countByUsernameAndIsDeleted(username, FALSE) == 0;
     }
 
     @SuppressWarnings("unchecked")
-    public User save(User user) {
+    @Transactional
+    public User save(final User user) {
         return super.save(user);
     }
 
@@ -68,13 +72,13 @@ public class UserRepoService extends BaseRepoService<User, Long> {
      * @throws HibernateException the hibernate exception
      */
     @Transactional(readOnly = true)
-    public User findByUsername(String username) throws HibernateException, NoResultException {
+    public User findByUsername(final String username) throws HibernateException, NoResultException {
         CriteriaQuery<User> criteriaQuery = getBaseCriteriaSelectImpl();
         CriteriaBuilder criteriaBuilder = getCriteriaBuilder();
         Root<User> userToken = getRoot(criteriaQuery);
         criteriaQuery
                 .where(
-                        criteriaBuilder.equal(userToken.get("username"), username),
+                        criteriaBuilder.equal(userToken.<String>get("username"), username),
                         criteriaBuilder.isFalse(userToken.get("isDeleted")),
                         criteriaBuilder.isTrue(userToken.get("accountEnabled")),
                         criteriaBuilder.isFalse(userToken.get("accountExpired")),
@@ -82,27 +86,9 @@ public class UserRepoService extends BaseRepoService<User, Long> {
                         criteriaBuilder.isFalse(userToken.get("credentialsExpired"))
                 );
         return (User) selectQuery(criteriaQuery, TRUE, TRUE, null);
-
-        /*Criteria criteria = getBaseCriteriaSelectImpl()
-                .setFetchMode("roles", FetchMode.JOIN)
-                .setReadOnly(TRUE)
-                .add(eq("username", username))
-                .add(eq("isDeleted", FALSE))
-                .add(eq("accountEnabled", TRUE))
-                .add(eq("accountExpired", FALSE))
-                .add(eq("accountLocked", FALSE))
-                .add(eq("credentialsExpired", FALSE))
-                .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
-        return (User) criteria.uniqueResult();*/
     }
 
-    /**
-     * Is valid user for system access boolean.
-     *
-     * @param user the user
-     * @return the boolean
-     */
-    public Boolean isValidUserForSystemAccess(User user) {
-        return nonNull(user) ? user.isAccountNonExpired() && user.isAccountNonLocked() && user.isCredentialsNonExpired() && user.isEnabled() && !user.getIsDeleted() : FALSE;
+    public User findById(Long id) {
+        return getJpaRepository().getOne(id);
     }
 }
