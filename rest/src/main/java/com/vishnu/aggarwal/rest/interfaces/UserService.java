@@ -17,7 +17,7 @@ public interface UserService extends UserDetailsService {
      *
      * @return the current logged in user
      */
-    public User getCurrentLoggedInUser();
+    User getCurrentLoggedInUser();
 
     /**
      * Find by username user.
@@ -26,5 +26,7 @@ public interface UserService extends UserDetailsService {
      * @return the user
      * @throws HibernateException the hibernate exception
      */
-    public User findByUsername(String username) throws HibernateException;
+    User findByUsername(final String username) throws HibernateException;
+
+    User findById(final Long id);
 }
