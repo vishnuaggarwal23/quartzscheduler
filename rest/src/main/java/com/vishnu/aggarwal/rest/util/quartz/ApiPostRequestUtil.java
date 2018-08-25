@@ -4,49 +4,46 @@ import lombok.extern.apachecommons.CommonsLog;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import static com.vishnu.aggarwal.core.constants.ApplicationConstants.X_AUTH_TOKEN;
-import static java.util.Collections.singletonList;
+import static com.vishnu.aggarwal.core.constants.ApplicationConstants.*;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.parseMediaType;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 /**
  * The type Api post request util.
  */
 @CommonsLog
 public class ApiPostRequestUtil extends ApiRequestUtil {
+
+    public ApiPostRequestUtil() {
+        super(POST);
+    }
+
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        restTemplate = new RestTemplate();
-        httpHeaders = new HttpHeaders();
-        httpHeaders.setAccessControlAllowMethods(singletonList(POST));
-        httpHeaders.setAccessControlRequestMethod(POST);
+        final JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
+        if (isEmpty(jobDataMap)) {
+            this.jobExecutionException = new JobExecutionException("");
+            throw this.jobExecutionException;
+        }
 
-        JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
-        Map<String, String> headers = new HashMap<String, String>();
-        jobDataMap.keySet().forEach(it -> {
-            if (it.equalsIgnoreCase("key")) {
-                headers.put(it.split("_")[1], jobDataMap.getString(it));
-            } else if (it.equalsIgnoreCase("request-url")) {
-                url = jobDataMap.getString(it);
-            }
-        });
-        headers.keySet().forEach(it -> {
-            if (it.equalsIgnoreCase("auth")) {
-                httpHeaders.add(X_AUTH_TOKEN, headers.get(it));
-            } else if (it.equalsIgnoreCase("contentType")) {
-                httpHeaders.setContentType(parseMediaType(headers.get(it)));
+        this.url = getRequestUrl(jobDataMap);
+
+        final Map<String, String> headers = getHeaders(jobDataMap);
+
+        for (String headerKey : headers.keySet()) {
+            if (headerKey.equalsIgnoreCase(AUTH)) {
+                this.httpHeaders.add(X_AUTH_TOKEN, headers.get(headerKey));
+            } else if (headerKey.equalsIgnoreCase(CONTENT_TYPE)) {
+                this.httpHeaders.setContentType(parseMediaType(headers.get(headerKey)));
             } else {
-                httpHeaders.add(it, headers.get(it));
+                this.httpHeaders.add(headerKey, headers.get(headerKey));
             }
-        });
+        }
 
-        jobTriggerResponseRepoService.save(constructJobTriggerResponseDTO(restTemplate.exchange(url, POST, new HttpEntity<String>("parameters", httpHeaders), String.class), context));
+        constructAndSaveJobTriggerResponse(this.jobTriggerResponseRepoService, this.restTemplate, this.url, POST, this.httpHeaders, context);
     }
 }
