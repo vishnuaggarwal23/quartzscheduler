@@ -9,13 +9,11 @@ import com.vishnu.aggarwal.core.constants.UrlMapping.Rest.User;
 import com.vishnu.aggarwal.core.dto.UserAuthenticationDTO;
 import com.vishnu.aggarwal.core.dto.UserDTO;
 import com.vishnu.aggarwal.core.vo.DataTableVO;
-import com.vishnu.aggarwal.core.vo.RestResponseVO;
 import lombok.Getter;
 import org.springframework.http.HttpMethod;
 
 import java.util.Map;
 
-import static com.vishnu.aggarwal.core.constants.UrlMapping.Rest.User.*;
 import static java.lang.String.format;
 import static org.springframework.http.HttpMethod.*;
 
@@ -28,37 +26,53 @@ public enum RestApiEndPoint {
     /**
      * Create new job quartz rest api end point enum.
      */
-    CREATE_NEW_JOB(getQuartzRestUrlEndPoint(Quartz.CREATE_JOB), POST, Map.class),
+    CREATE_API_JOB(getQuartzRestUrlEndPoint(Quartz.CREATE_API_JOB), POST, Map.class),
+    /**
+     * Create api job scheduled simple rest api end point.
+     */
+    CREATE_API_JOB_SCHEDULED_SIMPLE(getQuartzRestUrlEndPoint(Quartz.CREATE_API_JOB_SCHEDULED_SIMPLE), POST, Map.class),
+    /**
+     * Create api job scheduled cron rest api end point.
+     */
+    CREATE_API_JOB_SCHEDULED_CRON(getQuartzRestUrlEndPoint(Quartz.CREATE_API_JOB_SCHEDULED_CRON), POST, Map.class),
 
     /**
      * Create new trigger quartz rest api end point enum.
      */
-    CREATE_NEW_TRIGGER(getQuartzRestUrlEndPoint(Quartz.CREATE_TRIGGER), POST, RestResponseVO.class),
+    CREATE_SIMPLE_TRIGGER(getQuartzRestUrlEndPoint(Quartz.CREATE_SIMPLE_TRIGGER), POST, Map.class),
+    /**
+     * Create cron trigger rest api end point.
+     */
+    CREATE_CRON_TRIGGER(getQuartzRestUrlEndPoint(Quartz.CREATE_CRON_TRIGGER), POST, Map.class),
 
     /**
      * Update existing job rest api end point.
      */
-    UPDATE_EXISTING_JOB(getQuartzRestUrlEndPoint(Quartz.UPDATE_TRIGGER), PUT, RestResponseVO.class),
+    UPDATE_API_JOB(getQuartzRestUrlEndPoint(Quartz.UPDATE_API_JOB), PUT, Map.class),
 
     /**
      * Update existing trigger rest api end point.
      */
-    UPDATE_EXISTING_TRIGGER(getQuartzRestUrlEndPoint(Quartz.UPDATE_TRIGGER), PUT, RestResponseVO.class),
+    UPDATE_SIMPLE_TRIGGER(getQuartzRestUrlEndPoint(Quartz.UPDATE_SIMPLE_TRIGGER), PUT, Map.class),
+    /**
+     * Update cron trigger rest api end point.
+     */
+    UPDATE_CRON_TRIGGER(getQuartzRestUrlEndPoint(Quartz.UPDATE_CRON_TRIGGER), PUT, Map.class),
 
     /**
      * Fetch jobs by group name quartz rest api end point enum.
      */
-    FETCH_JOBS_BY_GROUP_NAME(getQuartzRestUrlEndPoint(Quartz.FETCH_JOB_BY_JOB_GROUP_NAME), GET, DataTableVO.class),
+    FETCH_JOB_BY_JOB_GROUP_NAME(getQuartzRestUrlEndPoint(Quartz.FETCH_JOB_BY_JOB_GROUP_NAME), GET, DataTableVO.class),
 
     /**
      * Fetch triggers by job key name and group name quartz rest api end point enum.
      */
-    FETCH_TRIGGERS_BY_JOB_KEY_NAME_AND_GROUP_NAME(getQuartzRestUrlEndPoint(Quartz.FETCH_TRIGGER_BY_JOB_KEY_JOB_GROUP_NAME), GET, DataTableVO.class),
+    FETCH_TRIGGER_BY_JOB_KEY_JOB_GROUP_NAME(getQuartzRestUrlEndPoint(Quartz.FETCH_TRIGGER_BY_JOB_KEY_JOB_GROUP_NAME), GET, DataTableVO.class),
 
     /**
      * Fetch quartz details by group name quartz rest api end point enum.
      */
-    FETCH_QUARTZ_DETAILS_BY_GROUP_NAME(getQuartzRestUrlEndPoint(Quartz.FETCH_QUARTZ_DETAILS_JOB_GROUP_NAME), GET, DataTableVO.class),
+    FETCH_QUARTZ_DETAILS_JOB_GROUP_NAME(getQuartzRestUrlEndPoint(Quartz.FETCH_QUARTZ_DETAILS_JOB_GROUP_NAME), GET, DataTableVO.class),
 
     /**
      * Resume jobs quartz rest api end point enum.
@@ -93,7 +107,7 @@ public enum RestApiEndPoint {
     /**
      * User authentication rest api end point.
      */
-    USER_AUTHENTICATION(getUserRestUrlEndPoint(AUTHENTICATE), GET, UserAuthenticationDTO.class),
+    AUTHENTICATE(getUserRestUrlEndPoint(User.AUTHENTICATE), GET, UserAuthenticationDTO.class),
 
     /**
      * Current logged in user rest api end point.
@@ -103,12 +117,12 @@ public enum RestApiEndPoint {
     /**
      * Login user rest api end point.
      */
-    LOGIN_USER(getUserRestUrlEndPoint(LOGIN), POST, UserAuthenticationDTO.class),
+    LOGIN(getUserRestUrlEndPoint(User.LOGIN), POST, UserAuthenticationDTO.class),
 
     /**
      * Logout user rest api end point.
      */
-    LOGOUT_USER(getUserRestUrlEndPoint(LOGOUT), POST, RestResponseVO.class);
+    LOGOUT(getUserRestUrlEndPoint(User.LOGOUT), POST, Object.class);
 
     private String apiEndPoint;
     private HttpMethod httpMethod;
