@@ -1,6 +1,11 @@
 package com.vishnu.aggarwal.core.co;
 
+import com.vishnu.aggarwal.core.validation.interfaces.CreateNewScheduledSimpleTriggeredJob;
+import com.vishnu.aggarwal.core.validation.interfaces.CreateNewSimpleTriggerForJob;
+import com.vishnu.aggarwal.core.validation.interfaces.UpdateExistingSimpleTriggerForJob;
 import lombok.*;
+
+import javax.validation.constraints.NotNull;
 
 import static java.lang.Boolean.FALSE;
 import static java.util.Objects.isNull;
@@ -14,7 +19,16 @@ import static java.util.Objects.isNull;
 @NoArgsConstructor
 @ToString
 public class RepeatIntervalCO {
+    @NotNull(
+            message = "repeat value is required",
+            groups = {
+                    CreateNewScheduledSimpleTriggeredJob.class,
+                    CreateNewSimpleTriggerForJob.class,
+                    UpdateExistingSimpleTriggerForJob.class
+            }
+    )
     private Integer repeatValue;
+
     private Boolean repeatForever = FALSE;
     private Integer repeatCount;
 

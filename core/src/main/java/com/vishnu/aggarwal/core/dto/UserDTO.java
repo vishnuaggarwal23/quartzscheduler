@@ -51,6 +51,10 @@ public class UserDTO {
         this.lastName = lastName;
     }
 
+    public UserDTO(Long id) {
+        this.id = id;
+    }
+
     /**
      * Is account non expired boolean.
      *
