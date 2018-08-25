@@ -186,31 +186,47 @@ public class UrlMapping {
             /**
              * The constant CREATE_JOB.
              */
-            public static final String CREATE_JOB = "/job";
+            public static final String CREATE_API_JOB = "/api/job";
+            /**
+             * The constant CREATE_JOB_SCHEDULED_SIMPLE.
+             */
+            public static final String CREATE_API_JOB_SCHEDULED_SIMPLE = "/api/job/simple";
+            /**
+             * The constant CREATE_JOB_SCHEDULED_CRON.
+             */
+            public static final String CREATE_API_JOB_SCHEDULED_CRON = "/api/job/cron";
             /**
              * The constant UPDATE_JOB.
              */
-            public static final String UPDATE_JOB = "/job";
+            public static final String UPDATE_API_JOB = "/api/job";
             /**
              * The constant CREATE_TRIGGER.
              */
-            public static final String CREATE_TRIGGER = "/trigger";
+            public static final String CREATE_SIMPLE_TRIGGER = "/simple/trigger";
+            /**
+             * The constant CREATE_CRON_TRIGGER.
+             */
+            public static final String CREATE_CRON_TRIGGER = "/cron/trigger";
             /**
              * The constant UPDATE_TRIGGER.
              */
-            public static final String UPDATE_TRIGGER = "/trigger";
+            public static final String UPDATE_SIMPLE_TRIGGER = "/simple/trigger";
+            /**
+             * The constant UPDATE_CRON_TRIGGER.
+             */
+            public static final String UPDATE_CRON_TRIGGER = "/cron/trigger";
             /**
              * The constant FETCH_JOB_BY_GROUP_NAME.
              */
-            public static final String FETCH_JOB_BY_JOB_GROUP_NAME = "/job/{jobGroupName}";
+            public static final String FETCH_JOB_BY_JOB_GROUP_NAME = "/job";
             /**
              * The constant FETCH_TRIGGER_BY_JOB_KEY_GROUP_NAME.
              */
-            public static final String FETCH_TRIGGER_BY_JOB_KEY_JOB_GROUP_NAME = "/trigger/{jobKeyName}/{jobGroupName}";
+            public static final String FETCH_TRIGGER_BY_JOB_KEY_JOB_GROUP_NAME = "/trigger";
             /**
              * The constant FETCH_QUARTZ_DETAILS_GROUP_NAME.
              */
-            public static final String FETCH_QUARTZ_DETAILS_JOB_GROUP_NAME = "/details/{jobGroupName}";
+            public static final String FETCH_QUARTZ_DETAILS_JOB_GROUP_NAME = "/details";
             /**
              * The constant RESUME_JOBS.
              */
