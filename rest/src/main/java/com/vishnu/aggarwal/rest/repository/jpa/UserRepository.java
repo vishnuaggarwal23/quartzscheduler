@@ -26,4 +26,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @return the long
      */
     Long countByUsernameAndIsDeletedAndAccountEnabledAndAccountExpiredAndAccountLockedAndCredentialsExpired(String username, Boolean isDeleted, Boolean accountEnabled, Boolean accountExpired, Boolean accountLocked, Boolean credentialsExpired);
+
+    Long countByUsernameAndIsDeleted(String username, Boolean isDeleted);
 }
