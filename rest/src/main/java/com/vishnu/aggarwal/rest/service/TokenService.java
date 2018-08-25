@@ -20,8 +20,7 @@ public class TokenService extends BaseService {
     /**
      * The Token repo service.
      */
-    private final
-    TokenRepoService tokenRepoService;
+    private final TokenRepoService tokenRepoService;
 
     /**
      * Instantiates a new Token service.
