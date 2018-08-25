@@ -67,7 +67,7 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
      * @return the user token
      */
     @SuppressWarnings("unchecked")
-    public UserToken findByToken(String xAuthToken) throws NoResultException {
+    public UserToken findByToken(String xAuthToken) {
         CriteriaQuery<UserToken> criteriaQuery = getBaseCriteriaSelectImpl();
         CriteriaBuilder criteriaBuilder = getCriteriaBuilder();
         Root<UserToken> userToken = getRoot(criteriaQuery);
@@ -78,18 +78,9 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
                         criteriaBuilder.equal(userToken.get("status"), ACTIVE),
                         criteriaBuilder.isFalse(userToken.get("isDeleted")),
                         criteriaBuilder.isFalse(token.get("isDeleted")),
-                        criteriaBuilder.like(criteriaBuilder.lower(token.<String>get("token")), xAuthToken.toLowerCase())
+                        criteriaBuilder.like(criteriaBuilder.lower(token.get("token")), xAuthToken.toLowerCase())
                 );
         return (UserToken) selectQuery(criteriaQuery, TRUE, TRUE, null);
-        /*return (UserToken) getBaseCriteriaSelectImpl()
-                .setReadOnly(TRUE)
-                .createAlias("token", "t")
-                .add(eq("t.token", token))
-                .add(eq("status", ACTIVE))
-                .add(eq("isDeleted", FALSE))
-                .add(eq("t.isDeleted", FALSE))
-                .setResultTransformer(DISTINCT_ROOT_ENTITY)
-                .uniqueResult();*/
     }
 
     /**
