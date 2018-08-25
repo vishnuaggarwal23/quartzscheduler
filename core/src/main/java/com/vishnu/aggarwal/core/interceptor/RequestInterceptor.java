@@ -2,7 +2,6 @@ package com.vishnu.aggarwal.core.interceptor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.apachecommons.CommonsLog;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -37,7 +36,7 @@ public abstract class RequestInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        ID = RandomStringUtils.randomNumeric(10);
+//        ID = RandomStringUtils.randomNumeric(10);
         startTime = now(getDefault().toZoneId());
 
         Map<String, Object> data = new HashMap<String, Object>();
@@ -56,9 +55,9 @@ public abstract class RequestInterceptor implements HandlerInterceptor {
         data.put("headers", convertEnumerationToMap(request.getHeaderNames(), request));
         data.put("cookies", request.getCookies());
         data.put("queryString", request.getQueryString());
-        request.setAttribute(CUSTOM_REQUEST_ID, ID);
+//        request.setAttribute(CUSTOM_REQUEST_ID, ID);
 
-        log.info("*************[PREHANDLE Request Interceptor ID " + ID + "] Request Logging ***************\n " + convertMapToJsonString(data) + "\n");
+        log.info("*************[PREHANDLE Request Interceptor ID " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Request Logging ***************\n " + convertMapToJsonString(data) + "\n");
 
         return true;
     }
