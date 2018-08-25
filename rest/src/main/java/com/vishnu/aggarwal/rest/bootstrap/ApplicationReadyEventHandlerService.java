@@ -10,10 +10,10 @@ import com.vishnu.aggarwal.rest.service.repository.jpa.UserRepoService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.ApplicationContext;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import static com.vishnu.aggarwal.core.constants.ApplicationConstants.*;
 import static com.vishnu.aggarwal.core.constants.RoleType.ROLE_ADMIN;
 import static com.vishnu.aggarwal.core.constants.RoleType.ROLE_USER;
 import static com.vishnu.aggarwal.core.enums.Status.ACTIVE;
@@ -35,11 +35,6 @@ public class ApplicationReadyEventHandlerService extends com.vishnu.aggarwal.cor
     private final UserRepoService userRepoService;
 
     /**
-     * The Application context.
-     */
-    private final ApplicationContext applicationContext;
-
-    /**
      * The Authority repo service.
      */
     private final AuthorityRepoService authorityRepoService;
@@ -57,12 +52,10 @@ public class ApplicationReadyEventHandlerService extends com.vishnu.aggarwal.cor
     @Autowired
     public ApplicationReadyEventHandlerService(
             UserRepoService userRepoService,
-            ApplicationContext applicationContext,
             AuthorityRepoService authorityRepoService,
             BCryptPasswordEncoder bCryptPasswordEncoder,
             UserAuthorityRepoService userAuthorityRepoService) {
         this.userRepoService = userRepoService;
-        this.applicationContext = applicationContext;
         this.authorityRepoService = authorityRepoService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userAuthorityRepoService = userAuthorityRepoService;
@@ -71,7 +64,7 @@ public class ApplicationReadyEventHandlerService extends com.vishnu.aggarwal.cor
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
         if (getBootstrapEnabled()) {
-            log.info("Application Ready Event Handler called for Rest Application");
+            log.info("[Application Bootstrap] Application Ready Event Handler called for Rest Application");
             createAuthorities();
             createUsers();
             createUserAuthorities();
@@ -82,7 +75,7 @@ public class ApplicationReadyEventHandlerService extends com.vishnu.aggarwal.cor
         RoleType.getValues().forEach(it -> {
             Authority authority = authorityRepoService.findByAuthorityAndIsDeleted(it, FALSE);
             if (isNull(authority)) {
-                log.info("Creating " + it + " Authority");
+                log.info("[Application Bootstrap] Creating " + it + " Authority");
                 authority = new Authority();
                 authority.setName(it);
                 authorityRepoService.save(authority);
@@ -91,46 +84,32 @@ public class ApplicationReadyEventHandlerService extends com.vishnu.aggarwal.cor
     }
 
     private void createUsers() {
-        if (isTrue(userRepoService.checkIfUsernameIsUnique("admin"))) {
-            log.info("Creating admin user ");
+        if (isTrue(userRepoService.checkIfUsernameIsUnique(ADMIN_USER_USERNAME))) {
+            log.info("[Application Bootstrap] Creating admin user ");
             User adminUser = new User();
-            adminUser.setUsername("admin");
-            adminUser.setPassword(bCryptPasswordEncoder.encode("admin"));
-            adminUser.setEmail("admin@admin.admin");
-            adminUser.setLastName("user");
-            adminUser.setFirstName("admin");
+            adminUser.setUsername(ADMIN_USER_USERNAME);
+            adminUser.setPassword(bCryptPasswordEncoder.encode(ADMIN_USER_PASSWORD));
+            adminUser.setEmail(ADMIN_USER_EMAIL);
+            adminUser.setLastName(ADMIN_USER_LASTNAME);
+            adminUser.setFirstName(ADMIN_USER_FIRSTNAME);
             adminUser.setStatus(ACTIVE);
             userRepoService.save(adminUser);
         }
-
-        /*if (isTrue(userRepoService.checkIfUsernameIsUnique("user"))) {
-            log.info("**************** Creating normal user ");
-            User user = new User();
-            user.setUsername("user");
-            user.setPassword(bCryptPasswordEncoder.encode("user"));
-            user.setEmail("user@user.user");
-            userRepoService.save(user);
-        }*/
     }
 
     private void createUserAuthorities() {
-        User adminUser = userRepoService.findByUsername("admin");
+        User adminUser = userRepoService.findByUsername(ADMIN_USER_USERNAME);
         if (nonNull(adminUser)) {
             createUserAuthority(adminUser, authorityRepoService.findByAuthorityAndIsDeleted(ROLE_ADMIN, FALSE));
             createUserAuthority(adminUser, authorityRepoService.findByAuthorityAndIsDeleted(ROLE_USER, FALSE));
         }
-        /*User normalUser = userRepoService.findByUsername("user");
-        if (nonNull(normalUser)) {
-            Authority normalUserAuthority = authorityRepoService.findByAuthorityAndIsDeleted(RoleType.ROLE_USER, FALSE);
-            createUserAuthority(normalUser, normalUserAuthority);
-        }*/
     }
 
-    private void createUserAuthority(User user, Authority authority) {
+    private void createUserAuthority(final User user, final Authority authority) {
         if (nonNull(authority)) {
             UserAuthority userAuthority = userAuthorityRepoService.findByUserAndAuthorityAndIsDeleted(user, authority, FALSE);
             if (isNull(userAuthority)) {
-                log.info("Creating User Authority for [User " + user + "] and [Authority " + authority + "]");
+                log.info("[Application Bootstrap] Creating User Authority for [User " + user + "] and [Authority " + authority + "]");
                 userAuthority = new UserAuthority();
                 userAuthority.setUser(user);
                 userAuthority.setAuthority(authority);
