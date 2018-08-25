@@ -40,7 +40,7 @@ public enum JobExecutorClass {
      * @param clazz the clazz
      * @return the job executor class
      */
-    public static JobExecutorClass findJobExecutorClassByValue(Class clazz) {
+    public static JobExecutorClass findJobExecutorClassByValue(final Class clazz) {
         for (JobExecutorClass jobExecutorClass : values()) {
             if (jobExecutorClass.getClassName().equalsIgnoreCase(clazz.getSimpleName()) || jobExecutorClass.getPackageName().equalsIgnoreCase(clazz.toString())) {
                 return jobExecutorClass;
