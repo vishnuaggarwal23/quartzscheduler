@@ -21,8 +21,12 @@ public class AuthorityRepoService extends BaseRepoService<Authority, Long> {
     /**
      * The Authority repository.
      */
+    private final AuthorityRepository authorityRepository;
+
     @Autowired
-    AuthorityRepository authorityRepository;
+    public AuthorityRepoService(AuthorityRepository authorityRepository) {
+        this.authorityRepository = authorityRepository;
+    }
 
     @Override
     protected Class<Authority> getEntityClass() {
