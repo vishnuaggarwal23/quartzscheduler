@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static java.lang.System.out;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 /**
@@ -27,14 +26,18 @@ public class Jobs {
     /**
      * The Token repo service.
      */
-    @Autowired
-    TokenRepoService tokenRepoService;
+    private final TokenRepoService tokenRepoService;
 
     /**
      * The User token repo service.
      */
+    private final UserTokenRepoService userTokenRepoService;
+
     @Autowired
-    UserTokenRepoService userTokenRepoService;
+    public Jobs(TokenRepoService tokenRepoService, UserTokenRepoService userTokenRepoService) {
+        this.tokenRepoService = tokenRepoService;
+        this.userTokenRepoService = userTokenRepoService;
+    }
 
     /**
      * Inactivate expired user tokens.
@@ -43,13 +46,10 @@ public class Jobs {
     public void inactivateExpiredUserTokens() {
         List<Token> tokens = tokenRepoService.findAllExpiredTokens();
         if (!isEmpty(tokens)) {
-            log.info("*********** Found expired tokens to inactivate");
-            tokens.forEach((Token it) -> {
-                out.println(it.toString());
-            });
-            log.info("**********");
+            log.info("Found expired tokens to inactivate");
+            tokens.forEach((Token it) -> log.info(it.toString()));
             if (userTokenRepoService.inactivateExpiredUserTokens(tokens)) {
-                log.info("*********** Expired tokens inactivated *************");
+                log.info("Expired tokens inactivated");
             }
         }
     }
