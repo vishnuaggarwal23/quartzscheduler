@@ -29,8 +29,12 @@ import static org.springframework.web.util.WebUtils.*;
 @CommonsLog
 public class HttpRequestResponseService {
 
+    private final HttpRequestResponseRepository httpRequestResponseRepository;
+
     @Autowired
-    HttpRequestResponseRepository httpRequestResponseRepository;
+    public HttpRequestResponseService(HttpRequestResponseRepository httpRequestResponseRepository) {
+        this.httpRequestResponseRepository = httpRequestResponseRepository;
+    }
 
     public void save(ContentCachingRequestWrapper httpServletRequestToLog, ContentCachingResponseWrapper httpServletResponseToLog) {
         HttpRequest httpRequest = new HttpRequest();
