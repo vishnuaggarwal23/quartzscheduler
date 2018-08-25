@@ -8,7 +8,6 @@ import com.vishnu.aggarwal.core.co.DataTableCO;
 import com.vishnu.aggarwal.core.service.BaseService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.hibernate.Session;
-import org.hibernate.criterion.Order;
 import org.hibernate.query.Query;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -101,7 +100,7 @@ public abstract class BaseRepoService<T, ID extends Serializable> extends BaseSe
     protected Criteria getBaseCriteriaSelectImpl() {
         return getSession().createCriteria(getEntityClass());
     }*/
-    protected CriteriaQuery<T> getBaseCriteriaSelectImpl() {
+    CriteriaQuery<T> getBaseCriteriaSelectImpl() {
         return this.getCriteriaBuilder().createQuery(getEntityClass());
     }
 
@@ -110,7 +109,7 @@ public abstract class BaseRepoService<T, ID extends Serializable> extends BaseSe
      *
      * @return the base criteria update
      */
-    protected CriteriaUpdate<T> getBaseCriteriaUpdateImpl() {
+    CriteriaUpdate<T> getBaseCriteriaUpdateImpl() {
         return this.getCriteriaBuilder().createCriteriaUpdate(getEntityClass());
     }
 
@@ -126,25 +125,11 @@ public abstract class BaseRepoService<T, ID extends Serializable> extends BaseSe
     /**
      * Gets criteria order.
      *
-     * @param dataTableCO the data table co
-     * @return the criteria order
-     */
-    Order getCriteriaOrder(DataTableCO dataTableCO) {
-        if (dataTableCO.getOrderBy().equalsIgnoreCase("desc")) {
-            return Order.desc(isEmpty(dataTableCO.getSortBy()) ? "id" : dataTableCO.getSortBy());
-        } else {
-            return Order.asc(isEmpty(dataTableCO.getSortBy()) ? "id" : dataTableCO.getSortBy());
-        }
-    }
-
-    /**
-     * Gets criteria order.
-     *
      * @param criteriaBuilder the criteria builder
      * @param dataTableCO     the data table co
      * @return the criteria order
      */
-    javax.persistence.criteria.Order getCriteriaOrder(CriteriaBuilder criteriaBuilder, DataTableCO dataTableCO) {
+    private Order getCriteriaOrder(CriteriaBuilder criteriaBuilder, DataTableCO dataTableCO) {
         if (dataTableCO.getOrderBy().equalsIgnoreCase("desc")) {
             return criteriaBuilder.desc(getRoot(getBaseCriteriaSelectImpl()).get(isEmpty(dataTableCO.getSortBy()) ? "id" : dataTableCO.getSortBy()));
         } else {
@@ -171,8 +156,9 @@ public abstract class BaseRepoService<T, ID extends Serializable> extends BaseSe
      * @param isSingleResultExpected the is single result expected
      * @param dataTableCO            the data table co
      * @return the object
+     * @throws NoResultException the no result exception
      */
-    Object selectQuery(CriteriaQuery<T> criteriaQuery, Boolean isDistinct, Boolean isSingleResultExpected, DataTableCO dataTableCO) throws NoResultException {
+    Object selectQuery(CriteriaQuery<T> criteriaQuery, Boolean isDistinct, Boolean isSingleResultExpected, DataTableCO dataTableCO) {
         criteriaQuery.distinct(isDistinct);
         if (nonNull(dataTableCO)) {
             criteriaQuery.orderBy(getCriteriaOrder(getCriteriaBuilder(), dataTableCO));
