@@ -40,5 +40,69 @@ public class ApplicationConstants {
      */
     public static final String CUSTOM_REQUEST_ID = "customRequestId";
 
+    /**
+     * The constant USER.
+     */
     public static final String USER = "USER-DETAILS";
+
+    /**
+     * The constant REQUEST_URL.
+     */
+    public static final String REQUEST_URL = "requestURL";
+
+    /**
+     * The constant REQUEST_TYPE.
+     */
+    public static final String REQUEST_TYPE = "requestType";
+
+    /**
+     * The constant REQUEST_HEADER.
+     */
+    public static final String REQUEST_HEADER = "requestHeader";
+
+    /**
+     * The constant PARAMETERS.
+     */
+    public static final String PARAMETERS = "parameters";
+
+    /**
+     * The constant KEY.
+     */
+    public static final String KEY = "key";
+
+    /**
+     * The constant AUTH.
+     */
+    public static final String AUTH = "auth";
+
+    /**
+     * The constant CONTENT_TYPE.
+     */
+    public static final String CONTENT_TYPE = "contentType";
+
+    /**
+     * The constant REST_EXCLUDE_INTERCEPTOR_PATTERN.
+     */
+    public static final String[] REST_EXCLUDE_INTERCEPTOR_PATTERN = {"/**/js/**/", "/**/css/**/", "/**/img/**/", "/**/font/**/", "/**/fonts/**/", "/**/webjars/**/", "/**/webjar/**/"};
+
+    /**
+     * The constant ADMIN_USER_USERNAME.
+     */
+    public static final String ADMIN_USER_USERNAME = "admin";
+    /**
+     * The constant ADMIN_USER_PASSWORD.
+     */
+    public static final String ADMIN_USER_PASSWORD = "admin";
+    /**
+     * The constant ADMIN_USER_FIRSTNAME.
+     */
+    public static final String ADMIN_USER_FIRSTNAME = "admin";
+    /**
+     * The constant ADMIN_USER_LASTNAME.
+     */
+    public static final String ADMIN_USER_LASTNAME = "user";
+    /**
+     * The constant ADMIN_USER_EMAIL.
+     */
+    public static final String ADMIN_USER_EMAIL = "admin@admin.admin";
 }
