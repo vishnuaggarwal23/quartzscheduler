@@ -1,6 +1,9 @@
 package com.vishnu.aggarwal.core.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.Nullable;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * The interface Base message resolver.
@@ -19,4 +22,6 @@ public interface BaseMessageResolver {
     String getMessage(String messageCode);
 
     String getMessage(String messageCode, Object... args);
+
+    @NotNull String getMessage(final String messageCode, final String defaultMessage, @Nullable Object... args);
 }
