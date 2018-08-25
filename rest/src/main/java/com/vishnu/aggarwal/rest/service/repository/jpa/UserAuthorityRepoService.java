@@ -22,8 +22,12 @@ public class UserAuthorityRepoService extends BaseRepoService<UserAuthority, Lon
     /**
      * The User authority repository.
      */
+    private final UserAuthorityRepository userAuthorityRepository;
+
     @Autowired
-    UserAuthorityRepository userAuthorityRepository;
+    public UserAuthorityRepoService(UserAuthorityRepository userAuthorityRepository) {
+        this.userAuthorityRepository = userAuthorityRepository;
+    }
 
     @Override
     protected Class<UserAuthority> getEntityClass() {
