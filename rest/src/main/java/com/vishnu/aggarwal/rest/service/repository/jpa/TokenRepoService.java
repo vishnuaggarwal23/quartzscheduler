@@ -34,8 +34,7 @@ public class TokenRepoService extends BaseRepoService<Token, Long> {
     /**
      * The Token repository.
      */
-    private final
-    TokenRepository tokenRepository;
+    private final TokenRepository tokenRepository;
 
     /**
      * Instantiates a new Token repo service.
@@ -90,13 +89,5 @@ public class TokenRepoService extends BaseRepoService<Token, Long> {
                         criteriaBuilder.lessThan(tokenRoot.get("expirationDate"), getStart(new Date(currentTimeMillis())))
                 );
         return (List<Token>) selectQuery(criteriaQuery, TRUE, FALSE, null);
-
-        /*return (List<Token>) getBaseCriteriaSelectImpl()
-                .setReadOnly(TRUE)
-                .add(eq("status", ACTIVE))
-                .add(isNotNull("expirationDate"))
-                .add(lt("expirationDate", getStart(new Date(currentTimeMillis()))))
-                .setResultTransformer(DISTINCT_ROOT_ENTITY)
-                .list();*/
     }
 }
