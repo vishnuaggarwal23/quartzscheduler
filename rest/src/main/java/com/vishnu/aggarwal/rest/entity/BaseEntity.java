@@ -20,6 +20,7 @@ import javax.persistence.Version;
 import java.io.Serializable;
 import java.util.Date;
 
+import static java.lang.Boolean.FALSE;
 import static javax.persistence.TemporalType.TIMESTAMP;
 
 /**
@@ -35,7 +36,7 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 public abstract class BaseEntity<ID> implements Serializable {
 
     private static final long serialVersionUID = -2248190721476487645L;
-    private Boolean isDeleted = Boolean.FALSE;
+    private Boolean isDeleted = FALSE;
     @Version
     private Long version;
     @CreatedDate
