@@ -12,7 +12,6 @@ import com.vishnu.aggarwal.rest.service.repository.jpa.UserTokenRepoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.NoResultException;
 import java.util.List;
 
 /**
@@ -24,8 +23,12 @@ public class UserTokenService extends BaseService {
     /**
      * The User token repo service.
      */
+    private final UserTokenRepoService userTokenRepoService;
+
     @Autowired
-    UserTokenRepoService userTokenRepoService;
+    public UserTokenService(UserTokenRepoService userTokenRepoService) {
+        this.userTokenRepoService = userTokenRepoService;
+    }
 
     /**
      * Save user token.
@@ -53,7 +56,7 @@ public class UserTokenService extends BaseService {
      * @param token the token
      * @return the user token
      */
-    public UserToken findByToken(String token) throws NoResultException {
+    public UserToken findByToken(String token) {
         return userTokenRepoService.findByToken(token);
     }
 
