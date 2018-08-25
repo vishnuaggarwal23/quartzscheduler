@@ -1,6 +1,7 @@
 package com.vishnu.aggarwal.rest.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vishnu.aggarwal.core.config.BaseMessageResolver;
 import com.vishnu.aggarwal.core.config.WebConfig;
 import com.vishnu.aggarwal.rest.config.security.AccessDeniedHandler;
 import com.vishnu.aggarwal.rest.config.security.LogoutHandler;
@@ -22,6 +23,7 @@ import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static com.vishnu.aggarwal.core.constants.ApplicationConstants.REST_EXCLUDE_INTERCEPTOR_PATTERN;
 import static java.time.ZoneId.of;
 import static java.util.TimeZone.getTimeZone;
 
@@ -38,21 +40,27 @@ public class ApplicationConfig extends WebConfig {
 
     private final ObjectMapper objectMapper;
 
+    private final BaseMessageResolver baseMessageResolver;
+
     /**
      * Instantiates a new Application config.
-     *
-     * @param requestInterceptor the request interceptor
+     *  @param requestInterceptor the request interceptor
      * @param objectMapper
+     * @param baseMessageResolver
      */
     @Autowired
-    public ApplicationConfig(RequestInterceptor requestInterceptor, ObjectMapper objectMapper) {
+    public ApplicationConfig(
+            RequestInterceptor requestInterceptor,
+            ObjectMapper objectMapper,
+            BaseMessageResolver baseMessageResolver) {
         this.requestInterceptor = requestInterceptor;
         this.objectMapper = objectMapper;
+        this.baseMessageResolver = baseMessageResolver;
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(requestInterceptor).excludePathPatterns("/**/js/**/", "/**/css/**/", "/**/img/**/", "/**/font/**/", "/**/fonts/**/", "/**/webjars/**/", "/**/webjar/**/");
+        registry.addInterceptor(requestInterceptor).excludePathPatterns(REST_EXCLUDE_INTERCEPTOR_PATTERN);
     }
 
     /**
@@ -107,7 +115,7 @@ public class ApplicationConfig extends WebConfig {
     @Bean
     @Primary
     AccessDeniedHandler accessDeniedHandler() {
-        return new AccessDeniedHandler();
+        return new AccessDeniedHandler(baseMessageResolver);
     }
 
     @Override
