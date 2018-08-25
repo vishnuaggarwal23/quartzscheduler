@@ -3,7 +3,7 @@ import static java.lang.System.properties
 buildscript {
     ext {
         projectVersion = '0.0.1-SNAPSHOT'
-        projectGroup = 'com.vishnu.aggarwal.rest'
+        projectGroup = 'com.vishnu.aggarwal'
         projectBaseName = 'quartz-rest'
     }
     /*dependencies {
@@ -22,28 +22,28 @@ war {
     enabled = true
     baseName = projectBaseName
     version = projectVersion
-    exclude('application-dev.yml', 'banner.txt')
+    exclude('application.yml', 'application-dev.yml', 'banner.txt')
 }
 
 jar {
     enabled = true
     baseName = projectBaseName
     version = projectVersion
-    exclude('application-dev.yml', 'banner.txt')
+    exclude('application.yml', 'application-dev.yml', 'banner.txt')
 }
 
 bootJar {
     enabled = true
     baseName = projectBaseName
     version = projectVersion
-    exclude('application-dev.yml', 'banner.txt')
+    exclude('application.yml', 'application-dev.yml', 'banner.txt')
 }
 
 bootWar {
     enabled = true
     baseName = projectBaseName
     version = projectVersion
-    exclude('application-dev.yml', 'banner.txt')
+    exclude('application.yml', 'application-dev.yml', 'banner.txt')
 }
 
 bootRun {

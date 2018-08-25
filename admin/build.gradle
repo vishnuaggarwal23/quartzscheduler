@@ -3,7 +3,7 @@ import static java.lang.System.getProperties
 buildscript {
     ext {
         projectVersion = '0.0.1-SNAPSHOT'
-        projectGroup = 'com.vishnu.aggarwal.admin'
+        projectGroup = 'com.vishnu.aggarwal'
         projectBaseName = 'quartz-admin'
     }
 }
@@ -19,28 +19,28 @@ war {
     enabled = true
     baseName = projectBaseName
     version = projectVersion
-    exclude('application-dev.yml', 'banner.txt')
+    exclude('application.yml', 'application-dev.yml', 'banner.txt')
 }
 
 jar {
     enabled = true
     baseName = projectBaseName
     version = projectVersion
-    exclude('application-dev.yml', 'banner.txt')
+    exclude('application.yml', 'application-dev.yml', 'banner.txt')
 }
 
 bootJar {
     enabled = true
     baseName = projectBaseName
     version = projectVersion
-    exclude('application-dev.yml', 'banner.txt')
+    exclude('application.yml', 'application-dev.yml', 'banner.txt')
 }
 
 bootWar {
     enabled = true
     baseName = projectBaseName
     version = projectVersion
-    exclude('application-dev.yml', 'banner.txt')
+    exclude('application.yml', 'application-dev.yml', 'banner.txt')
 }
 
 bootRun {

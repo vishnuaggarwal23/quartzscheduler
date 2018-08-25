@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        projectGroup = 'com.vishnu.aggarwal.core'
+        projectGroup = 'com.vishnu.aggarwal'
         projectVersion = '0.0.1-SNAPSHOT'
         projectBaseName = 'quartz-core'
     }
