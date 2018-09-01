@@ -8,6 +8,10 @@ Created by vishnu on 30/3/18 9:35 AM
  * The type Url config.
  */
 public class UrlMapping {
+
+    public static final String ALL_URL_PREFIX = "/**";
+    public static final String ALL_URL_SUFFIX = "**/";
+
     /**
      * The type Admin.
      */
@@ -16,6 +20,12 @@ public class UrlMapping {
          * The type Web.
          */
         public static class Web {
+
+            /**
+             * The constant BASE_URI.
+             */
+            public static final String BASE_URI = "/web";
+
             /**
              * The type Quartz.
              */
@@ -23,7 +33,7 @@ public class UrlMapping {
                 /**
                  * The constant BASE_URI.
                  */
-                public static final String BASE_URI = "/web/quartz";
+                public static final String BASE_URI = "/quartz";
                 /**
                  * The constant CREATE_JOB.
                  */
@@ -41,15 +51,15 @@ public class UrlMapping {
                 /**
                  * The constant BASE_URI.
                  */
-                public static final String BASE_URI = "/web";
+                public static final String BASE_URI = "/user";
                 /**
                  * The constant USER_DASHBOARD.
                  */
-                public static final String USER_DASHBOARD = "/user/dashboard";
+                public static final String USER_DASHBOARD = "/dashboard";
                 /**
                  * The constant USER_LOGIN_1.
                  */
-                public static final String USER_LOGIN_1 = "";
+                public static final String USER_LOGIN_1 = "/login";
                 /**
                  * The constant USER_LOGIN_2.
                  */
@@ -59,6 +69,8 @@ public class UrlMapping {
                  * The constant FORGOT_PASSWORD.
                  */
                 public static final String FORGOT_PASSWORD = "/forgotPassword";
+
+                public static final String LOGOUT = "/logout";
             }
         }
 
@@ -69,63 +81,85 @@ public class UrlMapping {
             /**
              * The type Quartz.
              */
+
+            public static final String BASE_URI = "/api";
+
+            /**
+             * The type Quartz.
+             */
             public static class Quartz {
                 /**
                  * The constant BASE_URI.
                  */
-                public static final String BASE_URI = "/api/quartz";
+                public static final String BASE_URI = Rest.Quartz.BASE_URI;
                 /**
                  * The constant CREATE_JOB.
                  */
-                public static final String CREATE_JOB = "/job";
+                public static final String CREATE_API_JOB = Rest.Quartz.CREATE_API_JOB;
+                /**
+                 * The constant CREATE_JOB_SCHEDULED_SIMPLE.
+                 */
+                public static final String CREATE_API_JOB_SCHEDULED_SIMPLE = Rest.Quartz.CREATE_API_JOB_SCHEDULED_SIMPLE;
+                /**
+                 * The constant CREATE_JOB_SCHEDULED_CRON.
+                 */
+                public static final String CREATE_API_JOB_SCHEDULED_CRON = Rest.Quartz.CREATE_API_JOB_SCHEDULED_CRON;
                 /**
                  * The constant UPDATE_JOB.
                  */
-                public static final String UPDATE_JOB = "/job";
+                public static final String UPDATE_API_JOB = Rest.Quartz.UPDATE_API_JOB;
                 /**
                  * The constant CREATE_TRIGGER.
                  */
-                public static final String CREATE_TRIGGER = "/trigger";
+                public static final String CREATE_SIMPLE_TRIGGER = Rest.Quartz.CREATE_SIMPLE_TRIGGER;
+                /**
+                 * The constant CREATE_CRON_TRIGGER.
+                 */
+                public static final String CREATE_CRON_TRIGGER = Rest.Quartz.CREATE_CRON_TRIGGER;
                 /**
                  * The constant UPDATE_TRIGGER.
                  */
-                public static final String UPDATE_TRIGGER = "/trigger";
+                public static final String UPDATE_SIMPLE_TRIGGER = Rest.Quartz.UPDATE_SIMPLE_TRIGGER;
+                /**
+                 * The constant UPDATE_CRON_TRIGGER.
+                 */
+                public static final String UPDATE_CRON_TRIGGER = Rest.Quartz.UPDATE_CRON_TRIGGER;
                 /**
                  * The constant FETCH_JOB_BY_GROUP_NAME.
                  */
-                public static final String FETCH_JOB_BY_GROUP_NAME = "/job/{groupName}";
+                public static final String FETCH_JOB_BY_JOB_GROUP_NAME = Rest.Quartz.FETCH_JOB_BY_JOB_GROUP_NAME;
                 /**
                  * The constant FETCH_TRIGGER_BY_JOB_KEY_GROUP_NAME.
                  */
-                public static final String FETCH_TRIGGER_BY_JOB_KEY_GROUP_NAME = "/trigger/{jobKeyName}/{groupName}";
+                public static final String FETCH_TRIGGER_BY_JOB_KEY_JOB_GROUP_NAME = Rest.Quartz.FETCH_TRIGGER_BY_JOB_KEY_JOB_GROUP_NAME;
                 /**
                  * The constant FETCH_QUARTZ_DETAILS_GROUP_NAME.
                  */
-                public static final String FETCH_QUARTZ_DETAILS_GROUP_NAME = "/details/{groupName}";
+                public static final String FETCH_QUARTZ_DETAILS_JOB_GROUP_NAME = Rest.Quartz.FETCH_QUARTZ_DETAILS_JOB_GROUP_NAME;
                 /**
                  * The constant RESUME_JOBS.
                  */
-                public static final String RESUME_JOBS = "/resume/jobs";
+                public static final String RESUME_JOBS = Rest.Quartz.RESUME_JOBS;
                 /**
                  * The constant RESUME_TRIGGERS.
                  */
-                public static final String RESUME_TRIGGERS = "/resume/triggers";
+                public static final String RESUME_TRIGGERS = Rest.Quartz.RESUME_TRIGGERS;
                 /**
                  * The constant PAUSE_JOBS.
                  */
-                public static final String PAUSE_JOBS = "/pause/jobs";
+                public static final String PAUSE_JOBS = Rest.Quartz.PAUSE_JOBS;
                 /**
                  * The constant PAUSE_TRIGGERS.
                  */
-                public static final String PAUSE_TRIGGERS = "/pause/triggers";
+                public static final String PAUSE_TRIGGERS = Rest.Quartz.PAUSE_TRIGGERS;
                 /**
                  * The constant DELETE_JOBS.
                  */
-                public static final String DELETE_JOBS = "/delete/jobs";
+                public static final String DELETE_JOBS = Rest.Quartz.DELETE_JOBS;
                 /**
                  * The constant DELETE_TRIGGERS.
                  */
-                public static final String DELETE_TRIGGERS = "/delete/triggers";
+                public static final String DELETE_TRIGGERS = Rest.Quartz.DELETE_TRIGGERS;
             }
 
             /**
@@ -135,20 +169,23 @@ public class UrlMapping {
                 /**
                  * The constant BASE_URI.
                  */
-                public static final String BASE_URI = "/api/user";
+                public static final String BASE_URI = Rest.User.BASE_URI;
+                /**
+                 * The constant AUTHENTICATE.
+                 */
+                public static final String AUTHENTICATE = Rest.User.AUTHENTICATE;
                 /**
                  * The constant LOGIN.
                  */
-                public static final String LOGIN = "/login";
+                public static final String LOGIN = Rest.User.LOGIN;
                 /**
                  * The constant LOGOUT.
                  */
-                public static final String LOGOUT = "/logout";
+                public static final String LOGOUT = Rest.User.LOGOUT;
                 /**
                  * The constant CURRENT_LOGGED_IN_USER.
                  */
-                public static final String CURRENT_LOGGED_IN_USER = "/current";
-
+                public static final String CURRENT_LOGGED_IN_USER = Rest.User.CURRENT_LOGGED_IN_USER;
             }
 
             /**
@@ -158,15 +195,15 @@ public class UrlMapping {
                 /**
                  * The constant BASE_URI.
                  */
-                public static final String BASE_URI = "/api/validation";
+                public static final String BASE_URI = Rest.Validation.BASE_URI;
                 /**
                  * The constant UNIQUE_JOB_KEY_PER_GROUP.
                  */
-                public static final String UNIQUE_JOB_KEY_PER_GROUP = "/uniqueJobKey";
+                public static final String UNIQUE_JOB_KEY_PER_GROUP = Rest.Validation.UNIQUE_JOB_KEY_PER_GROUP;
                 /**
                  * The constant UNIQUE_TRIGGER_KEY_PER_GROUP.
                  */
-                public static final String UNIQUE_TRIGGER_KEY_PER_GROUP = "/uniqueTriggerKey";
+                public static final String UNIQUE_TRIGGER_KEY_PER_GROUP = Rest.Validation.UNIQUE_TRIGGER_KEY_PER_GROUP;
             }
         }
     }

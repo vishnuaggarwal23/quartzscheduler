@@ -99,11 +99,8 @@ $.validator.addMethod('customUniqueKey', function (value, element, options) {
         contentType: "application/json",
         dataType: "json",
         complete: function (response) {
-            if (response && response.responseText) {
-                var responseJson = $.parseJSON(response.responseText);
-                if (responseJson.data) {
-                    isValid = true;
-                }
+            if (response && is2xxResponseCode(response.status) && response.responseJSON) {
+                isValid = response.responseJSON.valid;
             }
         }
     });
@@ -111,10 +108,10 @@ $.validator.addMethod('customUniqueKey', function (value, element, options) {
 });
 
 $(document).ready(function () {
-    var userJson = JSON.parse($('input#currentLoggedInUserJson').val());
+    var userJson = JSON.parse($('input#currentLoggedInUserJson').val()).user;
 
-    $('input#jobGroupName').val(userJson.fullName.trim().toString() + " : " + userJson.id);
-    $('input#triggerGroupName').val(userJson.fullName.trim().toString() + " : " + userJson.id);
+    $('input#jobGroupName').val(userJson.firstName.trim().toString() + " " + userJson.lastName.trim().toString() + " : " + userJson.id);
+    $('input#triggerGroupName').val(userJson.firstName.trim().toString() + " " + userJson.lastName.trim().toString() + " : " + userJson.id);
 
     $('form#createApiJobForm input').keypress(function (e) {
         if (e.which === 13) {
@@ -279,6 +276,7 @@ var formSubmitHandler = function (form) {
     trimText();
 
     var quartzDTO = {};
+    var createJobUri = $(form).data('createNewUnscheduledApiJobUri');
 
     var jobCO = {
         details: {
@@ -352,8 +350,8 @@ var formSubmitHandler = function (form) {
                 repeatType: $('select#repeatType').find(':selected').val(),
                 repeatInterval: repeatInterval
             };
-        }
-        if ($('select#scheduleType').find(':selected').val() === "CRON") {
+            createJobUri = $(form).data('createNewSimpleApiJobUri');
+        } else if ($('select#scheduleType').find(':selected').val() === "CRON") {
             apiJobDataCO["cronJobScheduler"] = {
                 trigger: triggerCO,
                 second: $('input#cronExpressionSecond').val(),
@@ -363,7 +361,8 @@ var formSubmitHandler = function (form) {
                 month: $('input#cronExpressionMonth').val(),
                 dayOfWeek: $('input#cronExpressionDayOfWeek').val(),
                 year: $('input#cronExpressionYear').val()
-            }
+            };
+            createJobUri = $(form).data('createNewCronApiJobUri');
         }
     }
 
@@ -371,22 +370,25 @@ var formSubmitHandler = function (form) {
     quartzDTO["apiJobData"] = apiJobDataCO;
 
     $.ajax({
-        url: $(form).data('createNewJobUri'),
+        url: createJobUri,
         type: "post",
         contentType: "application/json",
         dataType: "json",
         data: JSON.stringify(quartzDTO),
         complete: function (response) {
-            if (response && response.responseJSON) {
-                if (response.responseJSON.jobCreated === true || response.responseJSON.jobCreated === 'true') {
+            var goForError = true;
+            if (response) {
+                if (is2xxResponseCode(response.status) && response.responseJSON) {
                     if ($('input#jobScheduled').is(':checked')) {
-                        showSuccessMessage("Job is successfully created and scheduled at " + response.responseJSON.jobScheduledDate);
+                        showSuccessMessage("Job is successfully created and scheduled at " + response.responseJSON.jobDetails.jobScheduledDate);
                     } else {
                         showSuccessMessage("Job is successfully created");
                     }
-                } else {
-                    showErrorMessage("Unable to create the job" + response.responseJSON.errorMessage);
+                    goForError = false;
                 }
+            }
+            if (goForError) {
+                showErrorMessage("Unable to create the job" + response.responseJSON.error.message);
             }
         }
     });

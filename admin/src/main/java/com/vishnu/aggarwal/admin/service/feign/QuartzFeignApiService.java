@@ -72,7 +72,7 @@ public interface QuartzFeignApiService {
      * Delete jobs rest response vo.
      *
      * @param keyGroupDescriptionDTO the key group name dto
-     * @param xAuthToken      the x auth token
+     * @param xAuthToken             the x auth token
      * @return the rest response vo
      */
     @RequestLine("DELETE /job")
@@ -82,7 +82,7 @@ public interface QuartzFeignApiService {
      * Delete triggers rest response vo.
      *
      * @param keyGroupDescriptionDTO the key group name dto
-     * @param xAuthToken      the x auth token
+     * @param xAuthToken             the x auth token
      * @return the rest response vo
      */
     @RequestLine("DELETE /trigger")

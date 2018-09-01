@@ -6,31 +6,30 @@ Created by vishnu on 19/4/18 3:43 PM
 
 import com.vishnu.aggarwal.core.service.BaseService;
 import com.vishnu.aggarwal.rest.entity.User;
-import com.vishnu.aggarwal.rest.entity.UserToken;
 import com.vishnu.aggarwal.rest.interfaces.UserService;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.JwtException;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AccountExpiredException;
-import org.springframework.security.authentication.CredentialsExpiredException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.LockedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.NoResultException;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.vishnu.aggarwal.core.constants.ApplicationConstants.CUSTOM_REQUEST_ID;
 import static io.jsonwebtoken.Jwts.*;
 import static io.jsonwebtoken.SignatureAlgorithm.HS512;
 import static java.lang.System.currentTimeMillis;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
-import static org.springframework.util.Assert.*;
 
 /**
  * The type Token handler service.
@@ -51,6 +50,7 @@ public class TokenHandlerService extends BaseService implements com.vishnu.aggar
      * The Account status user details check.
      */
     private final UserDetailsChecker accountStatusUserDetailsCheck;
+    private final HttpServletRequest httpServletRequest;
     @Value("${jwt.secret}")
     private String SECRET;
     @Value("${jwt.expirationTime:''}")
@@ -62,57 +62,56 @@ public class TokenHandlerService extends BaseService implements com.vishnu.aggar
      * @param userService                   the user service
      * @param userTokenService              the user token service
      * @param accountStatusUserDetailsCheck the account status user details check
+     * @param httpServletRequest            the http servlet request
      */
     @Autowired
     public TokenHandlerService(
             UserService userService,
             UserTokenService userTokenService,
-            UserDetailsChecker accountStatusUserDetailsCheck) {
+            UserDetailsChecker accountStatusUserDetailsCheck,
+            HttpServletRequest httpServletRequest) {
         this.userService = userService;
         this.userTokenService = userTokenService;
         this.accountStatusUserDetailsCheck = accountStatusUserDetailsCheck;
+        this.httpServletRequest = httpServletRequest;
     }
 
-    public User parseToken(String token) throws ExpiredJwtException, UnsupportedJwtException, MalformedJwtException, SignatureException, IllegalArgumentException, LockedException, DisabledException, AccountExpiredException, CredentialsExpiredException, NoResultException {
-        log.info("Parsing X-AUTH-TOKEN " + token);
-        hasText(token, formatMessage(getMessage("jwt.token.empty")));
+    public User parseToken(final String token) throws JwtException {
         try {
-            UserToken userToken = userTokenService.findByToken(token);
-            notNull(userToken, formatMessage(getMessage("jwt.token.empty")));
-
-            User userFromUserToken = userToken.getUser();
-            notNull(userFromUserToken, formatMessage(getMessage("jwt.token.empty")));
-
-            String username = getClaim(token).getSubject();
-            hasText(username, formatMessage(getMessage("jwt.token.empty")));
-
-            User userFromUsername = userService.findByUsername(username);
-            notNull(userFromUsername, formatMessage(getMessage("jwt.token.empty")));
-
-            state(userFromUserToken.equals(userFromUsername), formatMessage(getMessage("jwt.token.empty")));
-
+            log.info("[Request Interceptor Id : " + httpServletRequest.getAttribute(CUSTOM_REQUEST_ID) + "] Parsing X-AUTH-TOKEN " + token);
+            final User userFromUsername = userService.findByUsername(getClaim(token).getSubject());
+            if (!userTokenService.findByToken(token).getUser().equals(userFromUsername)) {
+                throw new JwtException("");
+            }
             accountStatusUserDetailsCheck.check(userFromUsername);
             return userFromUsername;
-        } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException | LockedException | DisabledException | AccountExpiredException | CredentialsExpiredException | NoResultException e) {
-            log.error("Error while fetching user name from X-AUTH-TOKEN " + token);
+        } catch (AuthenticationException e) {
+            log.error("[Request Interceptor Id : " + httpServletRequest.getAttribute(CUSTOM_REQUEST_ID) + "] Error while fetching user name from X-AUTH-TOKEN " + token);
+            log.error(getStackTrace(e));
+            throw new JwtException(e.getMessage(), e);
+        } catch (JwtException e) {
+            log.error("[Request Interceptor Id : " + httpServletRequest.getAttribute(CUSTOM_REQUEST_ID) + "] Error while fetching user name from X-AUTH-TOKEN " + token);
             log.error(getStackTrace(e));
             throw e;
+        } catch (Exception e) {
+            log.error("[Request Interceptor Id : " + httpServletRequest.getAttribute(CUSTOM_REQUEST_ID) + "] Error while fetching user name from X-AUTH-TOKEN " + token);
+            log.error(getStackTrace(e));
+            throw new JwtException(e.getMessage(), e);
         }
     }
 
-    private Claims getClaim(String token) throws ExpiredJwtException, UnsupportedJwtException, MalformedJwtException, SignatureException, IllegalArgumentException {
+    private Claims getClaim(final String token) throws JwtException {
         Claims claims = parser()
                 .setSigningKey(SECRET)
                 .parseClaimsJws(token)
                 .getBody();
-
-        notNull(claims, formatMessage(getMessage("jwt.token.empty")));
+        if (isNull(claims)) {
+            throw new JwtException("");
+        }
         return claims;
     }
 
-    public Map<String, Object> generateToken(User user) throws IllegalArgumentException, IllegalStateException {
-
-        notNull(user, formatMessage(getMessage("jwt.token.empty")));
+    public Map<String, Object> generateToken(final User user) {
 
         Map<String, Object> tokenMap = new HashMap<>();
         final Date now = new Date(currentTimeMillis());
@@ -145,14 +144,23 @@ public class TokenHandlerService extends BaseService implements com.vishnu.aggar
         return tokenMap;
     }
 
-    public Boolean isValidToken(String token) throws ExpiredJwtException, UnsupportedJwtException, MalformedJwtException, SignatureException, IllegalArgumentException, LockedException, DisabledException, AccountExpiredException, CredentialsExpiredException, NoResultException {
+    public Boolean isValidToken(final String token) throws JwtException {
         try {
             accountStatusUserDetailsCheck.check(parseToken(token));
-            return getClaim(token).getExpiration().after(new Date(currentTimeMillis()));
-        } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException | LockedException | DisabledException | AccountExpiredException | CredentialsExpiredException | NoResultException e) {
-            log.error("Error while checking validity of JWT Token " + token);
+            final Date tokenExpirationDate = getClaim(token).getExpiration();
+            return !nonNull(tokenExpirationDate) || tokenExpirationDate.after(new Date(currentTimeMillis()));
+        } catch (AuthenticationException e) {
+            log.error("[Request Interceptor Id : " + httpServletRequest.getAttribute(CUSTOM_REQUEST_ID) + "] Error while checking validity of JWT Token " + token);
+            log.error(getStackTrace(e));
+            throw new JwtException(e.getMessage(), e);
+        } catch (JwtException e) {
+            log.error("[Request Interceptor Id : " + httpServletRequest.getAttribute(CUSTOM_REQUEST_ID) + "] Error while checking validity of JWT Token " + token);
             log.error(getStackTrace(e));
             throw e;
+        } catch (Exception e) {
+            log.error("[Request Interceptor Id : " + httpServletRequest.getAttribute(CUSTOM_REQUEST_ID) + "] Error while checking validity of JWT Token " + token);
+            log.error(getStackTrace(e));
+            throw new JwtException(e.getMessage(), e);
         }
     }
 }

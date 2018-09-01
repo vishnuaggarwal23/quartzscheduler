@@ -5,8 +5,9 @@ Created by vishnu on 14/4/18 4:13 PM
 */
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.vishnu.aggarwal.admin.service.AuthenticationService;
-import com.vishnu.aggarwal.core.constants.UrlMapping.Admin.Api;
+import com.vishnu.aggarwal.core.constants.UrlMapping.Admin.Api.User;
 import com.vishnu.aggarwal.core.constants.UrlMapping.Admin.Web;
 import com.vishnu.aggarwal.core.controller.BaseController;
 import com.vishnu.aggarwal.core.dto.UserAuthenticationDTO;
@@ -14,31 +15,24 @@ import com.vishnu.aggarwal.core.dto.UserDTO;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestClientException;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.*;
+import static com.vishnu.aggarwal.core.constants.UrlMapping.Admin.Api.BASE_URI;
 import static com.vishnu.aggarwal.core.constants.UrlMapping.Admin.Api.User.*;
-import static com.vishnu.aggarwal.core.constants.UrlMapping.Admin.Web.User.USER_DASHBOARD;
-import static com.vishnu.aggarwal.core.constants.UrlMapping.Admin.Web.User.USER_LOGIN_1;
-import static java.lang.Boolean.FALSE;
+import static com.vishnu.aggarwal.core.util.TypeTokenUtils.getHashMapOfStringAndString;
+import static com.vishnu.aggarwal.core.util.TypeTokenUtils.getHashMapOfStringAndUserAuthenticationDTO;
 import static java.lang.Boolean.TRUE;
 import static java.lang.String.format;
-import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
-import static org.springframework.http.HttpStatus.valueOf;
+import static java.util.Objects.nonNull;
+import static org.springframework.http.HttpStatus.ACCEPTED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
-import static org.springframework.util.Assert.*;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.util.WebUtils.getCookie;
@@ -48,7 +42,7 @@ import static org.springframework.web.util.WebUtils.getCookie;
  */
 @RestController(value = "apiUserController")
 @CommonsLog
-@RequestMapping(value = Api.User.BASE_URI, produces = {APPLICATION_JSON_UTF8_VALUE})
+@RequestMapping(value = BASE_URI + User.BASE_URI, produces = {APPLICATION_JSON_UTF8_VALUE})
 public class UserController extends BaseController {
 
     /**
@@ -56,19 +50,23 @@ public class UserController extends BaseController {
      */
     private final AuthenticationService authenticationService;
     private final ObjectMapper objectMapper;
+    private final Gson gson;
 
     /**
      * Instantiates a new User controller.
      *
      * @param authenticationService the authentication service
      * @param objectMapper          the object mapper
+     * @param gson
      */
     @Autowired
     public UserController(
             AuthenticationService authenticationService,
-            ObjectMapper objectMapper) {
+            ObjectMapper objectMapper,
+            Gson gson) {
         this.authenticationService = authenticationService;
         this.objectMapper = objectMapper;
+        this.gson = gson;
     }
 
     /**
@@ -81,35 +79,28 @@ public class UserController extends BaseController {
      */
     @RequestMapping(value = LOGIN, method = POST)
     @ResponseBody
+    @ResponseStatus(ACCEPTED)
     public ResponseEntity<String> login(@RequestBody UserDTO login, HttpServletRequest request, HttpServletResponse response) {
-        try {
-            ResponseEntity<UserAuthenticationDTO> userAuthenticationDTOResponseEntity = authenticationService.loginUser(login);
+        final ResponseEntity<String> responseEntity = authenticationService.loginUser(login);
 
-            notNull(userAuthenticationDTOResponseEntity, formatMessage(getMessage("")));
-            notNull(userAuthenticationDTOResponseEntity.getBody(), formatMessage(getMessage("")));
-            notEmpty(userAuthenticationDTOResponseEntity.getHeaders(), formatMessage(getMessage("")));
+        if (!responseEntity.getStatusCode().is2xxSuccessful()) {
+            return responseEntity;
+        }
 
-            String xAuthToken = isEmpty(userAuthenticationDTOResponseEntity.getHeaders().get(X_AUTH_TOKEN)) ? userAuthenticationDTOResponseEntity.getBody().getXAuthToken() : userAuthenticationDTOResponseEntity.getHeaders().get(X_AUTH_TOKEN).get(0);
-            hasText(xAuthToken, formatMessage(getMessage("")));
+        final HashMap<String, UserAuthenticationDTO> responseBody = gson.fromJson(responseEntity.getBody(), getHashMapOfStringAndUserAuthenticationDTO());
+        final UserAuthenticationDTO userAuthenticationDTO = !isEmpty(responseBody) && responseBody.containsKey(HASHMAP_USER_KEY) ? responseBody.get(HASHMAP_USER_KEY) : null;
 
-            Cookie authTokenCookie = new Cookie(X_AUTH_TOKEN, xAuthToken);
+        if (nonNull(userAuthenticationDTO) && userAuthenticationDTO.getIsAuthenticated()) {
+            Cookie authTokenCookie = new Cookie(X_AUTH_TOKEN, userAuthenticationDTO.getXAuthToken());
             authTokenCookie.setPath("/");
             authTokenCookie.setMaxAge(MAX_COOKIE_AGE);
             response.addCookie(authTokenCookie);
-
-            for (Entry<String, List<String>> headerEntry : userAuthenticationDTOResponseEntity.getHeaders().entrySet()) {
-                response.addHeader(headerEntry.getKey(), headerEntry.getValue().get(0));
-            }
-
-            Map<String, String> responseMap = new HashMap<String, String>();
-            responseMap.put("path", format("%s%s%s", request.getContextPath(), Web.User.BASE_URI, USER_DASHBOARD));
-
-            return new ResponseEntity<String>(objectMapper.writeValueAsString(responseMap), valueOf(response.getStatus()));
-        } catch (Exception e) {
-            log.error("[Request ID " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while logging in user");
-            log.error(getStackTrace(e));
-            return new ResponseEntity<String>(getMessage(""), valueOf(response.getStatus()));
         }
+
+//        responseEntity.getHeaders().toSingleValueMap().forEach(response::addHeader);
+        HashMap<String, String> responseMap = new HashMap<String, String>();
+        responseMap.put("path", format("%s%s%s%s", request.getContextPath(), Web.BASE_URI, Web.User.BASE_URI, Web.User.USER_DASHBOARD));
+        return new ResponseEntity<String>(gson.toJson(responseMap, getHashMapOfStringAndString()), ACCEPTED);
     }
 
     /**
@@ -120,23 +111,19 @@ public class UserController extends BaseController {
      * @return the string
      */
     @RequestMapping(value = LOGOUT)
-    public ResponseEntity<Map> logout(HttpServletRequest request, HttpServletResponse response) {
-        Map<String, Object> map = new HashMap<String, Object>();
-        try {
-            Cookie xAuthTokenCookie = getCookie(request, X_AUTH_TOKEN);
-            authenticationService.logoutUser(xAuthTokenCookie);
-            xAuthTokenCookie.setValue(null);
-            xAuthTokenCookie.setMaxAge(0);
-            response.addCookie(xAuthTokenCookie);
+    @ResponseBody
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<Map<String, Object>> logout(HttpServletRequest request, HttpServletResponse response) {
+        Cookie xAuthTokenCookie = getCookie(request, X_AUTH_TOKEN);
+        authenticationService.logoutUser(xAuthTokenCookie);
+        xAuthTokenCookie.setValue(null);
+        xAuthTokenCookie.setMaxAge(0);
+        response.addCookie(xAuthTokenCookie);
 
-            map.put("path", format("%s%s%s", request.getContextPath(), Web.User.BASE_URI, USER_LOGIN_1));
-            map.put("logout", TRUE);
-        } catch (Exception e) {
-            log.error("[Request ID " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while logging out user");
-            log.error(getStackTrace(e));
-            map.put("logout", FALSE);
-        }
-        return new ResponseEntity<Map>(map, valueOf(response.getStatus()));
+        HashMap<String, Object> responseMap = new HashMap<String, Object>();
+        responseMap.put("path", format("%s%s%s%s", request.getContextPath(), Web.BASE_URI, Web.User.BASE_URI, Web.User.USER_LOGIN_1));
+        responseMap.put("logout", TRUE);
+        return new ResponseEntity<Map<String, Object>>(responseMap, ACCEPTED);
     }
 
     /**
@@ -147,13 +134,9 @@ public class UserController extends BaseController {
      * @return the current logged in user
      */
     @RequestMapping(value = CURRENT_LOGGED_IN_USER)
-    public ResponseEntity<UserDTO> getCurrentLoggedInUser(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        try {
-            return authenticationService.getCurrentLoggedInUser(getCookie(httpServletRequest, X_AUTH_TOKEN));
-        } catch (RestClientException e) {
-            log.error("[Request ID " + httpServletRequest.getAttribute(CUSTOM_REQUEST_ID) + "] Error while logging out user");
-            log.error(getStackTrace(e));
-            return new ResponseEntity<UserDTO>(valueOf(httpServletResponse.getStatus()));
-        }
+    @ResponseBody
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> getCurrentLoggedInUser(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        return authenticationService.getCurrentLoggedInUser(getCookie(httpServletRequest, X_AUTH_TOKEN));
     }
 }

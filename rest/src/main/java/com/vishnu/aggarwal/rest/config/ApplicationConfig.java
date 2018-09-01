@@ -1,6 +1,7 @@
 package com.vishnu.aggarwal.rest.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.vishnu.aggarwal.core.config.BaseMessageResolver;
 import com.vishnu.aggarwal.core.config.WebConfig;
 import com.vishnu.aggarwal.rest.config.security.AccessDeniedHandler;
@@ -23,7 +24,7 @@ import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-import static com.vishnu.aggarwal.core.constants.ApplicationConstants.REST_EXCLUDE_INTERCEPTOR_PATTERN;
+import static com.vishnu.aggarwal.core.constants.ApplicationConstants.REST_EXCLUDE_REQUEST_INTERCEPTOR_PATTERN;
 import static java.time.ZoneId.of;
 import static java.util.TimeZone.getTimeZone;
 
@@ -37,30 +38,33 @@ public class ApplicationConfig extends WebConfig {
      * The Request interceptor.
      */
     private final RequestInterceptor requestInterceptor;
-
     private final ObjectMapper objectMapper;
-
     private final BaseMessageResolver baseMessageResolver;
+    private final Gson gson;
 
     /**
      * Instantiates a new Application config.
-     *  @param requestInterceptor the request interceptor
+     *
+     * @param requestInterceptor  the request interceptor
      * @param objectMapper
      * @param baseMessageResolver
+     * @param gson
      */
     @Autowired
     public ApplicationConfig(
             RequestInterceptor requestInterceptor,
             ObjectMapper objectMapper,
-            BaseMessageResolver baseMessageResolver) {
+            BaseMessageResolver baseMessageResolver,
+            Gson gson) {
         this.requestInterceptor = requestInterceptor;
         this.objectMapper = objectMapper;
         this.baseMessageResolver = baseMessageResolver;
+        this.gson = gson;
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(requestInterceptor).excludePathPatterns(REST_EXCLUDE_INTERCEPTOR_PATTERN);
+        registry.addInterceptor(requestInterceptor).excludePathPatterns(REST_EXCLUDE_REQUEST_INTERCEPTOR_PATTERN);
     }
 
     /**
@@ -115,7 +119,7 @@ public class ApplicationConfig extends WebConfig {
     @Bean
     @Primary
     AccessDeniedHandler accessDeniedHandler() {
-        return new AccessDeniedHandler(baseMessageResolver);
+        return new AccessDeniedHandler(baseMessageResolver, gson, objectMapper);
     }
 
     @Override

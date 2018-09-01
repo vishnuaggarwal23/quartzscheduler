@@ -4,32 +4,30 @@ package com.vishnu.aggarwal.rest.service;
 Created by vishnu on 20/4/18 11:35 AM
 */
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vishnu.aggarwal.core.dto.UserDTO;
 import com.vishnu.aggarwal.core.service.BaseService;
 import com.vishnu.aggarwal.rest.entity.Token;
 import com.vishnu.aggarwal.rest.entity.User;
 import com.vishnu.aggarwal.rest.entity.UserToken;
+import com.vishnu.aggarwal.rest.exception.AuthTokenNotFoundException;
+import com.vishnu.aggarwal.rest.exception.EmptyJwtTokenException;
+import com.vishnu.aggarwal.rest.exception.PrincipalNotFoundException;
 import com.vishnu.aggarwal.rest.interfaces.TokenHandlerService;
 import com.vishnu.aggarwal.rest.interfaces.UserService;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.JwtException;
 import lombok.extern.apachecommons.CommonsLog;
 import org.apache.commons.io.IOUtils;
-import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedCredentialsNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -39,15 +37,11 @@ import java.util.Map;
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.CUSTOM_REQUEST_ID;
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.X_AUTH_TOKEN;
 import static com.vishnu.aggarwal.core.enums.Status.ACTIVE;
-import static io.jsonwebtoken.lang.Assert.*;
 import static java.lang.Boolean.FALSE;
 import static java.lang.String.valueOf;
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
-import static org.springframework.util.Assert.notEmpty;
-import static org.springframework.util.Assert.notNull;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 /**
@@ -114,56 +108,61 @@ public class TokenAuthenticationService extends BaseService implements com.vishn
     }
 
     @Override
-    public Authentication getAuthenticationForLogin(HttpServletRequest request, HttpServletResponse response, AuthenticationManager authenticationManager) throws HibernateException, IllegalStateException, AuthenticationException, IllegalArgumentException, IOException {
+    public Authentication getAuthenticationForLogin(HttpServletRequest request, HttpServletResponse response, AuthenticationManager authenticationManager) throws AuthenticationException {
         try {
-            UserDTO login = objectMapper.readValue(IOUtils.toString(request.getReader()), UserDTO.class);
-
-            hasLength(login.getUsername(), formatMessage(getMessage("username.not.found.in.login.request")));
-            hasLength(login.getPassword(), formatMessage(getMessage("password.not.found.in.login.request")));
-            notNull(userService.findByUsername(login.getUsername()), formatMessage(getMessage("no.user.found.for.username"), login.getUsername()));
+            final UserDTO login = objectMapper.readValue(IOUtils.toString(request.getReader()), UserDTO.class);
+            if (isNull(login)) {
+                throw new AuthenticationCredentialsNotFoundException("");
+            }
 
             log.info("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Attempting Authentication for [Username : " + login.getUsername() + "] and [Password : " + login.getPassword() + "]");
-            UsernamePasswordAuthenticationToken authenticatedUser = (UsernamePasswordAuthenticationToken) authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login.getUsername(), login.getPassword()));
 
-            notNull(authenticatedUser, formatMessage(getMessage("unable.to.authenticate.user")));
+            final UsernamePasswordAuthenticationToken authenticatedUser = (UsernamePasswordAuthenticationToken) authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login.getUsername(), login.getPassword()));
+            if (isNull(authenticatedUser) || !authenticatedUser.isAuthenticated()) {
+                throw new InsufficientAuthenticationException("");
+            }
 
-            Boolean isAuthentic = authenticatedUser.isAuthenticated();
-            User user = (User) authenticatedUser.getPrincipal();
-
-            log.debug("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Authentication Result : " + isAuthentic + " for [Username : " + login.getUsername() + "] and [Password : " + login.getPassword() + "]");
-
-            notNull(user, formatMessage(getMessage("principal.not.found.in.authentication")));
-            isTrue(isAuthentic, formatMessage(getMessage("user.authentication.failed")));
+            final User user = (User) authenticatedUser.getPrincipal();
+            if (isNull(user)) {
+                throw new PrincipalNotFoundException("");
+            }
 
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities());
             usernamePasswordAuthenticationToken.setDetails(addAuthentication(request, usernamePasswordAuthenticationToken).getToken());
             return usernamePasswordAuthenticationToken;
-        } catch (JsonParseException | JsonMappingException | IllegalArgumentException | HibernateException | LockedException | DisabledException | AccountExpiredException | CredentialsExpiredException | IllegalStateException e) {
+        } catch (IOException e) {
+            log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] User authentication failed.");
+            log.error(getStackTrace(e));
+            throw new InternalAuthenticationServiceException(e.getMessage(), e);
+        } catch (AuthenticationException e) {
             log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] User authentication failed.");
             log.error(getStackTrace(e));
             throw e;
-        } catch (IOException | AuthenticationException e) {
+        } catch (Exception e) {
             log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] User authentication failed.");
             log.error(getStackTrace(e));
-            throw e;
+            throw new InternalAuthenticationServiceException(e.getMessage(), e);
         }
     }
 
     @Override
-    public Authentication getAuthentication(HttpServletRequest request, HttpServletResponse response) throws ExpiredJwtException, UnsupportedJwtException, MalformedJwtException, SignatureException, IllegalArgumentException, LockedException, DisabledException, AccountExpiredException, CredentialsExpiredException, NoResultException {
+    public Authentication getAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         try {
             final String xAuthToken = request.getHeader(X_AUTH_TOKEN);
-            hasText(xAuthToken, formatMessage(getMessage("xAuthToken.not.found.request")));
-            log.info("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Authenticating user associated for JWT token " + xAuthToken);
+            if (isBlank(xAuthToken)) {
+                throw new AuthTokenNotFoundException("");
+            }
 
-            Boolean isValidToken = tokenHandlerService.isValidToken(xAuthToken);
-
-            isTrue(isValidToken, formatMessage(getMessage("xAuthToken.invalid"), xAuthToken));
+            if (!tokenHandlerService.isValidToken(xAuthToken)) {
+                throw new JwtException("");
+            }
 
             log.info("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] JWT token " + xAuthToken + " is found to be valid.");
 
-            User user = tokenHandlerService.parseToken(xAuthToken);
-            notNull(user, formatMessage(getMessage("user.not.found.for.token"), xAuthToken));
+            final User user = tokenHandlerService.parseToken(xAuthToken);
+            if (isNull(user)) {
+                throw new JwtException("");
+            }
 
             accountStatusUserDetailsCheck.check(user);
 
@@ -171,91 +170,129 @@ public class TokenAuthenticationService extends BaseService implements com.vishn
             usernamePasswordAuthenticationToken.setDetails(tokenService.findByTokenAndIsDeleted(xAuthToken, FALSE));
             log.info("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] User " + user + " authenticated for JWT token " + xAuthToken);
             return usernamePasswordAuthenticationToken;
-        } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException | LockedException | DisabledException | AccountExpiredException | CredentialsExpiredException | NoResultException e) {
+        } catch (JwtException e) {
+            log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while getting authentication");
+            log.error(getStackTrace(e));
+            throw new InternalAuthenticationServiceException(e.getMessage(), e);
+        } catch (AuthenticationException e) {
             log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while getting authentication");
             log.error(getStackTrace(e));
             throw e;
+        } catch (Exception e) {
+            log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while getting authentication");
+            log.error(getStackTrace(e));
+            throw new InternalAuthenticationServiceException(e.getMessage(), e);
         }
     }
 
-    @Override
-    public UserToken addAuthentication(HttpServletRequest request, UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) throws IllegalArgumentException, HibernateException, LockedException, DisabledException, AccountExpiredException, CredentialsExpiredException, IllegalStateException {
+    private UserToken addAuthentication(HttpServletRequest request, final UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) throws AuthenticationException {
         try {
-            final Object principal = usernamePasswordAuthenticationToken.getPrincipal();
-            String username = "";
-            User user = null;
-
-            notNull(principal, formatMessage(getMessage("principal.not.found.in.authentication")));
-
-            if (principal instanceof String) {
-                username = (String) principal;
-                log.info("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Generating JWT Token for username " + username);
-                hasText(username, formatMessage(getMessage("username.not.found")));
-                user = userService.findByUsername(username);
-            } else if (principal instanceof User) {
-                user = (User) principal;
-                username = user.getUsername();
+            if (isNull(usernamePasswordAuthenticationToken)) {
+                throw new PreAuthenticatedCredentialsNotFoundException("");
             }
 
-            notNull(user, formatMessage(getMessage("user.not.found.for.principal")));
-            hasText(username, formatMessage(getMessage("username.not.found")));
+            final Object principal = usernamePasswordAuthenticationToken.getPrincipal();
+            if (isNull(principal)) {
+                throw new PrincipalNotFoundException("");
+            }
+
+            final String username = (String) principal;
+            if (isBlank(username)) {
+                throw new UsernameNotFoundException("");
+            }
+
+            final User user = userService.findByUsername(username);
+            if (isNull(user)) {
+                throw new UsernameNotFoundException("");
+            }
+
             accountStatusUserDetailsCheck.check(user);
-
-            Map<String, Object> tokenMap = tokenHandlerService.generateToken(user);
-            notEmpty(tokenMap, formatMessage(getMessage("token.not.generated"), user));
-
+            final Map<String, Object> tokenMap = tokenHandlerService.generateToken(user);
+            if (isEmpty(tokenMap)) {
+                throw new EmptyJwtTokenException("");
+            }
             log.info("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] JWT Token " + tokenMap.get("key") + " generated for user " + user);
 
             Token token = tokenService.findByTokenAndIsDeleted(valueOf(tokenMap.get("key")), FALSE);
             if (isNull(token)) {
-                token = new Token();
+                token = Token.getInstance();
                 token.setIssueId(valueOf(tokenMap.get("issueId")));
                 token.setToken(valueOf(tokenMap.get("key")));
                 token.setExpirationDate((Date) tokenMap.get("expirationDate"));
                 token.setIssuedDate((Date) tokenMap.get("issuedDate"));
                 token = tokenService.save(token);
             }
-            notNull(token, formatMessage(getMessage("generated.token.not.saved")));
 
-            UserToken userToken = new UserToken();
+            UserToken userToken = UserToken.getInstance();
             userToken.setUser(user);
             userToken.setToken(token);
             userToken.setStatus(ACTIVE);
-            userTokenService.updateTokenStatus(user);
+
+            boolean saveUserToken = true;
+            if (!isEmpty(userTokenService.findAllUserTokens(user))) {
+                saveUserToken = userTokenService.updateTokenStatus(user);
+            }
+
+            if (!saveUserToken) {
+                throw new AuthenticationServiceException("");
+            }
+
             userToken = userTokenService.save(userToken);
-            notNull(userToken, formatMessage(getMessage("generated.token.not.saved.for.user"), token, user));
+            if (isNull(userToken)) {
+                throw new AuthenticationServiceException("");
+            }
 
             return userToken;
-        } catch (IllegalArgumentException | HibernateException | LockedException | DisabledException | AccountExpiredException | CredentialsExpiredException | IllegalStateException e) {
+        } catch (JwtException e) {
+            log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while adding authentication to user");
+            log.error(getStackTrace(e));
+            throw new InternalAuthenticationServiceException(e.getMessage(), e);
+        } catch (AuthenticationException e) {
             log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while adding authentication to user");
             log.error(getStackTrace(e));
             throw e;
+        } catch (Exception e) {
+            log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while adding authentication to user");
+            log.error(getStackTrace(e));
+            throw new InternalAuthenticationServiceException(e.getMessage(), e);
         }
     }
 
     @Override
-    public Boolean removeAuthentication(Authentication authentication) {
-        final Object principal = authentication.getPrincipal();
-        String username = "";
-        User user = null;
-        if (principal instanceof String) {
-            username = (String) principal;
-            user = isNotBlank(username) ? userService.findByUsername(username) : null;
-        } else if (principal instanceof User) {
-            user = (User) principal;
-        }
-        if (nonNull(user)) {
-            try {
-                accountStatusUserDetailsCheck.check(user);
-                if (!isEmpty(userTokenService.findAllUserTokens(user))) {
-                    return userTokenService.updateTokenStatus(user);
-                }
-            } catch (Exception e) {
-                log.error("****Error while invalidating all authentication token objects for user " + user + " **\n");
-                log.error("****Stacktrace ***\n");
-                log.error(getStackTrace(e));
+    public Boolean removeAuthentication(final Authentication authentication, HttpServletRequest request) throws AuthenticationException {
+        try {
+            if (isNull(authentication)) {
+                throw new PreAuthenticatedCredentialsNotFoundException("");
             }
+
+            final Object principal = authentication.getPrincipal();
+            if (isNull(principal)) {
+                throw new PrincipalNotFoundException("");
+            }
+
+            final String username = (String) principal;
+            if (isBlank(username)) {
+                throw new UsernameNotFoundException("");
+            }
+
+            final User user = userService.findByUsername(username);
+            if (isNull(user)) {
+                throw new UsernameNotFoundException("");
+            }
+
+            accountStatusUserDetailsCheck.check(user);
+            if (!isEmpty(userTokenService.findAllUserTokens(user))) {
+                return userTokenService.updateTokenStatus(user);
+            }
+            return true;
+        } catch (AuthenticationException e) {
+            log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while invalidating all authentication token objects for user ");
+            log.error(getStackTrace(e));
+            throw e;
+        } catch (Exception e) {
+            log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while invalidating all authentication token objects for user ");
+            log.error(getStackTrace(e));
+            throw new InternalAuthenticationServiceException(e.getMessage(), e);
         }
-        return FALSE;
     }
 }

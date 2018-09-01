@@ -5,6 +5,7 @@ Created by vishnu on 19/4/18 4:08 PM
 */
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.vishnu.aggarwal.core.config.BaseMessageResolver;
 import com.vishnu.aggarwal.rest.interfaces.TokenAuthenticationService;
 import com.vishnu.aggarwal.rest.interfaces.UserService;
@@ -50,6 +51,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final LogoutHandler logoutHandler;
     private final AuthenticationEntryPoint authenticationEntryPoint;
     private final AccessDeniedHandler accessDeniedHandler;
+    private final Gson gson;
 
     /**
      * Instantiates a new Security config.
@@ -62,6 +64,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      * @param logoutSuccessHandler       the logout success handler
      * @param logoutHandler              the logout handler
      * @param accessDeniedHandler        the access denied handler
+     * @param gson
      */
     @Autowired
     public SecurityConfig(
@@ -72,7 +75,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             UserService userService,
             com.vishnu.aggarwal.rest.config.security.LogoutSuccessHandler logoutSuccessHandler,
             com.vishnu.aggarwal.rest.config.security.LogoutHandler logoutHandler,
-            com.vishnu.aggarwal.rest.config.security.AccessDeniedHandler accessDeniedHandler) {
+            com.vishnu.aggarwal.rest.config.security.AccessDeniedHandler accessDeniedHandler,
+            Gson gson) {
         super();
         this.objectMapper = objectMapper;
         this.tokenAuthenticationService = tokenAuthenticationService;
@@ -81,6 +85,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         this.userService = userService;
         this.logoutSuccessHandler = logoutSuccessHandler;
         this.logoutHandler = logoutHandler;
+        this.gson = gson;
         this.authenticationEntryPoint = new Http403ForbiddenEntryPoint();
         this.accessDeniedHandler = accessDeniedHandler;
     }
@@ -100,8 +105,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .headers().xssProtection().xssProtectionEnabled(TRUE).and().cacheControl().and().contentTypeOptions().and().frameOptions().and().httpStrictTransportSecurity().disable()
                 .and()
                 .anonymous().disable()
-                .addFilter(new LoginFilter(new AntPathRequestMatcher("/**/user/login", POST.name()), tokenAuthenticationService, baseMessageResolver, objectMapper, authenticationManagerBean(), userService))
-                .addFilterBefore(new AuthenticationFilter(tokenAuthenticationService, objectMapper, baseMessageResolver, authenticationManagerBean(), userService, new AntPathRequestMatcher("/**/error"), new AntPathRequestMatcher("/**/user/login"), new AntPathRequestMatcher("/**/user/authenticate")), LogoutFilter.class)
+                .addFilter(new LoginFilter(new AntPathRequestMatcher("/**/user/login", POST.name()), tokenAuthenticationService, baseMessageResolver, objectMapper, authenticationManagerBean(), userService, gson))
+                .addFilterBefore(new AuthenticationFilter(tokenAuthenticationService, objectMapper, baseMessageResolver, authenticationManagerBean(), userService, new AntPathRequestMatcher("/**/error"), new AntPathRequestMatcher("/**/user/login"), new AntPathRequestMatcher("/**/user/authenticate"), gson), LogoutFilter.class)
                 .addFilterAt(new LogoutFilter("/**/user/logout", logoutSuccessHandler, new AntPathRequestMatcher("/**/user/logout", POST.name()), tokenAuthenticationService, logoutHandler, baseMessageResolver), org.springframework.security.web.authentication.logout.LogoutFilter.class)
                 .authorizeRequests()
                 .antMatchers(OPTIONS).permitAll()

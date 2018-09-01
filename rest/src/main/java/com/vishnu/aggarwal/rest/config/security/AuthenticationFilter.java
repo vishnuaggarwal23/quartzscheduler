@@ -1,26 +1,23 @@
 package com.vishnu.aggarwal.rest.config.security;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.vishnu.aggarwal.core.config.BaseMessageResolver;
+import com.vishnu.aggarwal.core.dto.ErrorResponseDTO;
 import com.vishnu.aggarwal.core.dto.UserAuthenticationDTO;
 import com.vishnu.aggarwal.core.dto.UserDTO;
+import com.vishnu.aggarwal.core.exceptions.UserNotAuthenticatedException;
 import com.vishnu.aggarwal.rest.entity.Token;
 import com.vishnu.aggarwal.rest.entity.User;
 import com.vishnu.aggarwal.rest.interfaces.TokenAuthenticationService;
 import com.vishnu.aggarwal.rest.interfaces.UserService;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.extern.apachecommons.CommonsLog;
-import org.springframework.security.authentication.*;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
 
-import javax.persistence.NoResultException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -29,8 +26,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.Date;
+import java.util.HashMap;
 
-import static com.vishnu.aggarwal.core.constants.ApplicationConstants.CUSTOM_REQUEST_ID;
+import static com.vishnu.aggarwal.core.constants.ApplicationConstants.*;
+import static com.vishnu.aggarwal.core.util.TypeTokenUtils.getHashMapOfStringAndErrorResponseDTO;
+import static com.vishnu.aggarwal.core.util.TypeTokenUtils.getHashMapOfStringAndUserAuthenticationDTO;
 import static java.lang.Boolean.FALSE;
 import static java.util.Objects.nonNull;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
@@ -58,6 +59,7 @@ public class AuthenticationFilter extends GenericFilterBean {
     private RequestMatcher ignoredRequestMatcher;
     private RequestMatcher loginRequestMatcher;
     private RequestMatcher authenticationRequestMatcher;
+    private Gson gson;
 
     /**
      * Instantiates a new Authentication filter.
@@ -66,12 +68,23 @@ public class AuthenticationFilter extends GenericFilterBean {
      * @param objectMapper                 the object mapper
      * @param baseMessageResolver          the base message resolver
      * @param authenticationManager        the authentication manager
-     * @param userService
-     * @param ignoredRequestMatcher
-     * @param loginRequestMatcher
-     * @param authenticationRequestMatcher
+     * @param userService                  the user service
+     * @param ignoredRequestMatcher        the ignored request matcher
+     * @param loginRequestMatcher          the login request matcher
+     * @param authenticationRequestMatcher the authentication request matcher
+     * @param gson
      */
-    public AuthenticationFilter(TokenAuthenticationService tokenAuthenticationService, ObjectMapper objectMapper, BaseMessageResolver baseMessageResolver, AuthenticationManager authenticationManager, UserService userService, RequestMatcher ignoredRequestMatcher, RequestMatcher loginRequestMatcher, RequestMatcher authenticationRequestMatcher) {
+    public AuthenticationFilter(
+            TokenAuthenticationService tokenAuthenticationService,
+            ObjectMapper objectMapper,
+            BaseMessageResolver baseMessageResolver,
+            AuthenticationManager authenticationManager,
+            UserService userService,
+            RequestMatcher ignoredRequestMatcher,
+            RequestMatcher loginRequestMatcher,
+            RequestMatcher authenticationRequestMatcher,
+            Gson gson
+    ) {
         super();
         this.tokenAuthenticationService = tokenAuthenticationService;
         this.objectMapper = objectMapper;
@@ -81,10 +94,11 @@ public class AuthenticationFilter extends GenericFilterBean {
         this.ignoredRequestMatcher = ignoredRequestMatcher;
         this.loginRequestMatcher = loginRequestMatcher;
         this.authenticationRequestMatcher = authenticationRequestMatcher;
+        this.gson = gson;
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         try {
             response.setCharacterEncoding("UTF-8");
@@ -95,59 +109,73 @@ public class AuthenticationFilter extends GenericFilterBean {
                     chain.doFilter(httpServletRequest, response);
                 } else {
                     Authentication authentication = tokenAuthenticationService.getAuthentication(httpServletRequest, (HttpServletResponse) response);
-                    getContext().setAuthentication(authentication);
+                    if (authentication.isAuthenticated()) {
+                        getContext().setAuthentication(authentication);
+                        if (authenticationRequestMatcher.matches(httpServletRequest)) {
+                            final User user = userService.findByUsername(authentication.getPrincipal().toString());
+                            HashMap<String, UserAuthenticationDTO> responseMap = new HashMap<String, UserAuthenticationDTO>();
+                            responseMap.put(HASHMAP_USER_KEY, new UserAuthenticationDTO(
+                                    new UserDTO
+                                            (
+                                                    user.getId(),
+                                                    user.getUsername(),
+                                                    user.getEmail(),
+                                                    null,
+                                                    user.getAccountExpired(),
+                                                    user.getAccountLocked(),
+                                                    user.getCredentialsExpired(),
+                                                    user.getAccountEnabled(),
+                                                    user.getIsDeleted(),
+                                                    user.getFirstName(),
+                                                    user.getLastName()
+                                            ),
+                                    authentication.isAuthenticated(),
+                                    ((Token) authentication.getDetails()).getKey()
+                            ));
 
-                    if (authenticationRequestMatcher.matches(httpServletRequest)) {
-                        Assert.isTrue(authentication.isAuthenticated(), baseMessageResolver.getMessage("user.authentication.failed"));
-                        final Object principal = authentication.getPrincipal();
-
-                        Assert.notNull(principal, baseMessageResolver.getMessage("principal.not.found.in.authentication"));
-                        User user = null;
-                        if (principal instanceof String) {
-                            user = userService.findByUsername(principal.toString());
-                        } else if (principal instanceof User) {
-                            user = (User) principal;
+                            ((HttpServletResponse) response).setStatus(SC_OK);
+                            response.getWriter().write(gson.toJson(responseMap, getHashMapOfStringAndUserAuthenticationDTO()));
+                        } else {
+                            chain.doFilter(httpServletRequest, response);
                         }
-
-                        Assert.notNull(user, baseMessageResolver.getMessage("user.not.found.for.principal"));
-
-                        ((HttpServletResponse) response).setStatus(SC_OK);
-                        response.getWriter().write(objectMapper.writeValueAsString(
-                                new UserAuthenticationDTO(new UserDTO
-                                        (
-                                                user.getId(),
-                                                user.getUsername(),
-                                                user.getEmail(),
-                                                null,
-                                                user.getAccountExpired(),
-                                                user.getAccountLocked(),
-                                                user.getCredentialsExpired(),
-                                                user.getAccountEnabled(),
-                                                user.getIsDeleted(),
-                                                user.getFirstName(),
-                                                user.getLastName()
-                                        ),
-                                        authentication.isAuthenticated(),
-                                        ((Token) authentication.getDetails()).getKey())
-                                )
-                        );
                     } else {
-                        Assert.isTrue(authentication.isAuthenticated(), baseMessageResolver.getMessage("user.authentication.failed"));
-                        chain.doFilter(httpServletRequest, response);
+                        throw new UserNotAuthenticatedException("");
                     }
                 }
             }
-        } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException | LockedException | DisabledException | AccountExpiredException | CredentialsExpiredException | JsonProcessingException | NoResultException e) {
-            log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while checking authentication.");
-            log.error(getStackTrace(e));
-            HttpSession session = httpServletRequest.getSession(FALSE);
-            if (nonNull(session)) {
-                session.invalidate();
-            }
-            getContext().setAuthentication(null);
-            clearContext();
-            ((HttpServletResponse) response).setStatus(SC_UNAUTHORIZED);
+        } catch (AuthenticationException e) {
+            handleException(request, (HttpServletResponse) response, httpServletRequest, e);
+//            throw new IOException(e.getMessage(), e);
+        } catch (IOException | ServletException e) {
+            handleException(request, (HttpServletResponse) response, httpServletRequest, e);
 //            throw e;
+        } catch (Exception e) {
+            handleException(request, (HttpServletResponse) response, httpServletRequest, e);
+//            throw new IOException(e.getMessage(), e);
         }
+    }
+
+    private void handleException(ServletRequest request, HttpServletResponse response, HttpServletRequest httpServletRequest, Exception e) throws IOException {
+        log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while checking authentication.");
+        log.error(getStackTrace(e));
+        HttpSession session = httpServletRequest.getSession(FALSE);
+        if (nonNull(session)) {
+            session.invalidate();
+        }
+        getContext().setAuthentication(null);
+        clearContext();
+
+        HashMap<String, ErrorResponseDTO> responseMap = new HashMap<String, ErrorResponseDTO>();
+        responseMap.put(HASHMAP_ERROR_KEY, new ErrorResponseDTO(
+                request.getAttribute(CUSTOM_REQUEST_ID),
+                new Date(),
+                baseMessageResolver.getMessage(e.getMessage(), e.getMessage()),
+                null
+        ));
+        response.getWriter().write(gson.toJson(responseMap, getHashMapOfStringAndErrorResponseDTO()));
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType(APPLICATION_JSON_UTF8_VALUE);
+        response.setStatus(SC_UNAUTHORIZED);
+//        response.sendError(SC_UNAUTHORIZED, baseMessageResolver.getMessage(e.getMessage(), e.getMessage()));
     }
 }

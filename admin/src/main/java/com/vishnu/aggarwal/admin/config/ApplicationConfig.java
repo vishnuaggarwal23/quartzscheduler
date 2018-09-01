@@ -11,6 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+
+import static com.vishnu.aggarwal.core.constants.ApplicationConstants.*;
+import static org.springframework.http.HttpStatus.*;
 
 /**
  * The type Web config.
@@ -32,7 +36,11 @@ public class ApplicationConfig extends WebConfig {
      * @param logoutInterceptor         the logout interceptor
      */
     @Autowired
-    public ApplicationConfig(RequestInterceptor requestInterceptor, AuthenticationInterceptor authenticationInterceptor, LoginInterceptor loginInterceptor, LogoutInterceptor logoutInterceptor) {
+    public ApplicationConfig(
+            RequestInterceptor requestInterceptor,
+            AuthenticationInterceptor authenticationInterceptor,
+            LoginInterceptor loginInterceptor,
+            LogoutInterceptor logoutInterceptor) {
         this.requestInterceptor = requestInterceptor;
         this.authenticationInterceptor = authenticationInterceptor;
         this.loginInterceptor = loginInterceptor;
@@ -41,10 +49,10 @@ public class ApplicationConfig extends WebConfig {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(requestInterceptor).excludePathPatterns("/**/js/**/", "/**/css/**/", "/**/img/**/", "/**/font/**/", "/**/fonts/**/", "/**/webjars/**/", "/**/webjar/**/");
-        registry.addInterceptor(authenticationInterceptor).addPathPatterns("/**/web/user/**", "/**/web/quartz/**").excludePathPatterns("/**/web", "/**/web/", "/**/web/forgotPassword", "/**/js/**/", "/**/css/**/", "/**/img/**/", "/**/font/**/", "/**/fonts/**/", "/**/webjars/**/", "/**/webjar/**/");
-        registry.addInterceptor(loginInterceptor).addPathPatterns("/**/web", "/**/web/").excludePathPatterns("/**/js/**/", "/**/css/**/", "/**/img/**/", "/**/font/**/", "/**/fonts/**/", "/**/webjars/**/", "/**/webjar/**/");
-        registry.addInterceptor(logoutInterceptor).addPathPatterns("/**/api/user/logout", "/**/api/user/logout/").excludePathPatterns("/**/js/**/", "/**/css/**/", "/**/img/**/", "/**/font/**/", "/**/fonts/**/", "/**/webjars/**/", "/**/webjar/**/");
+        registry.addInterceptor(requestInterceptor).excludePathPatterns(ADMIN_EXCLUDE_REQUEST_INTERCEPTOR_PATTERN);
+        registry.addInterceptor(authenticationInterceptor).addPathPatterns(ADMIN_AUTHENTICATION_INTERCEPTOR_INCLUDE_PATTERN).excludePathPatterns(ADMIN_AUTHENTICATION_INTERCEPTOR_EXCLUDE_PATTERN);
+        registry.addInterceptor(loginInterceptor).addPathPatterns(ADMIN_LOGIN_INTERCEPTOR_INCLUDE_PATTERN).excludePathPatterns(ADMIN_LOGIN_INTERCEPTOR_EXCLUDE_PATTERN);
+        registry.addInterceptor(logoutInterceptor).addPathPatterns(ADMIN_LOGOUT_INTERCEPTOR_INCLUDE_PATTERN).excludePathPatterns(ADMIN_LOGOUT_INTERCEPTOR_EXCLUDE_PATTERN);
     }
 
     /**
@@ -55,5 +63,17 @@ public class ApplicationConfig extends WebConfig {
     @Bean
     public LayoutDialect layoutDialect() {
         return new LayoutDialect();
+    }
+
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addStatusController("/401", UNAUTHORIZED);
+        registry.addStatusController("/403", FORBIDDEN);
+        registry.addStatusController("/404", NOT_FOUND);
+        registry.addStatusController("/500", INTERNAL_SERVER_ERROR);
+        registry.addViewController("/401").setStatusCode(UNAUTHORIZED).setViewName("error/401");
+        registry.addViewController("/403").setStatusCode(FORBIDDEN).setViewName("error/403");
+        registry.addViewController("/404").setStatusCode(NOT_FOUND).setViewName("error/404");
+        registry.addViewController("/500").setStatusCode(INTERNAL_SERVER_ERROR).setViewName("error/500");
     }
 }

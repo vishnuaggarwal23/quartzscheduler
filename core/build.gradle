@@ -49,8 +49,10 @@ dependencies {
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
     compile group: 'commons-io', name: 'commons-io', version: '2.6'
     providedRuntime group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version: "${springBootVersion}"
-//    runtime group: 'org.springframework.boot', name: 'spring-boot-devtools', version: "${springBootVersion}"
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: "${springBootVersion}"
+    compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
+    compile group: 'com.google.code.findbugs', name: 'annotations', version: '3.0.1'
+
 
     idea {
         module {

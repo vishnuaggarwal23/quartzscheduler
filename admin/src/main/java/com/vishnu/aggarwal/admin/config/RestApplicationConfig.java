@@ -36,7 +36,7 @@ public class RestApplicationConfig {
      * @param baseUri the base uri
      * @return the string
      */
-    public String restApplicationUrl(String baseUri) {
+    public String restApplicationUrl(final String baseUri) {
         return format("%s%s%s", this.baseUrl, this.contextPath, baseUri);
     }
 }

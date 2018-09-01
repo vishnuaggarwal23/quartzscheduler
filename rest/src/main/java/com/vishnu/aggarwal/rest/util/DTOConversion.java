@@ -28,6 +28,8 @@ public class DTOConversion {
         userDTO.setId(user.getId());
         userDTO.setIsDeleted(user.getIsDeleted());
         userDTO.setUsername(user.getUsername());
+        userDTO.setFirstName(user.getFirstName());
+        userDTO.setLastName(user.getLastName());
         return userDTO;
     }
 }

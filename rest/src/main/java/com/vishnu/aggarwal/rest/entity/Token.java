@@ -44,6 +44,10 @@ public class Token extends BaseEntity<Long> implements org.springframework.secur
     @NotBlank
     private String issueId;
 
+    public static Token getInstance() {
+        return new Token();
+    }
+
     @Override
     public String getKey() {
         return this.token;
@@ -70,9 +74,5 @@ public class Token extends BaseEntity<Long> implements org.springframework.secur
         if (nonNull(expirationDate)) {
             this.expirationDate = getEnd(expirationDate);
         }
-    }
-
-    public static Token getInstance() {
-        return new Token();
     }
 }

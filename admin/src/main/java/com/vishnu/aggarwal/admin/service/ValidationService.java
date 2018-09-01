@@ -4,20 +4,19 @@ package com.vishnu.aggarwal.admin.service;
 Created by vishnu on 18/4/18 10:44 AM
 */
 
-import com.vishnu.aggarwal.admin.config.FeignClientFactory;
-import com.vishnu.aggarwal.admin.config.RestApplicationConfig;
-import com.vishnu.aggarwal.admin.service.feign.ValidationApiService;
 import com.vishnu.aggarwal.core.service.BaseService;
-import com.vishnu.aggarwal.core.vo.RestResponseVO;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.Cookie;
+import java.util.HashMap;
+import java.util.Map;
 
-import static com.vishnu.aggarwal.core.constants.UrlMapping.Rest.Validation.BASE_URI;
+import static com.vishnu.aggarwal.core.constants.ApplicationConstants.KEY_NAME;
+import static com.vishnu.aggarwal.core.enums.RestApiEndPoint.UNIQUE_JOB_KEY_PER_GROUP;
+import static com.vishnu.aggarwal.core.enums.RestApiEndPoint.UNIQUE_TRIGGER_KEY_PER_GROUP;
 
 /**
  * The type Validation service.
@@ -26,21 +25,16 @@ import static com.vishnu.aggarwal.core.constants.UrlMapping.Rest.Validation.BASE
 @CommonsLog
 public class ValidationService extends BaseService {
 
-    /**
-     * The Rest application config.
-     */
-    @Autowired
-    RestApplicationConfig restApplicationConfig;
+    private final RestService restService;
 
     /**
-     * Validation api service validation api service.
+     * Instantiates a new Validation service.
      *
-     * @return the validation api service
+     * @param restService the rest service
      */
-    @Bean
-    @Primary
-    ValidationApiService validationApiService() {
-        return new FeignClientFactory().getInstance(ValidationApiService.class, restApplicationConfig.restApplicationUrl(BASE_URI));
+    @Autowired
+    public ValidationService(RestService restService) {
+        this.restService = restService;
     }
 
     /**
@@ -50,8 +44,10 @@ public class ValidationService extends BaseService {
      * @param xAuthToken the x auth token
      * @return the rest response vo
      */
-    public RestResponseVO<Boolean> isJobKeyUnique(String keyName, Cookie xAuthToken) {
-        return validationApiService().isJobKeyUnique(keyName, xAuthToken.getValue());
+    public ResponseEntity<String> isJobKeyUnique(String keyName, Cookie xAuthToken) {
+        Map<String, Object> urlQueryParams = new HashMap<String, Object>();
+        urlQueryParams.put(KEY_NAME, keyName);
+        return restService.getResponseFromBackendService(null, xAuthToken.getValue(), UNIQUE_JOB_KEY_PER_GROUP.getApiEndPoint(), UNIQUE_JOB_KEY_PER_GROUP.getHttpMethod(), urlQueryParams, null);
     }
 
     /**
@@ -61,7 +57,9 @@ public class ValidationService extends BaseService {
      * @param xAuthToken the x auth token
      * @return the rest response vo
      */
-    public RestResponseVO<Boolean> isTriggerKeyUnique(String keyName, Cookie xAuthToken) {
-        return validationApiService().isTriggerKeyUnique(keyName, xAuthToken.getValue());
+    public ResponseEntity<String> isTriggerKeyUnique(String keyName, Cookie xAuthToken) {
+        Map<String, Object> urlQueryParams = new HashMap<String, Object>();
+        urlQueryParams.put(KEY_NAME, keyName);
+        return restService.getResponseFromBackendService(null, xAuthToken.getValue(), UNIQUE_TRIGGER_KEY_PER_GROUP.getApiEndPoint(), UNIQUE_TRIGGER_KEY_PER_GROUP.getHttpMethod(), urlQueryParams, null);
     }
 }

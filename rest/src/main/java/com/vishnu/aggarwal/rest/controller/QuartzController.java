@@ -6,14 +6,19 @@ import com.vishnu.aggarwal.core.co.TriggerDetailsCO;
 import com.vishnu.aggarwal.core.controller.BaseController;
 import com.vishnu.aggarwal.core.dto.KeyGroupDescriptionDTO;
 import com.vishnu.aggarwal.core.dto.QuartzDTO;
+import com.vishnu.aggarwal.core.exceptions.InvalidRequestException;
+import com.vishnu.aggarwal.core.validation.interfaces.*;
 import com.vishnu.aggarwal.core.vo.DataTableVO;
-import com.vishnu.aggarwal.core.vo.RestResponseVO;
 import com.vishnu.aggarwal.rest.service.QuartzService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,23 +26,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import static com.vishnu.aggarwal.core.constants.ApplicationConstants.CUSTOM_REQUEST_ID;
 import static com.vishnu.aggarwal.core.constants.UrlMapping.Rest.Quartz.*;
-import static com.vishnu.aggarwal.core.enums.JobType.API;
-import static com.vishnu.aggarwal.core.enums.ScheduleType.CRON;
-import static com.vishnu.aggarwal.core.enums.ScheduleType.SIMPLE;
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
-import static java.text.MessageFormat.format;
-import static java.util.Objects.nonNull;
+import static com.vishnu.aggarwal.core.util.TypeTokenUtils.*;
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
-import static org.springframework.http.HttpStatus.valueOf;
+import static org.springframework.http.HttpStatus.ACCEPTED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
-import static org.springframework.util.Assert.*;
+import static org.springframework.util.CollectionUtils.isEmpty;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 /**
@@ -65,58 +60,90 @@ public class QuartzController extends BaseController {
     }
 
     /**
-     * Create new job response entity.
+     * Create unscheduled api job response entity.
      *
      * @param quartzDTO           the quartz dto
+     * @param errors              the errors
+     * @param bindingResult       the binding result
      * @param httpServletRequest  the http servlet request
      * @param httpServletResponse the http servlet response
      * @return the response entity
+     * @throws BindException           the bind exception
+     * @throws InvalidRequestException the invalid request exception
+     * @throws ClassNotFoundException  the class not found exception
+     * @throws SchedulerException      the scheduler exception
      */
-    @RequestMapping(value = CREATE_JOB, method = POST)
+    @RequestMapping(value = CREATE_API_JOB, method = POST)
     @ResponseBody
-    public ResponseEntity<Map> createNewJob(@RequestBody QuartzDTO quartzDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-//        RestResponseVO<String> restResponseVO = new RestResponseVO<String>(null, null, EMPTY);
-
-        Map<String, Object> map = new HashMap<String, Object>();
-
-        try {
-            notNull(quartzDTO, formatMessage(getMessage("object.not.set", getMessage("request.creating.new.quartz.job"))));
-            notNull(quartzDTO.getJob(), formatMessage(getMessage("object.not.set", getMessage("request.creating.new.quartz.job.not.contains.job"))));
-            notNull(quartzDTO.getJob().getType(), formatMessage(getMessage("object.not.set", getMessage("request.creating.new.quartz.job.not.contains.job.type"))));
-
-            if (quartzDTO.getJob().getType().equals(API)) {
-                if (isTrue(quartzDTO.getJob().getScheduled())) {
-                    notNull(quartzDTO.getScheduleType(), formatMessage(getMessage("object.not.set", getMessage("request.creating.new.quartz.job.not.contains.schedule.type"))));
-
-                    if (quartzDTO.getScheduleType().equals(SIMPLE)) {
-//                        setRestResponseVO(restResponseVO, null, null, getMessage("quartz.job.created.and.scheduled.at", quartzService.createNewScheduledApiSimpleJob(quartzDTO)));
-                        Date scheduledDate = quartzService.createNewScheduledApiSimpleJob(quartzDTO);
-                        if (nonNull(scheduledDate)) {
-                            map.put("jobScheduledDate", scheduledDate);
-                            map.put("jobCreated", TRUE);
-                        }
-                    } else if (quartzDTO.getScheduleType().equals(CRON)) {
-//                        setRestResponseVO(restResponseVO, null, null, getMessage("quartz.job.created.and.scheduled.at", quartzService.createNewScheduledApiCronJob(quartzDTO)));
-                        Date scheduledDate = quartzService.createNewScheduledApiCronJob(quartzDTO);
-                        if (nonNull(scheduledDate)) {
-                            map.put("jobScheduledDate", scheduledDate);
-                            map.put("jobCreated", TRUE);
-                        }
-                    }
-                } else {
-                    quartzService.createNewUnscheduledApiJob(quartzDTO);
-//                    setRestResponseVO(restResponseVO, null, null, getMessage("quartz.job.created"));
-                    map.put("jobCreated", TRUE);
-                }
-            }
-        } catch (SchedulerException | ClassNotFoundException | IllegalArgumentException | NullPointerException | IllegalStateException e) {
-            log.error(format("[Request Interceptor Id {0}] {1}", httpServletRequest.getAttribute(CUSTOM_REQUEST_ID), getMessage("error.while.creating.new.job")));
-            log.error(getStackTrace(e));
-            map.put("jobCreated", FALSE);
-            map.put("errorMessage", e.getLocalizedMessage());
-//            restResponseVO.setMessage(e.getLocalizedMessage());
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> createUnscheduledApiJob(@Validated({CreateNewUnscheduledJob.class}) @RequestBody final QuartzDTO quartzDTO, Errors errors, BindingResult bindingResult, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws BindException, InvalidRequestException, ClassNotFoundException, SchedulerException {
+        if (bindingResult.hasErrors()) {
+            throw new BindException(bindingResult);
         }
-        return new ResponseEntity<Map>(map, valueOf(httpServletResponse.getStatus()));
+        if (isTrue(quartzDTO.getJob().getScheduled())) {
+            throw new InvalidRequestException("");
+        }
+        HashMap<String, JobDetailsCO> response = new HashMap<String, JobDetailsCO>();
+        quartzService.createNewUnscheduledApiJob(quartzDTO);
+        response.put("jobDetails", quartzService.fetchJobDetailsByJobKeyNameAndJobGroupName(quartzDTO.getJob().getDetails()));
+        return new ResponseEntity<String>(gson().toJson(response, getHashMapOfStringAndJobDetailsCO()), ACCEPTED);
+    }
+
+    /**
+     * Create scheduled api simple triggered job response entity.
+     *
+     * @param quartzDTO           the quartz dto
+     * @param errors              the errors
+     * @param bindingResult       the binding result
+     * @param httpServletRequest  the http servlet request
+     * @param httpServletResponse the http servlet response
+     * @return the response entity
+     * @throws BindException           the bind exception
+     * @throws SchedulerException      the scheduler exception
+     * @throws ClassNotFoundException  the class not found exception
+     * @throws InvalidRequestException the invalid request exception
+     */
+    @RequestMapping(value = CREATE_API_JOB_SCHEDULED_SIMPLE, method = POST)
+    @ResponseBody
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> createScheduledApiSimpleTriggeredJob(@Validated(CreateNewScheduledSimpleTriggeredJob.class) @RequestBody final QuartzDTO quartzDTO, Errors errors, BindingResult bindingResult, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws BindException, SchedulerException, ClassNotFoundException, InvalidRequestException {
+        if (bindingResult.hasErrors()) {
+            throw new BindException(bindingResult);
+        }
+        Date scheduledDate = quartzService.createNewScheduledApiSimpleJob(quartzDTO);
+        JobDetailsCO jobDetailsCO = quartzService.fetchJobDetailsByJobKeyNameAndJobGroupName(quartzDTO.getJob().getDetails());
+        jobDetailsCO.setScheduledDate(scheduledDate);
+        HashMap<String, JobDetailsCO> response = new HashMap<String, JobDetailsCO>();
+        response.put("jobDetails", jobDetailsCO);
+        return new ResponseEntity<String>(gson().toJson(response, getHashMapOfStringAndJobDetailsCO()), ACCEPTED);
+    }
+
+    /**
+     * Create scheduled api cron triggered job response entity.
+     *
+     * @param quartzDTO           the quartz dto
+     * @param errors              the errors
+     * @param bindingResult       the binding result
+     * @param httpServletRequest  the http servlet request
+     * @param httpServletResponse the http servlet response
+     * @return the response entity
+     * @throws BindException          the bind exception
+     * @throws SchedulerException     the scheduler exception
+     * @throws ClassNotFoundException the class not found exception
+     */
+    @RequestMapping(value = CREATE_API_JOB_SCHEDULED_CRON, method = POST)
+    @ResponseBody
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> createScheduledApiCronTriggeredJob(@Validated(CreateNewScheduledCronTriggeredJob.class) @RequestBody final QuartzDTO quartzDTO, Errors errors, BindingResult bindingResult, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws BindException, SchedulerException, ClassNotFoundException {
+        if (bindingResult.hasErrors()) {
+            throw new BindException(bindingResult);
+        }
+        Date scheduledDate = quartzService.createNewScheduledApiCronJob(quartzDTO);
+        JobDetailsCO jobDetailsCO = quartzService.fetchJobDetailsByJobKeyNameAndJobGroupName(quartzDTO.getJob().getDetails());
+        jobDetailsCO.setScheduledDate(scheduledDate);
+        HashMap<String, JobDetailsCO> response = new HashMap<String, JobDetailsCO>();
+        response.put("jobDetails", jobDetailsCO);
+        return new ResponseEntity<String>(gson().toJson(response, getHashMapOfStringAndJobDetailsCO()), ACCEPTED);
     }
 
     /**
@@ -125,27 +152,24 @@ public class QuartzController extends BaseController {
      * @param quartzDTO           the quartz dto
      * @param httpServletRequest  the http servlet request
      * @param httpServletResponse the http servlet response
+     * @param bindingResult       the binding result
+     * @param errors              the errors
      * @return the response entity
+     * @throws BindException          the bind exception
+     * @throws SchedulerException     the scheduler exception
+     * @throws ClassNotFoundException the class not found exception
      */
-    @RequestMapping(value = UPDATE_JOB, method = PUT)
+    @RequestMapping(value = UPDATE_API_JOB, method = PUT)
     @ResponseBody
-    public ResponseEntity<RestResponseVO<String>> updateExistingJob(@RequestBody QuartzDTO quartzDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        RestResponseVO<String> restResponseVO = new RestResponseVO<String>(null, null, EMPTY);
-        try {
-            notNull(quartzDTO, formatMessage(getMessage("object.not.set", getMessage("request.updating.existing.quartz.job"))));
-            notNull(quartzDTO.getJob(), formatMessage(getMessage("object.not.set", getMessage("request.updating.existing.quartz.job.not.contains.job"))));
-            notNull(quartzDTO.getJob().getType(), getMessage("object.not.set", getMessage("request.updating.existing.quartz.job.not.contains.job.type")));
-
-            if (quartzDTO.getJob().getType().equals(API)) {
-                quartzService.updateExistingJob(quartzDTO);
-                setRestResponseVO(restResponseVO, null, null, getMessage("quartz.job.updated"));
-            }
-        } catch (SchedulerException | ClassNotFoundException | IllegalArgumentException | NullPointerException e) {
-            log.error(format("[Request Interceptor Id {0}] {1}", httpServletRequest.getAttribute(CUSTOM_REQUEST_ID), getMessage("error.while.updating.existing.job")));
-            log.error(getStackTrace(e));
-            restResponseVO.setMessage(e.getLocalizedMessage());
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> updateExistingJob(@Validated({UpdateExistingJob.class}) @RequestBody final QuartzDTO quartzDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, BindingResult bindingResult, Errors errors) throws BindException, SchedulerException, ClassNotFoundException {
+        if (bindingResult.hasErrors()) {
+            throw new BindException(bindingResult);
         }
-        return new ResponseEntity<RestResponseVO<String>>(restResponseVO, valueOf(httpServletResponse.getStatus()));
+        HashMap<String, JobDetailsCO> response = new HashMap<String, JobDetailsCO>();
+        quartzService.updateExistingJob(quartzDTO);
+        response.put("jobDetails", quartzService.fetchJobDetailsByJobKeyNameAndJobGroupName(quartzDTO.getJob().getDetails()));
+        return new ResponseEntity<String>(gson().toJson(response, getHashMapOfStringAndJobDetailsCO()), ACCEPTED);
     }
 
     /**
@@ -154,27 +178,54 @@ public class QuartzController extends BaseController {
      * @param quartzDTO           the quartz dto
      * @param httpServletRequest  the http servlet request
      * @param httpServletResponse the http servlet response
+     * @param bindingResult       the binding result
+     * @param errors              the errors
      * @return the response entity
+     * @throws BindException           the bind exception
+     * @throws InvalidRequestException the invalid request exception
+     * @throws SchedulerException      the scheduler exception
      */
-    @RequestMapping(value = CREATE_TRIGGER, method = POST)
+    @RequestMapping(value = CREATE_SIMPLE_TRIGGER, method = POST)
     @ResponseBody
-    public ResponseEntity<RestResponseVO<String>> createNewTrigger(@RequestBody QuartzDTO quartzDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        RestResponseVO<String> restResponseVO = new RestResponseVO<String>(null, null, EMPTY);
-        try {
-            notNull(quartzDTO, formatMessage(getMessage("object.not.set", getMessage("request.creating.new.quartz.trigger"))));
-            notNull(quartzDTO.getScheduleType(), formatMessage(getMessage("object.not.set", getMessage("request.creating.new.quartz.trigger.not.contains.schedule.type"))));
-
-            if (quartzDTO.getScheduleType().equals(SIMPLE)) {
-                setRestResponseVO(restResponseVO, null, null, getMessage("quartz.trigger.created.and.scheduled.at", quartzService.createNewSimpleTriggerForJob(quartzDTO)));
-            } else if (quartzDTO.getScheduleType().equals(CRON)) {
-                setRestResponseVO(restResponseVO, null, null, getMessage("quartz.trigger.created.and.scheduled.at", quartzService.createNewCronTriggerForJob(quartzDTO)));
-            }
-        } catch (SchedulerException | IllegalArgumentException | NullPointerException e) {
-            log.error(format("[Request Interceptor Id {0}] {1}", httpServletRequest.getAttribute(CUSTOM_REQUEST_ID), getMessage("error.while.creating.new.trigger")));
-            log.error(getStackTrace(e));
-            restResponseVO.setMessage(e.getLocalizedMessage());
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> createNewSimpleTriggerForJob(@Validated({CreateNewSimpleTriggerForJob.class}) @RequestBody final QuartzDTO quartzDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, BindingResult bindingResult, Errors errors) throws BindException, InvalidRequestException, SchedulerException {
+        if (bindingResult.hasErrors()) {
+            throw new BindException(bindingResult);
         }
-        return new ResponseEntity<RestResponseVO<String>>(restResponseVO, valueOf(httpServletResponse.getStatus()));
+        Date scheduledDate = quartzService.createNewSimpleTriggerForJob(quartzDTO);
+        TriggerDetailsCO triggerDetailsCO = quartzService.fetchTriggerDetailsByTriggerKeyNameAndTriggerGroupName(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getDetails());
+        triggerDetailsCO.setScheduledDate(scheduledDate);
+        HashMap<String, Object> response = new HashMap<String, Object>();
+        response.put("triggerDetails", triggerDetailsCO);
+        return new ResponseEntity<String>(gson().toJson(response, getHashMapOfStringAndTriggerDetailsCO()), ACCEPTED);
+    }
+
+    /**
+     * Create new cron trigger for job response entity.
+     *
+     * @param quartzDTO           the quartz dto
+     * @param httpServletRequest  the http servlet request
+     * @param httpServletResponse the http servlet response
+     * @param bindingResult       the binding result
+     * @param errors              the errors
+     * @return the response entity
+     * @throws BindException           the bind exception
+     * @throws InvalidRequestException the invalid request exception
+     * @throws SchedulerException      the scheduler exception
+     */
+    @RequestMapping(value = CREATE_CRON_TRIGGER, method = POST)
+    @ResponseBody
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> createNewCronTriggerForJob(@Validated({CreateNewCronTriggerForJob.class}) @RequestBody final QuartzDTO quartzDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, BindingResult bindingResult, Errors errors) throws BindException, InvalidRequestException, SchedulerException {
+        if (bindingResult.hasErrors()) {
+            throw new BindException(bindingResult);
+        }
+        Date scheduledDate = quartzService.createNewCronTriggerForJob(quartzDTO);
+        TriggerDetailsCO triggerDetailsCO = quartzService.fetchTriggerDetailsByTriggerKeyNameAndTriggerGroupName(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails());
+        triggerDetailsCO.setScheduledDate(scheduledDate);
+        HashMap<String, Object> response = new HashMap<String, Object>();
+        response.put("triggerDetails", triggerDetailsCO);
+        return new ResponseEntity<String>(gson().toJson(response, getHashMapOfStringAndTriggerDetailsCO()), ACCEPTED);
     }
 
     /**
@@ -183,278 +234,273 @@ public class QuartzController extends BaseController {
      * @param quartzDTO           the quartz dto
      * @param httpServletRequest  the http servlet request
      * @param httpServletResponse the http servlet response
+     * @param bindingResult       the binding result
+     * @param errors              the errors
      * @return the response entity
+     * @throws SchedulerException the scheduler exception
+     * @throws BindException      the bind exception
      */
-    @RequestMapping(value = UPDATE_TRIGGER, method = PUT)
+    @RequestMapping(value = UPDATE_SIMPLE_TRIGGER, method = PUT)
     @ResponseBody
-    public ResponseEntity<RestResponseVO<String>> updateExistingTrigger(@RequestBody QuartzDTO quartzDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        RestResponseVO<String> restResponseVO = new RestResponseVO<String>(null, null, EMPTY);
-        try {
-            notNull(quartzDTO, formatMessage(getMessage("object.not.set", getMessage("request.updating.existing.quartz.trigger"))));
-            notNull(quartzDTO.getScheduleType(), formatMessage(getMessage("object.not.set", getMessage("request.updating.existing.quartz.trigger.not.contains.schedule.type"))));
-
-            if (quartzDTO.getScheduleType().equals(SIMPLE)) {
-                setRestResponseVO(restResponseVO, null, null, getMessage("quartz.trigger.updated.and.scheduled.at", quartzService.updateExistingSimpleTrigger(quartzDTO)));
-            } else if (quartzDTO.getScheduleType().equals(CRON)) {
-                setRestResponseVO(restResponseVO, null, null, getMessage("quartz.trigger.updated.and.scheduled.at", quartzService.updateExistingCronTrigger(quartzDTO)));
-            }
-        } catch (SchedulerException | IllegalArgumentException | NullPointerException e) {
-            log.error(format("[Request Interceptor Id {0}] {1}", httpServletRequest.getAttribute(CUSTOM_REQUEST_ID), getMessage("error.while.updating.existing.trigger")));
-            log.error(getStackTrace(e));
-            restResponseVO.setMessage(e.getLocalizedMessage());
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> updateExistingSimpleTrigger(@Validated({UpdateExistingSimpleTriggerForJob.class}) @RequestBody final QuartzDTO quartzDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, BindingResult bindingResult, Errors errors) throws SchedulerException, BindException {
+        if (bindingResult.hasErrors()) {
+            throw new BindException(bindingResult);
         }
-        return new ResponseEntity<RestResponseVO<String>>(restResponseVO, valueOf(httpServletResponse.getStatus()));
+        Date scheduledDate = quartzService.updateExistingSimpleTrigger(quartzDTO);
+        TriggerDetailsCO triggerDetailsCO = quartzService.fetchTriggerDetailsByTriggerKeyNameAndTriggerGroupName(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getDetails());
+        triggerDetailsCO.setScheduledDate(scheduledDate);
+        HashMap<String, Object> response = new HashMap<String, Object>();
+        response.put("triggerDetails", triggerDetailsCO);
+        return new ResponseEntity<String>(gson().toJson(response, getHashMapOfStringAndTriggerDetailsCO()), ACCEPTED);
+    }
+
+    /**
+     * Update existing cron trigger response entity.
+     *
+     * @param quartzDTO           the quartz dto
+     * @param httpServletRequest  the http servlet request
+     * @param httpServletResponse the http servlet response
+     * @param bindingResult       the binding result
+     * @param errors              the errors
+     * @return the response entity
+     * @throws SchedulerException the scheduler exception
+     * @throws BindException      the bind exception
+     */
+    @RequestMapping(value = UPDATE_CRON_TRIGGER, method = PUT)
+    @ResponseBody
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> updateExistingCronTrigger(@Validated({UpdateExistingCronTriggerForJob.class}) @RequestBody final QuartzDTO quartzDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, BindingResult bindingResult, Errors errors) throws SchedulerException, BindException {
+        if (bindingResult.hasErrors()) {
+            throw new BindException(bindingResult);
+        }
+        Date schedueldDate = quartzService.updateExistingCronTrigger(quartzDTO);
+        TriggerDetailsCO triggerDetailsCO = quartzService.fetchTriggerDetailsByTriggerKeyNameAndTriggerGroupName(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails());
+        triggerDetailsCO.setScheduledDate(schedueldDate);
+        HashMap<String, Object> response = new HashMap<String, Object>();
+        response.put("triggerDetails", triggerDetailsCO);
+        return new ResponseEntity<String>(gson().toJson(response, getHashMapOfStringAndTriggerDetailsCO()), ACCEPTED);
     }
 
     /**
      * Fetch jobs by group name response entity.
      *
-     * @param jobGroupName        the group name
-     * @param httpServletRequest  the http servlet request
-     * @param httpServletResponse the http servlet response
+     * @param keyGroupDescriptionDTO the key group description dto
+     * @param httpServletRequest     the http servlet request
+     * @param httpServletResponse    the http servlet response
+     * @param bindingResult          the binding result
+     * @param errors                 the errors
      * @return the response entity
+     * @throws BindException      the bind exception
+     * @throws SchedulerException the scheduler exception
      */
     @RequestMapping(value = FETCH_JOB_BY_JOB_GROUP_NAME, method = GET)
     @ResponseBody
-    public ResponseEntity<DataTableVO<JobDetailsCO>> fetchJobsByJobGroupName(@PathVariable("jobGroupName") String jobGroupName, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        DataTableVO<JobDetailsCO> jobDetailsCODataTableVO = new DataTableVO<JobDetailsCO>(0, 0, 0, null);
-        try {
-            hasText(jobGroupName, formatMessage(getMessage("")));
-
-            List<JobDetailsCO> jobDetails = quartzService.fetchJobDetailsByJobGroupName(jobGroupName);
-            notEmpty(jobDetails, formatMessage(getMessage("")));
-
-            setDataTableVO(jobDetailsCODataTableVO, jobDetails.size(), jobDetails.size(), jobDetails.size(), jobDetails);
-        } catch (SchedulerException | IllegalArgumentException | NullPointerException e) {
-            log.error("[Request Interceptor Id " + httpServletRequest.getAttribute(CUSTOM_REQUEST_ID) + "] Error while fetching list of jobs for " + jobGroupName + " job group");
-            log.error(getStackTrace(e));
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> fetchJobsByJobGroupName(@Validated({FetchJobsByJobGroupName.class}) @RequestBody final KeyGroupDescriptionDTO keyGroupDescriptionDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, BindingResult bindingResult, Errors errors) throws BindException, SchedulerException {
+        if (bindingResult.hasErrors()) {
+            throw new BindException(bindingResult);
         }
-        return new ResponseEntity<DataTableVO<JobDetailsCO>>(jobDetailsCODataTableVO, valueOf(httpServletResponse.getStatus()));
+
+        List<JobDetailsCO> jobDetailsCOS = quartzService.fetchJobDetailsByJobGroupName(keyGroupDescriptionDTO);
+        return new ResponseEntity<String>(gson().toJson(isEmpty(jobDetailsCOS) ? new DataTableVO<JobDetailsCO>(0, 0, 0, null) : new DataTableVO<JobDetailsCO>(jobDetailsCOS.size(), jobDetailsCOS.size(), jobDetailsCOS.size(), jobDetailsCOS), getDataTableVOOfJobDetailsCO()), ACCEPTED);
     }
 
     /**
      * Fetch triggers by job key name and group name response entity.
      *
-     * @param jobKeyName          the job key name
-     * @param jobGroupName        the group name
-     * @param httpServletRequest  the http servlet request
-     * @param httpServletResponse the http servlet response
+     * @param keyGroupDescriptionDTO the key group description dto
+     * @param httpServletRequest     the http servlet request
+     * @param httpServletResponse    the http servlet response
+     * @param bindingResult          the binding result
+     * @param errors                 the errors
      * @return the response entity
+     * @throws BindException      the bind exception
+     * @throws SchedulerException the scheduler exception
      */
     @RequestMapping(value = FETCH_TRIGGER_BY_JOB_KEY_JOB_GROUP_NAME, method = GET)
     @ResponseBody
-    public ResponseEntity<DataTableVO<TriggerDetailsCO>> fetchTriggersByJobKeyNameAndJobGroupName(@PathVariable("jobKeyName") String jobKeyName, @PathVariable("jobGroupName") String jobGroupName, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        DataTableVO<TriggerDetailsCO> triggerDetailsCODataTableVO = new DataTableVO<TriggerDetailsCO>(0, 0, 0, null);
-        try {
-            hasText(jobKeyName, formatMessage(getMessage("")));
-            hasText(jobGroupName, formatMessage(getMessage("")));
-
-            List<TriggerDetailsCO> triggerDetails = quartzService.fetchTriggerDetailsByJobKeyNameAndJobGroupName(jobKeyName, jobGroupName);
-            notEmpty(triggerDetails, formatMessage(getMessage("")));
-
-            setDataTableVO(triggerDetailsCODataTableVO, triggerDetails.size(), triggerDetails.size(), triggerDetails.size(), triggerDetails);
-        } catch (SchedulerException | IllegalArgumentException | NullPointerException e) {
-            log.error("[Request Interceptor Id " + httpServletRequest.getAttribute(CUSTOM_REQUEST_ID) + "] Error while fetching list of triggers for " + jobGroupName + " job group and " + jobKeyName + " job key.");
-            log.error(getStackTrace(e));
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> fetchTriggersByJobKeyNameAndJobGroupName(@Validated({FetchTriggerDetailsByJobKeyNameAndJobGroupName.class}) @RequestBody final KeyGroupDescriptionDTO keyGroupDescriptionDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, BindingResult bindingResult, Errors errors) throws BindException, SchedulerException {
+        if (bindingResult.hasErrors()) {
+            throw new BindException(bindingResult);
         }
-        return new ResponseEntity<DataTableVO<TriggerDetailsCO>>(triggerDetailsCODataTableVO, valueOf(httpServletResponse.getStatus()));
+
+        List<TriggerDetailsCO> triggerDetailsCOS = quartzService.fetchTriggerDetailsByJobKeyNameAndJobGroupName(keyGroupDescriptionDTO);
+        return new ResponseEntity<String>(gson().toJson(isEmpty(triggerDetailsCOS) ? new DataTableVO<TriggerDetailsCO>(0, 0, 0, null) : new DataTableVO<TriggerDetailsCO>(triggerDetailsCOS.size(), triggerDetailsCOS.size(), triggerDetailsCOS.size(), triggerDetailsCOS), getDataTableVOOfTriggerDetailsCO()), ACCEPTED);
     }
 
     /**
      * Fetch quartz details for group name response entity.
      *
-     * @param jobGroupName        the group name
-     * @param httpServletRequest  the http servlet request
-     * @param httpServletResponse the http servlet response
+     * @param keyGroupDescriptionDTO the key group description dto
+     * @param httpServletRequest     the http servlet request
+     * @param httpServletResponse    the http servlet response
+     * @param bindingResult          the binding result
+     * @param errors                 the errors
      * @return the response entity
+     * @throws SchedulerException the scheduler exception
+     * @throws BindException      the bind exception
      */
     @RequestMapping(value = FETCH_QUARTZ_DETAILS_JOB_GROUP_NAME, method = GET)
     @ResponseBody
-    public ResponseEntity<DataTableVO<QuartzDetailsCO>> fetchQuartzDetailsForGroupName(@PathVariable("jobGroupName") String jobGroupName, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        DataTableVO<QuartzDetailsCO> quartzDetailsCODataTableVO = new DataTableVO<QuartzDetailsCO>(0, 0, 0, null);
-        try {
-            hasText(jobGroupName, formatMessage(getMessage("")));
-
-            List<QuartzDetailsCO> quartzDetails = quartzService.fetchQuartzDetailsForJobGroupName(jobGroupName);
-            notEmpty(quartzDetails, formatMessage(getMessage("")));
-
-            setDataTableVO(quartzDetailsCODataTableVO, quartzDetails.size(), quartzDetails.size(), quartzDetails.size(), quartzDetails);
-        } catch (SchedulerException | IllegalArgumentException | NullPointerException e) {
-            log.error("[Request Interceptor Id " + httpServletRequest.getAttribute(CUSTOM_REQUEST_ID) + "] Error while fetching list of overall quartz details for " + jobGroupName + "group");
-            log.error(getStackTrace(e));
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> fetchQuartzDetailsForJobGroupName(@Validated({FetchQuartzDetailsByJobGroupName.class}) @RequestBody final KeyGroupDescriptionDTO keyGroupDescriptionDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, BindingResult bindingResult, Errors errors) throws SchedulerException, BindException {
+        if (bindingResult.hasErrors()) {
+            throw new BindException(bindingResult);
         }
-        return new ResponseEntity<DataTableVO<QuartzDetailsCO>>(quartzDetailsCODataTableVO, valueOf(httpServletResponse.getStatus()));
+
+        List<QuartzDetailsCO> quartzDetails = quartzService.fetchQuartzDetailsForJobGroupName(keyGroupDescriptionDTO);
+        return new ResponseEntity<String>(gson().toJson(isEmpty(quartzDetails) ? new DataTableVO<QuartzDetailsCO>(0, 0, 0, null) : new DataTableVO<QuartzDetailsCO>(quartzDetails.size(), quartzDetails.size(), quartzDetails.size(), quartzDetails), getDataTableVOOfQuartzDetailsCO()), ACCEPTED);
     }
 
     /**
      * Resume jobs response entity.
      *
-     * @param jobKeyGroupDescriptionDTO  the job key group name dto
-     * @param httpServletRequest  the http servlet request
-     * @param httpServletResponse the http servlet response
+     * @param keyGroupDescriptionDTO the key group description dto
+     * @param httpServletRequest     the http servlet request
+     * @param httpServletResponse    the http servlet response
+     * @param errors                 the errors
+     * @param bindingResult          the binding result
      * @return the response entity
+     * @throws BindException      the bind exception
+     * @throws SchedulerException the scheduler exception
      */
     @RequestMapping(value = RESUME_JOBS, method = PUT)
     @ResponseBody
-    public ResponseEntity<Map> resumeJobs(@RequestBody KeyGroupDescriptionDTO jobKeyGroupDescriptionDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        Boolean jobResumed = FALSE;
-        try {
-            notNull(jobKeyGroupDescriptionDTO, formatMessage(getMessage("")));
-            hasText(jobKeyGroupDescriptionDTO.getKeyName(), formatMessage(getMessage("")));
-            hasText(jobKeyGroupDescriptionDTO.getGroupName(), formatMessage(getMessage("")));
-
-            quartzService.resumeJobs(jobKeyGroupDescriptionDTO.getKeyName(), jobKeyGroupDescriptionDTO.getGroupName());
-//            setRestResponseVO(restResponseVO, TRUE, null, getMessage("quartz.jobs.resume.success"));
-            jobResumed = TRUE;
-        } catch (SchedulerException | IllegalArgumentException | NullPointerException e) {
-            log.error("[Request Interceptor Id " + httpServletRequest.getAttribute(CUSTOM_REQUEST_ID) + "] Error while resuming job");
-            log.error(getStackTrace(e));
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> resumeJobs(@Validated({ResumeJobs.class}) @RequestBody final KeyGroupDescriptionDTO keyGroupDescriptionDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Errors errors, BindingResult bindingResult) throws BindException, SchedulerException {
+        if (bindingResult.hasErrors()) {
+            throw new BindException(bindingResult);
         }
-        Map<String, Boolean> map = new HashMap<String, Boolean>();
-        map.put("jobResumed", jobResumed);
-        return new ResponseEntity<Map>(map, valueOf(httpServletResponse.getStatus()));
+
+        HashMap<String, Boolean> response = new HashMap<String, Boolean>();
+        response.put("resumed", quartzService.resumeJobs(keyGroupDescriptionDTO));
+        return new ResponseEntity<String>(gson().toJson(response, getHashMapOfStringAndBoolean()), ACCEPTED);
     }
 
     /**
      * Pause jobs response entity.
      *
-     * @param jobKeyGroupDescriptionDTO  the job key group name dto
-     * @param httpServletRequest  the http servlet request
-     * @param httpServletResponse the http servlet response
+     * @param keyGroupDescriptionDTO the key group description dto
+     * @param httpServletRequest     the http servlet request
+     * @param httpServletResponse    the http servlet response
+     * @param errors                 the errors
+     * @param bindingResult          the binding result
      * @return the response entity
+     * @throws BindException      the bind exception
+     * @throws SchedulerException the scheduler exception
      */
     @RequestMapping(value = PAUSE_JOBS, method = PUT)
     @ResponseBody
-    public ResponseEntity<Map> pauseJobs(@RequestBody KeyGroupDescriptionDTO jobKeyGroupDescriptionDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        Boolean jobPaused = FALSE;
-        try {
-            notNull(jobKeyGroupDescriptionDTO, formatMessage(getMessage("")));
-            hasText(jobKeyGroupDescriptionDTO.getKeyName(), formatMessage(getMessage("")));
-            hasText(jobKeyGroupDescriptionDTO.getGroupName(), formatMessage(getMessage("")));
-
-            quartzService.pauseJobs(jobKeyGroupDescriptionDTO.getKeyName(), jobKeyGroupDescriptionDTO.getGroupName());
-//            setRestResponseVO(restResponseVO, TRUE, null, getMessage("quartz.jobs.pause.success"));
-            jobPaused = TRUE;
-        } catch (SchedulerException | IllegalArgumentException | NullPointerException e) {
-            log.error("[Request Interceptor Id " + httpServletRequest.getAttribute(CUSTOM_REQUEST_ID) + "] Error while pausing job");
-            log.error(getStackTrace(e));
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> pauseJobs(@Validated({PauseJobs.class}) @RequestBody final KeyGroupDescriptionDTO keyGroupDescriptionDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Errors errors, BindingResult bindingResult) throws BindException, SchedulerException {
+        if (bindingResult.hasErrors()) {
+            throw new BindException(bindingResult);
         }
-        Map<String, Boolean> map = new HashMap<String, Boolean>();
-        map.put("jobPaused", jobPaused);
-        return new ResponseEntity<Map>(map, valueOf(httpServletResponse.getStatus()));
+
+        HashMap<String, Boolean> response = new HashMap<String, Boolean>();
+        response.put("resumed", quartzService.pauseJobs(keyGroupDescriptionDTO));
+        return new ResponseEntity<String>(gson().toJson(response, getHashMapOfStringAndBoolean()), ACCEPTED);
     }
 
     /**
      * Resume triggers response entity.
      *
-     * @param triggerKeyGroupDescriptionDTO the trigger key group name dto
+     * @param keyGroupDescriptionDTO the trigger key group name dto
      * @param httpServletRequest     the http servlet request
      * @param httpServletResponse    the http servlet response
+     * @param errors                 the errors
+     * @param bindingResult          the binding result
      * @return the response entity
+     * @throws BindException      the bind exception
+     * @throws SchedulerException the scheduler exception
      */
     @RequestMapping(value = RESUME_TRIGGERS, method = PUT)
     @ResponseBody
-    public ResponseEntity<Map> resumeTriggers(@RequestBody KeyGroupDescriptionDTO triggerKeyGroupDescriptionDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        Boolean triggerResumed = FALSE;
-        try {
-            notNull(triggerKeyGroupDescriptionDTO, formatMessage(getMessage("")));
-            hasText(triggerKeyGroupDescriptionDTO.getKeyName(), formatMessage(getMessage("")));
-            hasText(triggerKeyGroupDescriptionDTO.getGroupName(), formatMessage(getMessage("")));
-
-            quartzService.resumeTriggers(triggerKeyGroupDescriptionDTO.getKeyName(), triggerKeyGroupDescriptionDTO.getGroupName());
-//            setRestResponseVO(restResponseVO, TRUE, null, getMessage("quartz.triggers.resume.success"));
-            triggerResumed = TRUE;
-        } catch (SchedulerException | IllegalArgumentException | NullPointerException e) {
-            log.error("[Request Interceptor Id " + httpServletRequest.getAttribute(CUSTOM_REQUEST_ID) + "] Error while resuming trigger");
-            log.error(getStackTrace(e));
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> resumeTriggers(@Validated({ResumeTriggers.class}) @RequestBody final KeyGroupDescriptionDTO keyGroupDescriptionDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Errors errors, BindingResult bindingResult) throws BindException, SchedulerException {
+        if (bindingResult.hasErrors()) {
+            throw new BindException(bindingResult);
         }
-        Map<String, Boolean> map = new HashMap<String, Boolean>();
-        map.put("triggerResumed", triggerResumed);
-        return new ResponseEntity<Map>(map, valueOf(httpServletResponse.getStatus()));
+
+        HashMap<String, Boolean> response = new HashMap<String, Boolean>();
+        response.put("resumed", quartzService.resumeTriggers(keyGroupDescriptionDTO));
+        return new ResponseEntity<String>(gson().toJson(response, getHashMapOfStringAndBoolean()), ACCEPTED);
     }
 
     /**
      * Pause triggers response entity.
      *
-     * @param triggerKeyGroupDescriptionDTO the trigger key group name dto
+     * @param keyGroupDescriptionDTO the trigger key group name dto
      * @param httpServletRequest     the http servlet request
      * @param httpServletResponse    the http servlet response
+     * @param errors                 the errors
+     * @param bindingResult          the binding result
      * @return the response entity
+     * @throws BindException      the bind exception
+     * @throws SchedulerException the scheduler exception
      */
     @RequestMapping(value = PAUSE_TRIGGERS, method = PUT)
     @ResponseBody
-    public ResponseEntity<Map> pauseTriggers(@RequestBody KeyGroupDescriptionDTO triggerKeyGroupDescriptionDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        Boolean triggerPaused = FALSE;
-        try {
-            notNull(triggerKeyGroupDescriptionDTO, formatMessage(getMessage("")));
-            hasText(triggerKeyGroupDescriptionDTO.getKeyName(), formatMessage(getMessage("")));
-            hasText(triggerKeyGroupDescriptionDTO.getGroupName(), formatMessage(getMessage("")));
-
-            quartzService.pauseTriggers(triggerKeyGroupDescriptionDTO.getKeyName(), triggerKeyGroupDescriptionDTO.getGroupName());
-//            setRestResponseVO(restResponseVO, TRUE, null, getMessage("quartz.triggers.pause.success"));
-            triggerPaused = TRUE;
-        } catch (SchedulerException | IllegalArgumentException | NullPointerException e) {
-            log.error("[Request Interceptor Id " + httpServletRequest.getAttribute(CUSTOM_REQUEST_ID) + "] Error while pausing trigger");
-            log.error(getStackTrace(e));
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> pauseTriggers(@Validated({PauseTriggers.class}) @RequestBody final KeyGroupDescriptionDTO keyGroupDescriptionDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Errors errors, BindingResult bindingResult) throws BindException, SchedulerException {
+        if (bindingResult.hasErrors()) {
+            throw new BindException(bindingResult);
         }
-        Map<String, Boolean> map = new HashMap<String, Boolean>();
-        map.put("triggerPaused", triggerPaused);
-        return new ResponseEntity<Map>(map, valueOf(httpServletResponse.getStatus()));
+
+        HashMap<String, Boolean> response = new HashMap<String, Boolean>();
+        response.put("paused", quartzService.pauseTriggers(keyGroupDescriptionDTO));
+        return new ResponseEntity<String>(gson().toJson(response, getHashMapOfStringAndBoolean()), ACCEPTED);
     }
 
     /**
      * Delete jobs response entity.
      *
-     * @param jobKeyGroupDescriptionDTO  the job key group name dto
-     * @param httpServletRequest  the http servlet request
-     * @param httpServletResponse the http servlet response
+     * @param keyGroupDescriptionDTO the trigger key group description dto
+     * @param httpServletRequest     the http servlet request
+     * @param httpServletResponse    the http servlet response
+     * @param errors                 the errors
+     * @param bindingResult          the binding result
      * @return the response entity
+     * @throws BindException      the bind exception
+     * @throws SchedulerException the scheduler exception
      */
     @RequestMapping(value = DELETE_JOBS, method = DELETE)
     @ResponseBody
-    public ResponseEntity<Map> deleteJobs(@RequestBody KeyGroupDescriptionDTO jobKeyGroupDescriptionDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        Boolean jobDeleted = FALSE;
-        try {
-            notNull(jobKeyGroupDescriptionDTO, formatMessage(getMessage("")));
-            hasText(jobKeyGroupDescriptionDTO.getKeyName(), formatMessage(getMessage("")));
-            hasText(jobKeyGroupDescriptionDTO.getGroupName(), formatMessage(getMessage("")));
-
-//            setRestResponseVO(restResponseVO, quartzService.deleteJobs(jobKeyGroupDescriptionDTO.getKeyName(), jobKeyGroupDescriptionDTO.getGroupName()), null, getMessage("quartz.jobs.delete.success"));
-            jobDeleted = quartzService.deleteJobs(jobKeyGroupDescriptionDTO.getKeyName(), jobKeyGroupDescriptionDTO.getGroupName());
-        } catch (SchedulerException | IllegalArgumentException | NullPointerException e) {
-            log.error("[Request Interceptor Id " + httpServletRequest.getAttribute(CUSTOM_REQUEST_ID) + "] Error while deleting job " + jobKeyGroupDescriptionDTO.toString());
-            log.error(getStackTrace(e));
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> deleteJobs(@Validated({DeleteJobs.class}) @RequestBody final KeyGroupDescriptionDTO keyGroupDescriptionDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Errors errors, BindingResult bindingResult) throws BindException, SchedulerException {
+        if (bindingResult.hasErrors()) {
+            throw new BindException(bindingResult);
         }
-        Map<String, Boolean> map = new HashMap<String, Boolean>();
-        map.put("jobDeleted", jobDeleted);
-        return new ResponseEntity<Map>(map, valueOf(httpServletResponse.getStatus()));
+
+        HashMap<String, Boolean> response = new HashMap<String, Boolean>();
+        response.put("deleted", quartzService.deleteJobs(keyGroupDescriptionDTO));
+        return new ResponseEntity<String>(gson().toJson(response, getHashMapOfStringAndBoolean()), ACCEPTED);
     }
 
     /**
      * Delete triggers response entity.
      *
-     * @param triggerKeyGroupDescriptionDTO the trigger key group name dto
+     * @param keyGroupDescriptionDTO the trigger key group name dto
      * @param httpServletRequest     the http servlet request
      * @param httpServletResponse    the http servlet response
+     * @param errors                 the errors
+     * @param bindingResult          the binding result
      * @return the response entity
+     * @throws BindException      the bind exception
+     * @throws SchedulerException the scheduler exception
      */
     @RequestMapping(value = DELETE_TRIGGERS, method = DELETE)
     @ResponseBody
-    public ResponseEntity<Map> deleteTriggers(@RequestBody KeyGroupDescriptionDTO triggerKeyGroupDescriptionDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        Boolean triggerDeleted = FALSE;
-        try {
-            notNull(triggerKeyGroupDescriptionDTO, formatMessage(getMessage("")));
-            hasText(triggerKeyGroupDescriptionDTO.getKeyName(), formatMessage(getMessage("")));
-            hasText(triggerKeyGroupDescriptionDTO.getGroupName(), formatMessage(getMessage("")));
-
-//            setRestResponseVO(restResponseVO, quartzService.deleteTriggers(triggerKeyGroupDescriptionDTO.getKeyName(), triggerKeyGroupDescriptionDTO.getGroupName()), null, getMessage("quartz.triggers.delete.success"));
-            triggerDeleted = quartzService.deleteTriggers(triggerKeyGroupDescriptionDTO.getKeyName(), triggerKeyGroupDescriptionDTO.getGroupName());
-        } catch (SchedulerException | IllegalArgumentException | NullPointerException e) {
-            log.error("[Request Interceptor Id " + httpServletRequest.getAttribute(CUSTOM_REQUEST_ID) + "] Error while deleting job " + triggerKeyGroupDescriptionDTO.toString());
-            log.error(getStackTrace(e));
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> deleteTriggers(@Validated({DeleteTriggers.class}) @RequestBody final KeyGroupDescriptionDTO keyGroupDescriptionDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Errors errors, BindingResult bindingResult) throws BindException, SchedulerException {
+        if (bindingResult.hasErrors()) {
+            throw new BindException(bindingResult);
         }
-        Map<String, Boolean> map = new HashMap<String, Boolean>();
-        map.put("triggerDeleted", triggerDeleted);
-        return new ResponseEntity<Map>(map, valueOf(httpServletResponse.getStatus()));
+
+        HashMap<String, Boolean> response = new HashMap<String, Boolean>();
+        response.put("deleted", quartzService.deleteTriggers(keyGroupDescriptionDTO));
+        return new ResponseEntity<String>(gson().toJson(response, getHashMapOfStringAndBoolean()), ACCEPTED);
     }
 }

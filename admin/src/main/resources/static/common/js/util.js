@@ -1,5 +1,13 @@
 "use strict";
 
+var HTTP_RESPONSE_CODE_ENUM = Object.freeze({
+    INFORMATIONAL: 1,
+    SUCCESSFUL: 2,
+    REDIRECTION: 3,
+    CLIENT_ERROR: 4,
+    SERVER_ERROR: 5
+});
+
 toastr.options = {
     "closeButton": true,
     "debug": false,
@@ -124,6 +132,14 @@ function showFlashMessagesOnPageLoad() {
             $element.empty();
         }
     });
+}
+
+function getResponseCodeValue(responseCode) {
+    return parseInt(parseInt(responseCode) / 100);
+}
+
+function is2xxResponseCode(responseCode) {
+    return HTTP_RESPONSE_CODE_ENUM.SUCCESSFUL === getResponseCodeValue(responseCode);
 }
 
 $(document).ready(function () {

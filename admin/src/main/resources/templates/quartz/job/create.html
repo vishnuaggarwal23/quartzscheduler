@@ -23,9 +23,15 @@
                     </div>
                 </div>
                 <div class="portlet-body form">
-                    <form method="post" th:attr="data-create-new-job-uri=@{/api/quartz/job}" name="createApiJobForm"
-                          id="createApiJobForm"
-                          class="form-horizontal">
+                    <form
+                            method="post"
+                            th:attr="
+                            data-create-new-unscheduled-api-job-uri=@{${T(com.vishnu.aggarwal.core.constants.ThymeleafUrlMapping).createUnscheduledApiJobUri()}},
+                            data-create-new-simple-api-job-uri=@{${T(com.vishnu.aggarwal.core.constants.ThymeleafUrlMapping).createScheduledApiSimpleJobUri()}},
+                            data-create-new-cron-api-job-uri=@{${T(com.vishnu.aggarwal.core.constants.ThymeleafUrlMapping).createScheduledApiCronJobUri()}}"
+                            name="createApiJobForm"
+                            id="createApiJobForm"
+                            class="form-horizontal">
                         <div class="form-body" th:id="jobInfoForm" th:name="jobInfoForm">
                             <h3 class="form-section">Job Info</h3>
                             <div class="row">

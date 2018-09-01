@@ -12,7 +12,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class UserNotAuthenticatedException extends Exception {
+public class UserNotAuthenticatedException extends RuntimeException {
     /**
      * Instantiates a new User not authenticated exception.
      *

@@ -13,7 +13,7 @@ public class ApplicationReadyEventHandlerService extends com.vishnu.aggarwal.cor
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
         if (getBootstrapEnabled()) {
-            log.info("******************** Application Ready Event Handler called for admin.");
+            log.info("[Application Bootstrap] Application Ready Event Handler called for admin.");
         }
     }
 }

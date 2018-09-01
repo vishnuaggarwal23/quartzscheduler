@@ -1,5 +1,10 @@
 package com.vishnu.aggarwal.core.constants;
 
+import com.vishnu.aggarwal.core.constants.UrlMapping.Admin;
+
+import static com.vishnu.aggarwal.core.constants.UrlMapping.ALL_URL_PREFIX;
+import static java.lang.String.format;
+
 /**
  * The type Application constants.
  */
@@ -83,8 +88,89 @@ public class ApplicationConstants {
     /**
      * The constant REST_EXCLUDE_INTERCEPTOR_PATTERN.
      */
-    public static final String[] REST_EXCLUDE_INTERCEPTOR_PATTERN = {"/**/js/**/", "/**/css/**/", "/**/img/**/", "/**/font/**/", "/**/fonts/**/", "/**/webjars/**/", "/**/webjar/**/"};
+    public static final String[] REST_EXCLUDE_REQUEST_INTERCEPTOR_PATTERN = {
+            "/**/js/**/",
+            "/**/css/**/",
+            "/**/img/**/",
+            "/**/font/**/",
+            "/**/fonts/**/",
+            "/**/webjars/**/",
+            "/**/webjar/**/"
+    };
 
+    /**
+     * The constant ADMIN_EXCLUDE_REQUEST_INTERCEPTOR_PATTERN.
+     */
+    public static final String[] ADMIN_EXCLUDE_REQUEST_INTERCEPTOR_PATTERN = {
+            "/**/js/**/",
+            "/**/css/**/",
+            "/**/img/**/",
+            "/**/font/**/",
+            "/**/fonts/**/",
+            "/**/webjars/**/",
+            "/**/webjar/**/"
+    };
+
+    /**
+     * The constant ADMIN_AUTHENTICATION_INTERCEPTOR_INCLUDE_PATTERN.
+     */
+    public static final String[] ADMIN_AUTHENTICATION_INTERCEPTOR_INCLUDE_PATTERN = {
+            format("%s%s%s%s", ALL_URL_PREFIX, Admin.Web.BASE_URI, Admin.Web.User.BASE_URI, ALL_URL_PREFIX),
+            format("%s%s%s%s", ALL_URL_PREFIX, Admin.Web.BASE_URI, Admin.Web.Quartz.BASE_URI, ALL_URL_PREFIX)
+    };
+    /**
+     * The constant ADMIN_AUTHENTICATION_INTERCEPTOR_EXCLUDE_PATTERN.
+     */
+    public static final String[] ADMIN_AUTHENTICATION_INTERCEPTOR_EXCLUDE_PATTERN = {
+            format("%s%s%s%s", ALL_URL_PREFIX, Admin.Web.BASE_URI, Admin.Web.User.BASE_URI, Admin.Web.User.USER_LOGIN_1),
+            format("%s%s%s%s", ALL_URL_PREFIX, Admin.Web.BASE_URI, Admin.Web.User.BASE_URI, Admin.Web.User.USER_LOGIN_2),
+            format("%s%s%s%s", ALL_URL_PREFIX, Admin.Web.BASE_URI, Admin.Web.User.BASE_URI, Admin.Web.User.FORGOT_PASSWORD),
+            "/**/js/**/",
+            "/**/css/**/",
+            "/**/img/**/",
+            "/**/font/**/",
+            "/**/fonts/**/",
+            "/**/webjars/**/",
+            "/**/webjar/**/"
+    };
+    /**
+     * The constant ADMIN_LOGIN_INTERCEPTOR_INCLUDE_PATTERN.
+     */
+    public static final String[] ADMIN_LOGIN_INTERCEPTOR_INCLUDE_PATTERN = new String[]{
+            format("%s%s%s%s", ALL_URL_PREFIX, Admin.Web.BASE_URI, Admin.Web.User.BASE_URI, Admin.Web.User.USER_LOGIN_1),
+            format("%s%s%s%s", ALL_URL_PREFIX, Admin.Web.BASE_URI, Admin.Web.User.BASE_URI, Admin.Web.User.USER_LOGIN_2)
+    };
+    /**
+     * The constant ADMIN_LOGIN_INTERCEPTOR_EXCLUDE_PATTERN.
+     */
+    public static final String[] ADMIN_LOGIN_INTERCEPTOR_EXCLUDE_PATTERN = {
+            "/**/js/**/",
+            "/**/css/**/",
+            "/**/img/**/",
+            "/**/font/**/",
+            "/**/fonts/**/",
+            "/**/webjars/**/",
+            "/**/webjar/**/"
+    };
+    /**
+     * The constant ADMIN_LOGOUT_INTERCEPTOR_INCLUDE_PATTERN.
+     */
+    public static final String[] ADMIN_LOGOUT_INTERCEPTOR_INCLUDE_PATTERN = {
+            format("%s%s%s%s", ALL_URL_PREFIX, Admin.Api.BASE_URI, Admin.Api.User.BASE_URI, Admin.Api.User.LOGOUT),
+            format("%s%s%s%s", ALL_URL_PREFIX, Admin.Web.BASE_URI, Admin.Web.User.BASE_URI, Admin.Web.User.LOGOUT)
+    };
+    /**
+     * The constant ADMIN_LOGOUT_INTERCEPTOR_EXCLUDE_PATTERN.
+     */
+    public static final String[] ADMIN_LOGOUT_INTERCEPTOR_EXCLUDE_PATTERN = {
+            "/**/js/**/",
+            "/**/css/**/",
+            "/**/img/**/",
+            "/**/font/**/",
+            "/**/fonts/**/",
+            "/**/webjars/**/",
+            "/**/webjar/**/"
+    };
     /**
      * The constant ADMIN_USER_USERNAME.
      */
@@ -105,4 +191,28 @@ public class ApplicationConstants {
      * The constant ADMIN_USER_EMAIL.
      */
     public static final String ADMIN_USER_EMAIL = "admin@admin.admin";
+
+    /**
+     * The constant KEY_NAME.
+     */
+    public static final String KEY_NAME = "keyName";
+
+    /**
+     * The constant USERNAME.
+     */
+    public static final String USERNAME = "username";
+
+    /**
+     * The constant TYPE.
+     */
+    public static final String TYPE = "type";
+
+    /**
+     * The constant HASHMAP_USER_KEY.
+     */
+    public static final String HASHMAP_USER_KEY = "user";
+    /**
+     * The constant HASHMAP_ERROR_KEY.
+     */
+    public static final String HASHMAP_ERROR_KEY = "error";
 }

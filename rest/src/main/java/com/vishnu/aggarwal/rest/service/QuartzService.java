@@ -1,24 +1,30 @@
 package com.vishnu.aggarwal.rest.service;
 
-import com.vishnu.aggarwal.core.co.JobDetailsCO;
-import com.vishnu.aggarwal.core.co.QuartzDetailsCO;
-import com.vishnu.aggarwal.core.co.TriggerDetailsCO;
+import com.vishnu.aggarwal.core.co.*;
+import com.vishnu.aggarwal.core.dto.KeyGroupDescriptionDTO;
 import com.vishnu.aggarwal.core.dto.QuartzDTO;
 import com.vishnu.aggarwal.core.enums.JobExecutorClass;
+import com.vishnu.aggarwal.core.exceptions.InvalidRequestException;
 import com.vishnu.aggarwal.core.service.BaseService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import java.util.*;
 
+import static com.vishnu.aggarwal.core.constants.ApplicationConstants.*;
 import static com.vishnu.aggarwal.core.enums.JobExecutorClass.findJobExecutorClassByValue;
 import static com.vishnu.aggarwal.core.enums.ScheduleType.CRON;
 import static com.vishnu.aggarwal.core.enums.ScheduleType.SIMPLE;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.lang.Class.forName;
+import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static java.util.TimeZone.getDefault;
 import static java.util.stream.Collectors.toList;
@@ -32,11 +38,6 @@ import static org.quartz.TriggerBuilder.newTrigger;
 import static org.quartz.TriggerKey.triggerKey;
 import static org.quartz.impl.matchers.GroupMatcher.jobGroupEquals;
 import static org.quartz.impl.matchers.GroupMatcher.triggerGroupEquals;
-import static org.springframework.util.Assert.hasText;
-import static org.springframework.util.Assert.isTrue;
-import static org.springframework.util.Assert.notEmpty;
-import static org.springframework.util.Assert.notNull;
-import static org.springframework.util.Assert.state;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 /**
@@ -44,6 +45,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
  */
 @Service
 @CommonsLog
+@Transactional
 public class QuartzService extends BaseService {
 
     /**
@@ -57,8 +59,7 @@ public class QuartzService extends BaseService {
      * @param quartzScheduler the quartz scheduler
      */
     @Autowired
-    public QuartzService(
-            Scheduler quartzScheduler) {
+    public QuartzService(Scheduler quartzScheduler) {
         this.quartzScheduler = quartzScheduler;
     }
 
@@ -71,10 +72,15 @@ public class QuartzService extends BaseService {
      * @throws ClassNotFoundException   the class not found exception
      * @throws IllegalArgumentException the illegal argument exception
      */
-    public void createNewUnscheduledApiJob(QuartzDTO quartzDTO) throws SchedulerException, NullPointerException, ClassNotFoundException, IllegalArgumentException {
-        notNull(quartzDTO, formatMessage(getMessage("object.not.set", getMessage("request"))));
-        notNull(quartzDTO.getJob(), formatMessage(getMessage("object.not.set", getMessage("job"))));
-        quartzScheduler.addJob(createJobDetail(quartzDTO), false, quartzDTO.getJob().getDurability() ? FALSE : TRUE);
+    public void createNewUnscheduledApiJob(final QuartzDTO quartzDTO) throws SchedulerException, NullPointerException, ClassNotFoundException, IllegalArgumentException {
+        quartzScheduler.addJob(
+                createJobDetail(
+                        quartzDTO.getApiJobData(),
+                        quartzDTO.getJob()
+                ),
+                false,
+                quartzDTO.getJob().getDurability() ? FALSE : TRUE
+        );
     }
 
     /**
@@ -82,52 +88,19 @@ public class QuartzService extends BaseService {
      *
      * @param quartzDTO the quartz dto
      * @return the date
-     * @throws ClassNotFoundException   the class not found exception
-     * @throws SchedulerException       the scheduler exception
-     * @throws IllegalArgumentException the illegal argument exception
-     * @throws NullPointerException     the null pointer exception
+     * @throws ClassNotFoundException  the class not found exception
+     * @throws SchedulerException      the scheduler exception
+     * @throws InvalidRequestException the invalid request exception
      */
-    public Date createNewScheduledApiSimpleJob(QuartzDTO quartzDTO) throws ClassNotFoundException, SchedulerException, IllegalArgumentException, NullPointerException, IllegalStateException {
-        notNull(quartzDTO, formatMessage(getMessage("object.not.set", getMessage("request"))));
-        notNull(quartzDTO.getApiJobData(), formatMessage(getMessage("object.not.set", getMessage("api.job.data"))));
-        notNull(quartzDTO.getApiJobData().getExecutorClass(), formatMessage(getMessage("object.not.set", getMessage("job.executor.class"))));
-        notNull(quartzDTO.getApiJobData().getSimpleJobScheduler(), formatMessage(getMessage("object.not.set", getMessage("simple.job.scheduler"))));
-        notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger(), formatMessage(getMessage("object.not.set", getMessage("trigger"))));
-        notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getDetails().getKeyName(), formatMessage(getMessage("object.not.set", getMessage("trigger.key.name"))));
-        notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getDetails().getGroupName(), formatMessage(getMessage("object.not.set", getMessage("trigger.group.name"))));
-        notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getDetails().getDescription(), formatMessage(getMessage("object.not.set", getMessage("trigger.description"))));
-        notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatType(), formatMessage(getMessage("object.not.set", getMessage("simple.job.scheduler.repeat.type"))));
-        notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval(), formatMessage(getMessage("object.not.set", getMessage("simple.job.scheduler.repeat.interval"))));
-        notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue(), formatMessage(getMessage("object.not.set", getMessage("simple.job.scheduler.repeat.value"))));
-        state(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue() > 0, formatMessage(getMessage("simple.job.scheduler.repeat.value.greater.than", 0)));
-
-        JobDetail jobDetail = createJobDetail(quartzDTO);
-        notNull(jobDetail, formatMessage(getMessage("object.not.set", getMessage("job.detail"))));
-        notNull(jobDetail.getJobDataMap(), formatMessage(getMessage("object.not.set", getMessage("job.data.map"))));
-        notEmpty(jobDetail.getJobDataMap(), formatMessage(getMessage("object.not.set", getMessage("job.data.map"))));
-
-        TriggerKey triggerKey = new TriggerKey(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getDetails().getKeyName(), quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getDetails().getGroupName());
-        notNull(triggerKey, formatMessage(getMessage("object.not.set", getMessage("trigger.key"))));
-
-        TriggerBuilder triggerBuilder = newTrigger()
-                .forJob(jobDetail)
-                .usingJobData(jobDetail.getJobDataMap())
-                .withDescription(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getDetails().getDescription())
-                .withIdentity(triggerKey);
-        notNull(triggerBuilder, formatMessage(getMessage("object.not.set", getMessage("trigger.builder"))));
-
-        if (isTrue(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getStartNow())) {
-            triggerBuilder = triggerBuilder.startNow();
-        } else {
-            notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getStartTime(), formatMessage(getMessage("object.not.set", getMessage("trigger.start.time"))));
-            triggerBuilder = triggerBuilder.startAt(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getStartTime());
-        }
-        notNull(triggerBuilder, formatMessage(getMessage("object.not.set", getMessage("trigger.builder"))));
-
-        triggerBuilder = getSimpleTriggerBuilder(quartzDTO, triggerBuilder);
-        notNull(triggerBuilder, formatMessage(getMessage("object.not.set", getMessage("trigger.builder"))));
-
-        return quartzScheduler.scheduleJob(jobDetail, triggerBuilder.build());
+    public Date createNewScheduledApiSimpleJob(final QuartzDTO quartzDTO) throws ClassNotFoundException, SchedulerException, InvalidRequestException {
+        final JobDetail jobDetail = createJobDetail(quartzDTO.getApiJobData(), quartzDTO.getJob());
+        return quartzScheduler.scheduleJob(
+                jobDetail,
+                getSimpleTriggerBuilder(
+                        quartzDTO.getApiJobData().getSimpleJobScheduler(),
+                        jobDetail
+                ).build()
+        );
     }
 
     /**
@@ -135,43 +108,23 @@ public class QuartzService extends BaseService {
      *
      * @param quartzDTO the quartz dto
      * @return the date
-     * @throws ClassNotFoundException   the class not found exception
-     * @throws SchedulerException       the scheduler exception
-     * @throws IllegalArgumentException the illegal argument exception
-     * @throws NullPointerException     the null pointer exception
+     * @throws ClassNotFoundException  the class not found exception
+     * @throws SchedulerException      the scheduler exception
+     * @throws InvalidRequestException the invalid request exception
      */
-    public Date createNewScheduledApiCronJob(QuartzDTO quartzDTO) throws ClassNotFoundException, SchedulerException, IllegalArgumentException, NullPointerException {
-        notNull(quartzDTO, formatMessage(getMessage("object.not.set", getMessage("request"))));
-        notNull(quartzDTO.getApiJobData(), formatMessage(getMessage("object.not.set", getMessage("api.job.data"))));
-        notNull(quartzDTO.getApiJobData().getExecutorClass(), formatMessage(getMessage("object.not.set", getMessage("job.executor.class"))));
-        notNull(quartzDTO.getApiJobData().getCronJobScheduler(), formatMessage(getMessage("object.not.set", getMessage("cron.job.scheduler"))));
-        notNull(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger(), formatMessage(getMessage("object.not.set", getMessage("trigger"))));
-        notNull(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails(), formatMessage(getMessage("object.not.set", getMessage("trigger"))));
-        notNull(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getKeyName(), formatMessage(getMessage("object.not.set", getMessage("trigger.key.name"))));
-        notNull(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getGroupName(), formatMessage(getMessage("object.not.set", getMessage("trigger.group.name"))));
-        notNull(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getDescription(), formatMessage(getMessage("object.not.set", getMessage("trigger.description"))));
-        notNull(quartzDTO.getApiJobData().getCronJobScheduler().getCronExpression(), formatMessage(getMessage("object.not.set", getMessage("cron.expression"))));
-
-        JobDetail jobDetail = createJobDetail(quartzDTO);
-        notNull(jobDetail, formatMessage(getMessage("object.not.set", getMessage("job.detail"))));
-        notNull(jobDetail.getJobDataMap(), formatMessage(getMessage("object.not.set", getMessage("job.data.map"))));
-        notEmpty(jobDetail.getJobDataMap(), formatMessage(getMessage("object.not.set", getMessage("job.data.map"))));
-
-        TriggerKey triggerKey = new TriggerKey(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getDetails().getKeyName(), quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getDetails().getGroupName());
-        notNull(triggerKey, formatMessage(getMessage("object.not.set", getMessage("trigger.key"))));
-
-        TriggerBuilder triggerBuilder = getCronTriggerBuilder(quartzDTO, jobDetail, triggerKey);
-        notNull(triggerBuilder, formatMessage(getMessage("object.not.set", getMessage("trigger.builder"))));
-
-        if (isTrue(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getStartNow())) {
-            triggerBuilder = triggerBuilder.startNow();
-        } else {
-            notNull(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getStartTime(), formatMessage(getMessage("object.not.set", getMessage("trigger.start.time"))));
-            triggerBuilder = triggerBuilder.startAt(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getStartTime());
-        }
-        notNull(triggerBuilder, formatMessage(getMessage("object.not.set", getMessage("trigger.builder"))));
-
-        return quartzScheduler.scheduleJob(jobDetail, triggerBuilder.build());
+    public Date createNewScheduledApiCronJob(final QuartzDTO quartzDTO) throws ClassNotFoundException, SchedulerException, InvalidRequestException {
+        final JobDetail jobDetail = createJobDetail(quartzDTO.getApiJobData(), quartzDTO.getJob());
+        return quartzScheduler.scheduleJob(
+                jobDetail,
+                getCronTriggerBuilder(
+                        quartzDTO.getApiJobData().getCronJobScheduler(),
+                        new TriggerKey(
+                                quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getKeyName(),
+                                quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getGroupName()
+                        ),
+                        jobDetail
+                ).build()
+        );
     }
 
     /**
@@ -182,59 +135,20 @@ public class QuartzService extends BaseService {
      * @throws SchedulerException       the scheduler exception
      * @throws IllegalArgumentException the illegal argument exception
      * @throws NullPointerException     the null pointer exception
+     * @throws IllegalStateException    the illegal state exception
      */
-    public Date createNewSimpleTriggerForJob(QuartzDTO quartzDTO) throws SchedulerException, IllegalArgumentException, NullPointerException, IllegalStateException {
-        notNull(quartzDTO, formatMessage(getMessage("object.not.set", getMessage("request"))));
-        notNull(quartzDTO.getJob(), formatMessage(getMessage("object.not.set", getMessage("job.details"))));
-        notNull(quartzDTO.getJob().getDetails(), formatMessage(getMessage("object.not.set", getMessage("job.details"))));
-        notNull(quartzDTO.getJob().getDetails().getKeyName(), formatMessage(getMessage("object.not.set", getMessage("job.key.name"))));
-        notNull(quartzDTO.getJob().getDetails().getGroupName(), formatMessage(getMessage("object.not.set", getMessage("job.group.name"))));
-        notNull(quartzDTO.getApiJobData(), formatMessage(getMessage("object.not.set", getMessage("api.job.data"))));
-        notNull(quartzDTO.getApiJobData().getExecutorClass(), formatMessage(getMessage("object.not.set", getMessage("job.executor.class"))));
-        notNull(quartzDTO.getApiJobData().getSimpleJobScheduler(), formatMessage(getMessage("object.not.set", getMessage("simple.job.scheduler"))));
-        notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger(), formatMessage(getMessage("object.not.set", getMessage("trigger"))));
-        notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getDetails().getKeyName(), formatMessage(getMessage("object.not.set", getMessage("trigger.key.name"))));
-        notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getDetails().getGroupName(), formatMessage(getMessage("object.not.set", getMessage("trigger.group.name"))));
-        notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getDetails().getDescription(), formatMessage(getMessage("object.not.set", getMessage("trigger.description"))));
-        notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatType(), formatMessage(getMessage("object.not.set", getMessage("simple.job.scheduler.repeat.type"))));
-        notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval(), formatMessage(getMessage("object.not.set", getMessage("simple.job.scheduler.repeat.interval"))));
-        notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue(), formatMessage(getMessage("object.not.set", getMessage("simple.job.scheduler.repeat.value"))));
-        state(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue() > 0, formatMessage(getMessage("simple.job.scheduler.repeat.value.greater.than", 0)));
-
-        JobKey jobKey = new JobKey(quartzDTO.getJob().getDetails().getKeyName(), quartzDTO.getJob().getDetails().getGroupName());
-        notNull(jobKey, formatMessage(getMessage("object.not.set", getMessage("job.key"))));
-
-        JobDetail jobDetail = quartzScheduler.getJobDetail(jobKey);
-        notNull(jobDetail, formatMessage(getMessage("object.not.set", getMessage("job.detail"))));
-        notNull(jobDetail.getJobDataMap(), formatMessage(getMessage("object.not.set", getMessage("job.data.map"))));
-        notEmpty(jobDetail.getJobDataMap(), formatMessage(getMessage("object.not.set", getMessage("job.data.map"))));
-
-        TriggerKey triggerKey = new TriggerKey(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getDetails().getKeyName(), quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getDetails().getGroupName());
-        notNull(triggerKey, formatMessage(getMessage("object.not.set", getMessage("trigger.key"))));
-
-        TriggerBuilder triggerBuilder = newTrigger()
-                .forJob(jobDetail)
-                .usingJobData(jobDetail.getJobDataMap())
-                .withDescription(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getDetails().getDescription())
-                .withIdentity(triggerKey);
-        notNull(triggerBuilder, formatMessage(getMessage("object.not.set", getMessage("trigger.builder"))));
-
-        if (isTrue(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getStartNow())) {
-            triggerBuilder = triggerBuilder.startNow();
-        } else {
-            notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getStartTime(), formatMessage(getMessage("object.not.set", getMessage("trigger.start.time"))));
-            triggerBuilder = triggerBuilder.startAt(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getStartTime());
-        }
-        notNull(triggerBuilder, formatMessage(getMessage("object.not.set", getMessage("trigger.builder"))));
-
-        if (nonNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getEndTime())) {
-            triggerBuilder = triggerBuilder.endAt(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getEndTime());
-        }
-
-        triggerBuilder = getSimpleTriggerBuilder(quartzDTO, triggerBuilder);
-        notNull(triggerBuilder, formatMessage(getMessage("object.not.set", getMessage("trigger.builder"))));
-
-        return quartzScheduler.scheduleJob(triggerBuilder.build());
+    public Date createNewSimpleTriggerForJob(final QuartzDTO quartzDTO) throws SchedulerException, IllegalArgumentException, NullPointerException, IllegalStateException {
+        return quartzScheduler.scheduleJob(
+                getSimpleTriggerBuilder(
+                        quartzDTO.getApiJobData().getSimpleJobScheduler(),
+                        quartzScheduler.getJobDetail(
+                                new JobKey(
+                                        quartzDTO.getJob().getDetails().getKeyName(),
+                                        quartzDTO.getJob().getDetails().getGroupName()
+                                )
+                        )
+                ).build()
+        );
     }
 
     /**
@@ -246,49 +160,19 @@ public class QuartzService extends BaseService {
      * @throws IllegalArgumentException the illegal argument exception
      * @throws NullPointerException     the null pointer exception
      */
-    public Date createNewCronTriggerForJob(QuartzDTO quartzDTO) throws SchedulerException, IllegalArgumentException, NullPointerException {
-        notNull(quartzDTO, formatMessage(getMessage("object.not.set", getMessage("request"))));
-        notNull(quartzDTO.getJob(), formatMessage(getMessage("object.not.set", getMessage("job"))));
-        notNull(quartzDTO.getJob().getDetails(), formatMessage(getMessage("object.not.set", getMessage("job"))));
-        notNull(quartzDTO.getJob().getDetails().getGroupName(), formatMessage(getMessage("object.not.set", getMessage("job.group.name"))));
-        notNull(quartzDTO.getJob().getDetails().getKeyName(), formatMessage(getMessage("object.not.set", getMessage("job.key.name"))));
-        notNull(quartzDTO.getApiJobData(), formatMessage(getMessage("object.not.set", getMessage("api.job.data"))));
-        notNull(quartzDTO.getApiJobData().getCronJobScheduler(), formatMessage(getMessage("object.not.set", getMessage("cron.job.scheduler"))));
-        notNull(quartzDTO.getApiJobData().getCronJobScheduler().getCronExpression(), formatMessage(getMessage("object.not.set", getMessage("cron.expression"))));
-        notNull(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger(), formatMessage(getMessage("object.not.set", getMessage("trigger"))));
-        notNull(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails(), formatMessage(getMessage("object.not.set", getMessage("trigger"))));
-        notNull(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getKeyName(), formatMessage(getMessage("object.not.set", getMessage("trigger.key.name"))));
-        notNull(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getGroupName(), formatMessage(getMessage("object.not.set", getMessage("trigger.group.name"))));
-        notNull(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getDescription(), formatMessage(getMessage("object.not.set", getMessage("trigger.description"))));
-
-        JobKey jobKey = new JobKey(quartzDTO.getJob().getDetails().getKeyName(), quartzDTO.getJob().getDetails().getGroupName());
-        notNull(jobKey, formatMessage(getMessage("object.not.set", getMessage("job.key"))));
-
-        JobDetail jobDetail = quartzScheduler.getJobDetail(jobKey);
-        notNull(jobDetail, formatMessage(getMessage("object.not.set", getMessage("job.detail"))));
-        notNull(jobDetail.getJobDataMap(), formatMessage(getMessage("object.not.set", getMessage("job.data.map"))));
-        notEmpty(jobDetail.getJobDataMap(), formatMessage(getMessage("object.not.set", getMessage("job.data.map"))));
-
-        TriggerKey triggerKey = new TriggerKey(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getDetails().getKeyName(), quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getDetails().getGroupName());
-        notNull(triggerKey, formatMessage(getMessage("object.not.set", getMessage("trigger.key"))));
-
-        TriggerBuilder triggerBuilder = getCronTriggerBuilder(quartzDTO, jobDetail, triggerKey);
-        notNull(triggerBuilder, formatMessage(getMessage("object.not.set", getMessage("trigger.builder"))));
-
-        if (isTrue(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getStartNow())) {
-            triggerBuilder = triggerBuilder.startNow();
-        } else {
-            notNull(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getStartTime(), formatMessage(getMessage("object.not.set", getMessage("trigger.start.time"))));
-            triggerBuilder = triggerBuilder.startAt(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getStartTime());
-        }
-        notNull(triggerBuilder, formatMessage(getMessage("object.not.set", getMessage("trigger.builder"))));
-
-        if (nonNull(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getEndTime())) {
-            triggerBuilder = triggerBuilder.endAt(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getEndTime());
-            notNull(triggerBuilder, formatMessage(getMessage("object.not.set", getMessage("trigger.builder"))));
-        }
-
-        return quartzScheduler.scheduleJob(triggerBuilder.build());
+    public Date createNewCronTriggerForJob(final QuartzDTO quartzDTO) throws SchedulerException, IllegalArgumentException, NullPointerException {
+        return quartzScheduler.scheduleJob(
+                getCronTriggerBuilder(
+                        quartzDTO.getApiJobData().getCronJobScheduler(),
+                        new TriggerKey(
+                                quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getKeyName(),
+                                quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getGroupName()
+                        ),
+                        quartzScheduler.getJobDetail(new JobKey(
+                                quartzDTO.getJob().getDetails().getKeyName(),
+                                quartzDTO.getJob().getDetails().getGroupName()
+                        ))).build()
+        );
     }
 
     /**
@@ -300,40 +184,15 @@ public class QuartzService extends BaseService {
      * @throws IllegalArgumentException the illegal argument exception
      * @throws NullPointerException     the null pointer exception
      */
-    public void updateExistingJob(QuartzDTO quartzDTO) throws ClassNotFoundException, SchedulerException, IllegalArgumentException, NullPointerException {
-        notNull(quartzDTO, formatMessage(getMessage("object.not.set", getMessage("request"))));
-        notNull(quartzDTO.getJob(), formatMessage(getMessage("object.not.set", getMessage("job"))));
-        notNull(quartzDTO.getJob().getDetails(), formatMessage(getMessage("object.not.set", getMessage("job.detail"))));
-        notNull(quartzDTO.getJob().getDetails().getKeyName(), formatMessage(getMessage("object.not.set", getMessage("job.key.name"))));
-        notNull(quartzDTO.getJob().getDetails().getGroupName(), formatMessage(getMessage("object.not.set", getMessage("job.group.name"))));
-        notNull(quartzDTO.getJob().getDetails().getDescription(), formatMessage(getMessage("object.not.set", getMessage("job.description"))));
-        notNull(quartzDTO.getApiJobData(), formatMessage(getMessage("object.not.set", getMessage("api.job.data"))));
-        notNull(quartzDTO.getApiJobData().getExecutorClass(), formatMessage(getMessage("object.not.set", getMessage("job.executor.class"))));
-
-        JobDataMap jobDataMap = new JobDataMap(createJobDataMap(quartzDTO));
-        notNull(jobDataMap, formatMessage(getMessage("object.not.set", getMessage("job.data.map"))));
-        notEmpty(jobDataMap, formatMessage(getMessage("object.not.set", getMessage("job.data.map"))));
-
-        JobKey jobKey = quartzScheduler.getJobKeys(jobGroupEquals(quartzDTO.getJob().getDetails().getGroupName()))
-                .stream()
-                .filter(Objects::nonNull)
-                .filter(it -> it.getName().equalsIgnoreCase(quartzDTO.getJob().getDetails().getKeyName()))
-                .findFirst()
-                .orElse(null);
-        notNull(jobKey, formatMessage(getMessage("object.not.set", getMessage("job.key"))));
-
-        JobBuilder jobBuilder = newJob(getExecutorClass(quartzDTO.getApiJobData().getExecutorClass()))
-                .requestRecovery(quartzDTO.getJob().getRecover())
-                .storeDurably(quartzDTO.getJob().getDurability())
-                .withIdentity(jobKey)
-                .withDescription(quartzDTO.getJob().getDetails().getDescription())
-                .setJobData(jobDataMap);
-        notNull(jobBuilder, formatMessage(getMessage("object.not.set", getMessage("job.builder"))));
-
-        JobDetail jobDetail = jobBuilder.build();
-        notNull(jobDetail, formatMessage(getMessage("object.not.set", getMessage("job.detail"))));
-
-        quartzScheduler.addJob(jobDetail, false, quartzDTO.getJob().getDurability() ? FALSE : TRUE);
+    public void updateExistingJob(final QuartzDTO quartzDTO) throws ClassNotFoundException, SchedulerException, IllegalArgumentException, NullPointerException {
+        quartzScheduler.addJob(
+                createJobDetail(
+                        quartzDTO.getApiJobData(),
+                        quartzDTO.getJob()
+                ),
+                true,
+                quartzDTO.getJob().getDurability() ? FALSE : TRUE
+        );
     }
 
     /**
@@ -344,69 +203,20 @@ public class QuartzService extends BaseService {
      * @throws SchedulerException       the scheduler exception
      * @throws IllegalArgumentException the illegal argument exception
      * @throws NullPointerException     the null pointer exception
+     * @throws IllegalStateException    the illegal state exception
      */
-    public Date updateExistingSimpleTrigger(QuartzDTO quartzDTO) throws SchedulerException, IllegalArgumentException, NullPointerException, IllegalStateException {
-        notNull(quartzDTO, formatMessage(getMessage("object.not.set", getMessage("request"))));
-        notNull(quartzDTO.getJob(), formatMessage(getMessage("object.not.set", getMessage("job"))));
-        notNull(quartzDTO.getJob().getDetails(), formatMessage(getMessage("object.not.set", getMessage("job.detail"))));
-        notNull(quartzDTO.getJob().getDetails().getKeyName(), formatMessage(getMessage("object.not.set", getMessage("job.key.name"))));
-        notNull(quartzDTO.getJob().getDetails().getGroupName(), formatMessage(getMessage("object.not.set", getMessage("job.group.name"))));
-        notNull(quartzDTO.getApiJobData(), formatMessage(getMessage("object.not.set", getMessage("api.job.data"))));
-        notNull(quartzDTO.getApiJobData().getSimpleJobScheduler(), formatMessage(getMessage("object.not.set", getMessage("simple.job.scheduler"))));
-        notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger(), formatMessage(getMessage("object.not.set", getMessage("trigger"))));
-        notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getDetails().getKeyName(), formatMessage(getMessage("object.not.set", getMessage("trigger.key.name"))));
-        notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getDetails().getGroupName(), formatMessage(getMessage("object.not.set", getMessage("trigger.group.name"))));
-        notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getDetails().getDescription(), formatMessage(getMessage("object.not.set", getMessage("trigger.description"))));
-        notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatType(), formatMessage(getMessage("object.not.set", getMessage("simple.job.scheduler.repeat.type"))));
-        notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval(), formatMessage(getMessage("object.not.set", getMessage("simple.job.scheduler.repeat.interval"))));
-        notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue(), formatMessage(getMessage("object.not.set", getMessage("simple.job.scheduler.repeat.value"))));
-        state(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue() > 0, formatMessage(getMessage("simple.job.scheduler.repeat.value.greater.than", 0)));
-
-        TriggerKey triggerKey = quartzScheduler.getTriggerKeys(triggerGroupEquals(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getDetails().getGroupName()))
-                .stream()
-                .filter(Objects::nonNull)
-                .filter(it -> it.getName().equalsIgnoreCase(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getDetails().getKeyName()))
-                .findFirst()
-                .orElse(null);
-        notNull(triggerKey, formatMessage(getMessage("object.not.set", getMessage("trigger.key"))));
-
-        JobKey jobKey = quartzScheduler.getJobKeys(jobGroupEquals(quartzDTO.getJob().getDetails().getGroupName()))
-                .stream()
-                .filter(Objects::nonNull)
-                .filter(it -> it.getName().equalsIgnoreCase(quartzDTO.getJob().getDetails().getKeyName()))
-                .findFirst()
-                .orElse(null);
-        notNull(jobKey, formatMessage(getMessage("object.not.set", getMessage("job.key"))));
-
-        JobDetail jobDetail = quartzScheduler.getJobDetail(jobKey);
-        notNull(jobDetail, formatMessage(getMessage("object.not.set", getMessage("job.detail"))));
-        notNull(jobDetail.getJobDataMap(), formatMessage(getMessage("object.not.set", getMessage("job.data.map"))));
-        notEmpty(jobDetail.getJobDataMap(), formatMessage(getMessage("object.not.set", getMessage("job.data.map"))));
-
-        TriggerBuilder triggerBuilder = newTrigger()
-                .forJob(jobDetail)
-                .usingJobData(jobDetail.getJobDataMap())
-                .withDescription(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getDetails().getDescription())
-                .withIdentity(triggerKey);
-        notNull(triggerBuilder, formatMessage(getMessage("object.not.set", getMessage("trigger.builder"))));
-
-        if (isTrue(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getStartNow())) {
-            triggerBuilder = triggerBuilder.startNow();
-        } else {
-            notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getStartTime());
-            triggerBuilder = triggerBuilder.startAt(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getStartTime());
-        }
-        notNull(triggerBuilder, formatMessage(getMessage("object.not.set", getMessage("trigger.builder"))));
-
-        if (nonNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getEndTime())) {
-            triggerBuilder = triggerBuilder.endAt(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getEndTime());
-        }
-        notNull(triggerBuilder, formatMessage(getMessage("object.not.set", getMessage("trigger.builder"))));
-
-        triggerBuilder = getSimpleTriggerBuilder(quartzDTO, triggerBuilder);
-        notNull(triggerBuilder, formatMessage(getMessage("object.not.set", getMessage("trigger.builder"))));
-
-        return quartzScheduler.scheduleJob(triggerBuilder.build());
+    public Date updateExistingSimpleTrigger(final QuartzDTO quartzDTO) throws SchedulerException, IllegalArgumentException, NullPointerException, IllegalStateException {
+        return quartzScheduler.scheduleJob(
+                getSimpleTriggerBuilder(
+                        quartzDTO.getApiJobData().getSimpleJobScheduler(),
+                        quartzScheduler.getJobDetail(
+                                new JobKey(
+                                        quartzDTO.getJob().getDetails().getKeyName(),
+                                        quartzDTO.getJob().getDetails().getGroupName()
+                                )
+                        )
+                ).build()
+        );
     }
 
     /**
@@ -418,129 +228,66 @@ public class QuartzService extends BaseService {
      * @throws IllegalArgumentException the illegal argument exception
      * @throws NullPointerException     the null pointer exception
      */
-    public Date updateExistingCronTrigger(QuartzDTO quartzDTO) throws SchedulerException, IllegalArgumentException, NullPointerException {
-        notNull(quartzDTO, formatMessage(getMessage("object.not.set", getMessage("request"))));
-        notNull(quartzDTO.getApiJobData(), formatMessage(getMessage("object.not.set", getMessage("api.job.data"))));
-        notNull(quartzDTO.getApiJobData().getExecutorClass(), formatMessage(getMessage("object.not.set", getMessage("job.executor.class"))));
-        notNull(quartzDTO.getApiJobData().getCronJobScheduler(), formatMessage(getMessage("object.not.set", getMessage("cron.job.scheduler"))));
-        notNull(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger(), formatMessage(getMessage("object.not.set", getMessage("trigger"))));
-        notNull(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails(), formatMessage(getMessage("object.not.set", getMessage("trigger"))));
-        notNull(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getKeyName(), formatMessage(getMessage("object.not.set", getMessage("trigger.key.name"))));
-        notNull(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getGroupName(), formatMessage(getMessage("object.not.set", getMessage("trigger.group.name"))));
-        notNull(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getDescription(), formatMessage(getMessage("object.not.set", getMessage("trigger.description"))));
-        notNull(quartzDTO.getApiJobData().getCronJobScheduler().getCronExpression(), formatMessage(getMessage("object.not.set", getMessage("cron.expression"))));
-
-        TriggerKey triggerKey = quartzScheduler.getTriggerKeys(triggerGroupEquals(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getDetails().getGroupName()))
-                .stream()
-                .filter(Objects::nonNull)
-                .filter(it -> it.getName().equalsIgnoreCase(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getKeyName()))
-                .findFirst()
-                .orElse(null);
-        notNull(triggerKey, formatMessage(getMessage("object.not.set", getMessage("trigger.key"))));
-
-        JobKey jobKey = quartzScheduler.getJobKeys(jobGroupEquals(quartzDTO.getJob().getDetails().getGroupName()))
-                .stream()
-                .filter(Objects::nonNull)
-                .filter(it -> it.getName().equalsIgnoreCase(quartzDTO.getJob().getDetails().getKeyName()))
-                .findFirst()
-                .orElse(null);
-        notNull(jobKey, formatMessage(getMessage("object.not.set", getMessage("job.key"))));
-
-        JobDetail jobDetail = quartzScheduler.getJobDetail(jobKey);
-        notNull(jobDetail, formatMessage(getMessage("object.not.set", getMessage("job.detail"))));
-        notNull(jobDetail.getJobDataMap(), formatMessage(getMessage("object.not.set", getMessage("job.data.map"))));
-        notEmpty(jobDetail.getJobDataMap(), formatMessage(getMessage("object.not.set", getMessage("job.data.map"))));
-
-        TriggerBuilder triggerBuilder = getCronTriggerBuilder(quartzDTO, jobDetail, triggerKey);
-        notNull(triggerBuilder, formatMessage(getMessage("object.not.set", getMessage("trigger.builder"))));
-
-        if (isTrue(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getStartNow())) {
-            triggerBuilder = triggerBuilder.startNow();
-        } else {
-            notNull(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getStartTime(), formatMessage(getMessage("object.not.set", getMessage("trigger.start.time"))));
-            triggerBuilder = triggerBuilder.startAt(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getStartTime());
-        }
-        notNull(triggerBuilder, formatMessage(getMessage("object.not.set", getMessage("trigger.builder"))));
-
-        if (nonNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getEndTime())) {
-            triggerBuilder = triggerBuilder.endAt(quartzDTO.getApiJobData().getSimpleJobScheduler().getTrigger().getEndTime());
-            notNull(triggerBuilder, formatMessage(getMessage("object.not.set", getMessage("trigger.builder"))));
-        }
-
-        return quartzScheduler.scheduleJob(triggerBuilder.build());
+    public Date updateExistingCronTrigger(final QuartzDTO quartzDTO) throws SchedulerException, IllegalArgumentException, NullPointerException {
+        return quartzScheduler.scheduleJob(
+                getCronTriggerBuilder(
+                        quartzDTO.getApiJobData().getCronJobScheduler(),
+                        new TriggerKey(
+                                quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getKeyName(),
+                                quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getGroupName()
+                        ),
+                        quartzScheduler.getJobDetail(
+                                new JobKey(
+                                        quartzDTO.getJob().getDetails().getKeyName(),
+                                        quartzDTO.getJob().getDetails().getGroupName()
+                                )
+                        )
+                ).build()
+        );
     }
 
     /**
      * Fetch job details by group name list.
      *
-     * @param jobGroupName the group name
      * @return the list
      * @throws SchedulerException       the scheduler exception
      * @throws IllegalArgumentException the illegal argument exception
      * @throws NullPointerException     the null pointer exception
      */
-    public List<JobDetailsCO> fetchJobDetailsByJobGroupName(String jobGroupName) throws SchedulerException, IllegalArgumentException, NullPointerException {
-        hasText(jobGroupName, formatMessage(getMessage("object.not.set", getMessage("job.group.name"))));
-
-        Set<JobKey> jobKeys = quartzScheduler.getJobKeys(jobGroupEquals(jobGroupName));
-        notEmpty(jobKeys, formatMessage(getMessage("object.not.set", getMessage("job.key"))));
-
+    public @NotEmpty List<JobDetailsCO> fetchJobDetailsByJobGroupName(final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException, IllegalArgumentException, NullPointerException {
         List<JobDetailsCO> jobDetails = new ArrayList<JobDetailsCO>();
-        jobKeys = jobKeys.parallelStream().sorted(((o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()))).collect(toSet());
-
-        for (JobKey jobKey : jobKeys) {
+        for (JobKey jobKey : quartzScheduler.getJobKeys(jobGroupEquals(keyGroupDescriptionDTO.getGroupName())).parallelStream().sorted(((o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()))).collect(toSet())) {
             JobDetail jobDetail = quartzScheduler.getJobDetail(jobKey);
-            notNull(jobDetail, formatMessage(getMessage("object.not.set", getMessage("job.detail"))));
-
-            JobExecutorClass jobExecutorClass = findJobExecutorClassByValue(jobDetail.getJobClass());
-            notNull(jobExecutorClass, formatMessage(getMessage("object.not.set", getMessage("job.executor.class"))));
-
-            Map<String, Object> jobDataMap = createMapFromJobDataMap(jobDetail.getJobDataMap());
-            notEmpty(jobDataMap, formatMessage(getMessage("object.not.set", getMessage("job.data.map"))));
-
             jobDetails.add(new JobDetailsCO(
                     jobKey.getName(),
                     jobKey.getGroup(),
                     jobDetail.getDescription(),
-                    jobExecutorClass,
-                    jobDataMap,
+                    findJobExecutorClassByValue(jobDetail.getJobClass()),
+                    createMapFromJobDataMap(jobDetail.getJobDataMap()),
                     jobDetail.isDurable(),
                     countTriggersOfJob(jobKey) == 0,
                     jobDetail.requestsRecovery(),
                     jobDetail.isConcurrentExectionDisallowed(),
-                    jobDetail.isConcurrentExectionDisallowed()));
+                    jobDetail.isConcurrentExectionDisallowed(),
+                    null));
         }
-
-        notEmpty(jobDetails, formatMessage(getMessage("object.not.set", getMessage("job.details"))));
-
         return jobDetails;
     }
 
     /**
      * Fetch trigger details by job key name and group name list.
      *
-     * @param jobKeyName   the job key name
-     * @param jobGroupName the group name
+     * @param keyGroupDescriptionDTO the key group description dto
      * @return the list
      * @throws SchedulerException       the scheduler exception
      * @throws IllegalArgumentException the illegal argument exception
      * @throws NullPointerException     the null pointer exception
      */
     @SuppressWarnings("unchecked")
-    public List<TriggerDetailsCO> fetchTriggerDetailsByJobKeyNameAndJobGroupName(String jobKeyName, String jobGroupName) throws SchedulerException, IllegalArgumentException, NullPointerException {
-        hasText(jobKeyName, formatMessage(getMessage("object.not.set", getMessage("job.key.name"))));
-        hasText(jobGroupName, formatMessage(getMessage("object.not.set", getMessage("job.group.name"))));
-
-        JobKey jobKey = new JobKey(jobKeyName, jobGroupName);
-        notNull(jobKey, formatMessage(getMessage("object.not.set", getMessage("job.key"))));
-
-        List<Trigger> triggers = (List<Trigger>) quartzScheduler.getTriggersOfJob(jobKey);
-        notEmpty(triggers, formatMessage(getMessage("object.not.set", getMessage("trigger"))));
-
-        triggers = triggers.stream().sorted((o1, o2) -> o1.getKey().getName().compareToIgnoreCase(o2.getKey().getName())).collect(toList());
+    public @NotEmpty List<TriggerDetailsCO> fetchTriggerDetailsByJobKeyNameAndJobGroupName(final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException, IllegalArgumentException, NullPointerException {
 
         List<TriggerDetailsCO> triggerDetails = new ArrayList<TriggerDetailsCO>();
-        for (Trigger trigger : triggers) {
+        for (Trigger trigger : quartzScheduler.getTriggersOfJob(new JobKey(keyGroupDescriptionDTO.getKeyName(), keyGroupDescriptionDTO.getGroupName())).stream().sorted((o1, o2) -> o1.getKey().getName().compareToIgnoreCase(o2.getKey().getName())).collect(toList())) {
             TriggerDetailsCO triggerDetail = new TriggerDetailsCO(
                     trigger.getKey().getName(),
                     trigger.getKey().getGroup(),
@@ -552,337 +299,291 @@ public class QuartzService extends BaseService {
                     trigger.getFinalFireTime(),
                     trigger.getPriority(),
                     quartzScheduler.getTriggerState(triggerKey(trigger.getKey().getName(), trigger.getKey().getGroup())).toString());
-            triggerDetails.add(triggerDetail);
-
-            if (trigger instanceof SimpleTrigger) {
-                triggerDetail.setType(SIMPLE);
-                TriggerDetailsCO.SimpleTriggerDetails simpleTriggerDetails = triggerDetail.new SimpleTriggerDetails();
-                simpleTriggerDetails.setCountTriggered(((SimpleTrigger) trigger).getTimesTriggered());
-                simpleTriggerDetails.setRepeatCount(((SimpleTrigger) trigger).getRepeatCount());
-                simpleTriggerDetails.setRepeatInterval(((SimpleTrigger) trigger).getRepeatInterval());
-            } else if (trigger instanceof CronTrigger) {
-                triggerDetail.setType(CRON);
-                TriggerDetailsCO.CronTriggerDetails cronTriggerDetails = triggerDetail.new CronTriggerDetails();
-                cronTriggerDetails.setCronExpression(((CronTrigger) trigger).getCronExpression());
-                cronTriggerDetails.setExpressionSummary(((CronTrigger) trigger).getExpressionSummary());
-                cronTriggerDetails.setTimeZone(((CronTrigger) trigger).getTimeZone());
-            }
+            triggerDetails.add(setExtraTriggerDetails(trigger, triggerDetail));
         }
-        notEmpty(triggerDetails, formatMessage(getMessage("object.not.set", getMessage("trigger.details"))));
-
         return triggerDetails;
     }
 
     /**
      * Fetch quartz details for a group name list.
      *
-     * @param jobGroupName the group name
      * @return the list
      * @throws SchedulerException       the scheduler exception
      * @throws IllegalArgumentException the illegal argument exception
      * @throws NullPointerException     the null pointer exception
      */
-    public List<QuartzDetailsCO> fetchQuartzDetailsForJobGroupName(String jobGroupName) throws SchedulerException, IllegalArgumentException, NullPointerException {
-        hasText(jobGroupName, formatMessage(getMessage("object.not.set", getMessage("job.group.name"))));
-
-        List<JobDetailsCO> jobDetails = fetchJobDetailsByJobGroupName(jobGroupName);
-        notEmpty(jobDetails, formatMessage(getMessage("object.not.set", getMessage("job.details"))));
-
-        jobDetails = jobDetails.stream().sorted(((o1, o2) -> o1.getKeyName().compareToIgnoreCase(o2.getKeyName()))).collect(toList());
-
+    public @NotEmpty List<QuartzDetailsCO> fetchQuartzDetailsForJobGroupName(final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException, IllegalArgumentException, NullPointerException {
+        List<JobDetailsCO> jobDetails = fetchJobDetailsByJobGroupName(keyGroupDescriptionDTO).stream().sorted(((o1, o2) -> o1.getKeyName().compareToIgnoreCase(o2.getKeyName()))).collect(toList());
         List<QuartzDetailsCO> quartzDetails = new ArrayList<QuartzDetailsCO>();
         for (JobDetailsCO jobDetail : jobDetails) {
-            List<TriggerDetailsCO> triggerDetailsCOS = fetchTriggerDetailsByJobKeyNameAndJobGroupName(jobDetail.getKeyName(), jobDetail.getGroupName());
-            notEmpty(triggerDetailsCOS, formatMessage(getMessage("object.not.set", getMessage("trigger.details"))));
-
-            quartzDetails.add(new QuartzDetailsCO(jobDetail, triggerDetailsCOS));
+            quartzDetails.add(new QuartzDetailsCO(jobDetail, fetchTriggerDetailsByJobKeyNameAndJobGroupName(new KeyGroupDescriptionDTO(jobDetail.getKeyName(), jobDetail.getGroupName(), null))));
         }
-        notEmpty(quartzDetails, formatMessage(getMessage("object.not.set", getMessage("quartz.details"))));
-
         return quartzDetails;
     }
 
     /**
      * Resume triggers.
      *
-     * @param triggerKeyName   the key name
-     * @param triggerGroupName the group name
+     * @param keyGroupDescriptionDTO the key group description dto
      * @throws SchedulerException       the scheduler exception
      * @throws IllegalArgumentException the illegal argument exception
      * @throws NullPointerException     the null pointer exception
      */
-    public void resumeTriggers(String triggerKeyName, String triggerGroupName) throws SchedulerException, IllegalArgumentException, NullPointerException {
-        hasText(triggerGroupName, formatMessage(getMessage("object.not.set", getMessage("trigger.group.name"))));
-
-        if (isNotEmpty(triggerKeyName)) {
-            quartzScheduler.resumeTrigger(new TriggerKey(triggerKeyName, triggerGroupName));
+    public Boolean resumeTriggers(final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException, NullPointerException {
+        if (isNotEmpty(keyGroupDescriptionDTO.getKeyName())) {
+            quartzScheduler.resumeTrigger(new TriggerKey(keyGroupDescriptionDTO.getKeyName(), keyGroupDescriptionDTO.getGroupName()));
+            return true;
         } else {
-            quartzScheduler.resumeTriggers(triggerGroupEquals(triggerGroupName));
+            quartzScheduler.resumeTriggers(triggerGroupEquals(keyGroupDescriptionDTO.getGroupName()));
+            return true;
         }
     }
 
     /**
      * Pause triggers.
      *
-     * @param triggerKeyName   the key name
-     * @param triggerGroupName the group name
+     * @param keyGroupDescriptionDTO the key group description dto
      * @throws SchedulerException       the scheduler exception
      * @throws IllegalArgumentException the illegal argument exception
      * @throws NullPointerException     the null pointer exception
      */
-    public void pauseTriggers(String triggerKeyName, String triggerGroupName) throws SchedulerException, IllegalArgumentException, NullPointerException {
-        hasText(triggerGroupName, formatMessage(getMessage("object.not.set", getMessage("trigger.group.name"))));
-
-        if (isNotEmpty(triggerKeyName)) {
-            quartzScheduler.pauseTrigger(new TriggerKey(triggerKeyName, triggerGroupName));
+    public Boolean pauseTriggers(final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException, IllegalArgumentException, NullPointerException {
+        if (isNotEmpty(keyGroupDescriptionDTO.getKeyName())) {
+            quartzScheduler.pauseTrigger(new TriggerKey(keyGroupDescriptionDTO.getKeyName(), keyGroupDescriptionDTO.getGroupName()));
+            return true;
         } else {
-            quartzScheduler.pauseTriggers(triggerGroupEquals(triggerGroupName));
+            quartzScheduler.pauseTriggers(triggerGroupEquals(keyGroupDescriptionDTO.getGroupName()));
+            return true;
         }
     }
 
     /**
      * Resume jobs.
      *
-     * @param jobKeyName   the key name
-     * @param jobGroupName the group name
+     * @param keyGroupDescriptionDTO the key group description dto
      * @throws SchedulerException       the scheduler exception
      * @throws IllegalArgumentException the illegal argument exception
      * @throws NullPointerException     the null pointer exception
      */
-    public void resumeJobs(String jobKeyName, String jobGroupName) throws SchedulerException, IllegalArgumentException, NullPointerException {
-        hasText(jobGroupName, formatMessage(getMessage("object.not.set", getMessage("job.group.name"))));
-
-        if (isNotEmpty(jobKeyName)) {
-            quartzScheduler.resumeJob(new JobKey(jobKeyName, jobGroupName));
+    public Boolean resumeJobs(final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException, IllegalArgumentException, NullPointerException {
+        if (isNotEmpty(keyGroupDescriptionDTO.getKeyName())) {
+            quartzScheduler.resumeJob(new JobKey(keyGroupDescriptionDTO.getKeyName(), keyGroupDescriptionDTO.getGroupName()));
+            return true;
         } else {
-            quartzScheduler.resumeJobs(jobGroupEquals(jobGroupName));
+            quartzScheduler.resumeJobs(jobGroupEquals(keyGroupDescriptionDTO.getGroupName()));
+            return true;
         }
     }
 
     /**
      * Pause jobs.
      *
-     * @param jobKeyName   the key name
-     * @param jobGroupName the group name
+     * @param keyGroupDescriptionDTO the key group description dto
      * @throws SchedulerException       the scheduler exception
      * @throws IllegalArgumentException the illegal argument exception
      * @throws NullPointerException     the null pointer exception
      */
-    public void pauseJobs(String jobKeyName, String jobGroupName) throws SchedulerException, IllegalArgumentException, NullPointerException {
-        hasText(jobGroupName, formatMessage(getMessage("object.not.set", getMessage("job.group.name"))));
-
-        if (isNotEmpty(jobKeyName)) {
-            quartzScheduler.pauseJob(new JobKey(jobKeyName, jobGroupName));
+    public Boolean pauseJobs(final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException, IllegalArgumentException, NullPointerException {
+        if (isNotEmpty(keyGroupDescriptionDTO.getKeyName())) {
+            quartzScheduler.pauseJob(new JobKey(keyGroupDescriptionDTO.getKeyName(), keyGroupDescriptionDTO.getGroupName()));
+            return true;
         } else {
-            quartzScheduler.pauseJobs(jobGroupEquals(jobGroupName));
+            quartzScheduler.pauseJobs(jobGroupEquals(keyGroupDescriptionDTO.getGroupName()));
+            return true;
         }
     }
 
     /**
      * Delete jobs boolean.
      *
-     * @param jobKeyName   the key name
-     * @param jobGroupName the group name
+     * @param keyGroupDescriptionDTO the key group description dto
      * @return the boolean
-     * @throws SchedulerException       the scheduler exception
-     * @throws IllegalArgumentException the illegal argument exception
-     * @throws NullPointerException     the null pointer exception
+     * @throws SchedulerException the scheduler exception
      */
-    public Boolean deleteJobs(String jobKeyName, String jobGroupName) throws SchedulerException, IllegalArgumentException, NullPointerException {
-        hasText(jobGroupName, formatMessage(getMessage("object.not.set", getMessage("job.group.name"))));
-
-        Boolean deleted = FALSE;
-        if (isNotEmpty(jobKeyName)) {
-            JobKey jobKey = new JobKey(jobKeyName, jobGroupName);
-            notNull(jobKey, formatMessage(getMessage("object.not.set", getMessage("job.key"))));
-
-            deleted = quartzScheduler.deleteJob(jobKey);
+    public Boolean deleteJobs(final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException {
+        if (isNotEmpty(keyGroupDescriptionDTO.getKeyName())) {
+            return quartzScheduler.deleteJob(new JobKey(keyGroupDescriptionDTO.getKeyName(), keyGroupDescriptionDTO.getGroupName()));
         } else {
-            Set<JobKey> jobKeys = quartzScheduler.getJobKeys(jobGroupEquals(jobGroupName));
-            notEmpty(jobKeys, formatMessage(getMessage("object.not.set", getMessage("job.key"))));
-
-            deleted = quartzScheduler.deleteJobs(jobKeys.stream().filter(Objects::nonNull).collect(toList()));
+            return quartzScheduler.deleteJobs(new ArrayList<>(quartzScheduler.getJobKeys(jobGroupEquals(keyGroupDescriptionDTO.getGroupName()))));
         }
-        isTrue(deleted, formatMessage(getMessage("error.while.deleting.job")));
-
-        return deleted;
     }
 
     /**
      * Delete triggers boolean.
      *
-     * @param triggerKeyName   the key name
-     * @param triggerGroupName the group name
+     * @param keyGroupDescriptionDTO the key group description dto
      * @return the boolean
-     * @throws SchedulerException       the scheduler exception
-     * @throws IllegalArgumentException the illegal argument exception
-     * @throws NullPointerException     the null pointer exception
+     * @throws SchedulerException the scheduler exception
      */
-    public Boolean deleteTriggers(String triggerKeyName, String triggerGroupName) throws SchedulerException, IllegalArgumentException, NullPointerException {
-        hasText(triggerGroupName, formatMessage(getMessage("object.not.set", getMessage("trigger.group.name"))));
-
-        Boolean deleted = FALSE;
-        if (isNotEmpty(triggerKeyName)) {
-            TriggerKey triggerKey = new TriggerKey(triggerKeyName, triggerGroupName);
-            notNull(triggerKey, formatMessage(getMessage("object.not.set", getMessage("trigger.key"))));
-
-            deleted = quartzScheduler.unscheduleJob(triggerKey);
+    public boolean deleteTriggers(final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException {
+        if (isNotEmpty(keyGroupDescriptionDTO.getKeyName())) {
+            return quartzScheduler.unscheduleJob(new TriggerKey(keyGroupDescriptionDTO.getKeyName(), keyGroupDescriptionDTO.getGroupName()));
         } else {
-            Set<TriggerKey> triggerKeys = quartzScheduler.getTriggerKeys(triggerGroupEquals(triggerGroupName));
-            notEmpty(triggerKeys, formatMessage(getMessage("object.not.set", getMessage("trigger.key"))));
-
-            deleted = quartzScheduler.unscheduleJobs(triggerKeys.stream().filter(Objects::nonNull).collect(toList()));
+            return quartzScheduler.unscheduleJobs(new ArrayList<>(quartzScheduler.getTriggerKeys(triggerGroupEquals(keyGroupDescriptionDTO.getGroupName()))));
         }
-        isTrue(deleted, formatMessage(getMessage("error.while.deleting.trigger")));
-
-        return deleted;
     }
 
-    private Integer countTriggersOfJob(JobKey jobKey) throws SchedulerException, IllegalArgumentException {
-        notNull(jobKey, formatMessage(getMessage("object.not.set", getMessage("job.key"))));
+    private Integer countTriggersOfJob(final JobKey jobKey) throws SchedulerException, IllegalArgumentException {
         List<? extends Trigger> triggersOfAJob = quartzScheduler.getTriggersOfJob(jobKey);
         return isEmpty(triggersOfAJob) ? 0 : triggersOfAJob.size();
     }
 
-    private Map<String, String> createJobDataMap(QuartzDTO quartzDTO) throws IllegalArgumentException {
-        notNull(quartzDTO, formatMessage(getMessage("object.not.set", getMessage("request"))));
-        notNull(quartzDTO.getJob(), formatMessage(getMessage("object.not.set", getMessage("job"))));
-        notNull(quartzDTO.getApiJobData(), formatMessage(getMessage("object.not.set", getMessage("api.job.data"))));
-        notEmpty(quartzDTO.getApiJobData().getRequestHeaders(), formatMessage(getMessage("object.not.set", getMessage("request.headers"))));
-
+    private Map<String, String> createJobDataMap(@NotBlank @NotEmpty final List<APIHeaderCO> requestHeaders, @NotBlank final String requestUrl, final HttpMethod requestType) {
         Map<String, String> jobData = new HashMap<String, String>();
-        quartzDTO.getApiJobData().getRequestHeaders().stream().filter(Objects::nonNull).forEach(it -> {
-            jobData.put("header_" + it.getKey(), it.getValue());
-        });
-
-        hasText(quartzDTO.getApiJobData().getRequestUrl(), formatMessage(getMessage("object.not.set", getMessage("request.url"))));
-        jobData.put("request-url", quartzDTO.getApiJobData().getRequestUrl());
-
-        notNull(quartzDTO.getApiJobData().getRequestType(), formatMessage(getMessage("object.not.set", getMessage("request.type"))));
-        jobData.put("request-type", quartzDTO.getApiJobData().getRequestType().name());
-
+        requestHeaders.stream().filter(Objects::nonNull).forEach((APIHeaderCO it) -> jobData.put(format("%s_%s", REQUEST_HEADER, it.getKey()), it.getValue()));
+        jobData.put(REQUEST_URL, requestUrl);
+        jobData.put(REQUEST_TYPE, requestType.toString());
         return jobData;
     }
 
-    private Map<String, Object> createMapFromJobDataMap(JobDataMap jobDataMap) throws IllegalArgumentException {
-        notNull(jobDataMap, formatMessage(getMessage("object.not.set", getMessage("job.data.map"))));
-        notEmpty(jobDataMap, formatMessage(getMessage("object.not.set", getMessage("job.data.map"))));
-
+    private Map<String, Object> createMapFromJobDataMap(@NotEmpty final JobDataMap jobDataMap) throws IllegalArgumentException {
         Map<String, Object> map = new HashMap<String, Object>();
         jobDataMap.forEach(map::put);
-
-        notEmpty(map, formatMessage(getMessage("object.not.set", getMessage("job.data.map"))));
-
         return map;
     }
 
-    @SuppressWarnings("unchecked")
-    private Class<? extends Job> getExecutorClass(JobExecutorClass jobExecutorClass) throws ClassNotFoundException, IllegalArgumentException {
-        notNull(jobExecutorClass, formatMessage(getMessage("object.not.set", getMessage("job.executor.class"))));
+    private Class<? extends Job> getExecutorClass(final JobExecutorClass jobExecutorClass) throws ClassNotFoundException {
         return (Class<? extends Job>) forName(jobExecutorClass.getPackageName());
     }
 
-    private JobDetail createJobDetail(QuartzDTO quartzDTO) throws ClassNotFoundException, IllegalArgumentException {
-        notNull(quartzDTO, formatMessage(getMessage("object.not.set", getMessage("request"))));
-        notNull(quartzDTO.getJob(), formatMessage(getMessage("object.not.set", getMessage("job"))));
-        notNull(quartzDTO.getJob().getDetails(), formatMessage(getMessage("object.not.set", getMessage("job"))));
-        notNull(quartzDTO.getJob().getDetails().getKeyName(), formatMessage(getMessage("object.not.set", getMessage("job.key.name"))));
-        notNull(quartzDTO.getJob().getDetails().getGroupName(), formatMessage(getMessage("object.not.set", getMessage("job.group.name"))));
-        hasText(quartzDTO.getJob().getDetails().getDescription(), formatMessage(getMessage("object.not.set", getMessage("job.description"))));
-        notNull(quartzDTO.getApiJobData(), formatMessage(getMessage("object.not.set", getMessage("api.job.data"))));
-        notNull(quartzDTO.getApiJobData().getExecutorClass(), formatMessage(getMessage("object.not.set", getMessage("job.executor.class"))));
-
-        JobDataMap jobDataMap = new JobDataMap(createJobDataMap(quartzDTO));
-        notNull(jobDataMap, formatMessage(getMessage("object.not.set", getMessage("job.data.map"))));
-        notEmpty(jobDataMap, formatMessage(getMessage("object.not.set", getMessage("job.data.map"))));
-
-        JobKey jobKey = new JobKey(quartzDTO.getJob().getDetails().getKeyName(), quartzDTO.getJob().getDetails().getGroupName());
-        notNull(jobKey, formatMessage(getMessage("object.not.set", getMessage("job.key"))));
-
-        JobBuilder jobBuilder = newJob(getExecutorClass(quartzDTO.getApiJobData().getExecutorClass()))
-                .requestRecovery(quartzDTO.getJob().getRecover())
-                .storeDurably(quartzDTO.getJob().getDurability())
-                .withIdentity(jobKey)
-                .withDescription(quartzDTO.getJob().getDetails().getDescription())
-                .setJobData(jobDataMap);
-        notNull(jobBuilder, formatMessage(getMessage("object.not.set", getMessage("job.builder"))));
-
-        JobDetail jobDetail = jobBuilder.build();
-        notNull(jobDetail, formatMessage(getMessage("object.not.set", getMessage("job.detail"))));
-
-        return jobDetail;
+    private JobDetail createJobDetail(final APIJobDataCO apiJobData, final JobCO job) throws ClassNotFoundException {
+        return newJob(getExecutorClass(apiJobData.getExecutorClass()))
+                .requestRecovery(job.getRecover())
+                .storeDurably(job.getDurability())
+                .withIdentity(new JobKey(job.getDetails().getKeyName(), job.getDetails().getGroupName()))
+                .withDescription(job.getDetails().getDescription())
+                .setJobData(new JobDataMap(createJobDataMap(apiJobData.getRequestHeaders(), apiJobData.getRequestUrl(), apiJobData.getRequestType())))
+                .build();
     }
 
-    private TriggerBuilder getCronTriggerBuilder(QuartzDTO quartzDTO, JobDetail jobDetail, TriggerKey triggerKey) throws IllegalArgumentException {
-        notNull(quartzDTO, formatMessage(getMessage("object.not.set", getMessage("request"))));
-        notNull(quartzDTO.getApiJobData(), formatMessage(getMessage("object.not.set", getMessage("api.job.data"))));
-        notNull(quartzDTO.getApiJobData().getCronJobScheduler(), formatMessage(getMessage("object.not.set", getMessage("cron.job.scheduler"))));
-        notNull(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger(), formatMessage(getMessage("object.not.set", getMessage("trigger"))));
-        notNull(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails(), formatMessage(getMessage("object.not.set", getMessage("trigger"))));
-        notNull(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getDescription(), formatMessage(getMessage("object.not.set", getMessage("trigger.description"))));
-        notNull(quartzDTO.getApiJobData().getCronJobScheduler().getCronExpression(), formatMessage(getMessage("object.not.set", getMessage("cron.expression"))));
-        notNull(triggerKey, formatMessage(getMessage("object.not.set", getMessage("trigger.key"))));
-        notNull(jobDetail, formatMessage(getMessage("object.not.set", getMessage("job.detail"))));
-        notNull(jobDetail.getJobDataMap(), formatMessage(getMessage("object.not.set", getMessage("job.data.map"))));
-        notEmpty(jobDetail.getJobDataMap(), formatMessage(getMessage("object.not.set", getMessage("job.data.map"))));
+    private TriggerBuilder getCronTriggerBuilder(final CronJobSchedulerDataCO cronJobSchedulerData, final TriggerKey triggerKey, final JobDetail jobDetail) {
+        TriggerBuilder triggerBuilder = newTrigger()
+                .forJob(jobDetail)
+                .usingJobData(jobDetail.getJobDataMap())
+                .withDescription(cronJobSchedulerData.getTrigger().getDetails().getDescription())
+                .withIdentity(triggerKey)
+                .withSchedule(cronSchedule(cronJobSchedulerData.getCronExpression()).inTimeZone(getDefault()));
+        return getTriggerBuilder(triggerBuilder, cronJobSchedulerData.getTrigger());
+    }
+
+    private TriggerBuilder getTriggerBuilder(TriggerBuilder triggerBuilder, final TriggerCO trigger) throws InvalidRequestException {
+        if (isTrue(trigger.getStartNow())) {
+            triggerBuilder = triggerBuilder.startNow();
+        } else {
+            if (nonNull(trigger.getStartTime())) {
+                triggerBuilder = triggerBuilder.startAt(trigger.getStartTime());
+            } else {
+                throw new InvalidRequestException("");
+            }
+        }
+        if (nonNull(trigger.getEndTime())) {
+            triggerBuilder = triggerBuilder.endAt(trigger.getEndTime());
+        }
+        return triggerBuilder;
+    }
+
+    private TriggerBuilder getSimpleTriggerBuilder(final SimpleJobSchedulerDataCO simpleJobSchedulerData, final JobDetail jobDetail) throws InvalidRequestException {
 
         TriggerBuilder triggerBuilder = newTrigger()
                 .forJob(jobDetail)
                 .usingJobData(jobDetail.getJobDataMap())
-                .withDescription(quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getDescription())
-                .withIdentity(triggerKey)
-                .withSchedule(cronSchedule(quartzDTO.getApiJobData().getCronJobScheduler().getCronExpression()).inTimeZone(getDefault()));
-        notNull(triggerBuilder, formatMessage(getMessage("object.not.set", getMessage("trigger.builder"))));
+                .withDescription(simpleJobSchedulerData.getTrigger().getDetails().getDescription())
+                .withIdentity(new TriggerKey(simpleJobSchedulerData.getTrigger().getDetails().getKeyName(), simpleJobSchedulerData.getTrigger().getDetails().getGroupName()));
 
-        return triggerBuilder;
-    }
-
-    private TriggerBuilder getSimpleTriggerBuilder(QuartzDTO quartzDTO, TriggerBuilder triggerBuilder) throws IllegalArgumentException, IllegalStateException {
-        notNull(quartzDTO, formatMessage(getMessage("object.not.set", getMessage("request"))));
-        notNull(quartzDTO.getApiJobData(), formatMessage(getMessage("object.not.set", getMessage("api.job.data"))));
-        notNull(quartzDTO.getApiJobData().getSimpleJobScheduler(), formatMessage(getMessage("object.not.set", getMessage("simple.job.scheduler"))));
-        notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatType(), formatMessage(getMessage("object.not.set", getMessage("simple.job.scheduler.repeat.type"))));
-        notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval(), formatMessage(getMessage("object.not.set", getMessage("simple.job.scheduler.repeat.interval"))));
-        notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue(), formatMessage(getMessage("object.not.set", getMessage("simple.job.scheduler.repeat.value"))));
-
-        switch (quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatType()) {
+        switch (simpleJobSchedulerData.getRepeatType()) {
             case REPEAT_BY_SECOND:
-                if (quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatForever()) {
-                    triggerBuilder = triggerBuilder.withSchedule(repeatSecondlyForever(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()));
+                if (simpleJobSchedulerData.getRepeatInterval().getRepeatForever()) {
+                    triggerBuilder = triggerBuilder.withSchedule(repeatSecondlyForever(simpleJobSchedulerData.getRepeatInterval().getRepeatValue()));
                 } else {
-                    notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatCount(), formatMessage(getMessage("object.not.set", getMessage("simple.job.scheduler.repeat.count"))));
-                    state(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatCount() > 0, formatMessage(getMessage("simple.job.scheduler.repeat.count.greater.than", 0)));
-
-                    triggerBuilder = triggerBuilder.withSchedule(repeatSecondlyForTotalCount(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatCount(), quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()));
+                    if (simpleJobSchedulerData.getRepeatInterval().getRepeatCount() > 0) {
+                        triggerBuilder = triggerBuilder.withSchedule(repeatSecondlyForTotalCount(simpleJobSchedulerData.getRepeatInterval().getRepeatCount(), simpleJobSchedulerData.getRepeatInterval().getRepeatValue()));
+                    } else {
+                        throw new InvalidRequestException("");
+                    }
                 }
                 break;
             case REPEAT_BY_MINUTE:
-                if (quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatForever()) {
-                    triggerBuilder = triggerBuilder.withSchedule(repeatMinutelyForever(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()));
+                if (simpleJobSchedulerData.getRepeatInterval().getRepeatForever()) {
+                    triggerBuilder = triggerBuilder.withSchedule(repeatMinutelyForever(simpleJobSchedulerData.getRepeatInterval().getRepeatValue()));
                 } else {
-                    notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatCount(), formatMessage(getMessage("object.not.set", getMessage("simple.job.scheduler.repeat.count"))));
-                    state(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatCount() > 0, formatMessage(getMessage("simple.job.scheduler.repeat.count.greater.than", 0)));
-
-                    triggerBuilder = triggerBuilder.withSchedule(repeatMinutelyForTotalCount(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatCount(), quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()));
+                    if (simpleJobSchedulerData.getRepeatInterval().getRepeatCount() > 0) {
+                        triggerBuilder = triggerBuilder.withSchedule(repeatMinutelyForTotalCount(simpleJobSchedulerData.getRepeatInterval().getRepeatCount(), simpleJobSchedulerData.getRepeatInterval().getRepeatValue()));
+                    } else {
+                        throw new InvalidRequestException("");
+                    }
                 }
                 break;
             case REPEAT_BY_HOUR:
-                if (quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatForever()) {
-                    triggerBuilder = triggerBuilder.withSchedule(repeatHourlyForever(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()));
+                if (simpleJobSchedulerData.getRepeatInterval().getRepeatForever()) {
+                    triggerBuilder = triggerBuilder.withSchedule(repeatHourlyForever(simpleJobSchedulerData.getRepeatInterval().getRepeatValue()));
                 } else {
-                    notNull(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatCount(), formatMessage(getMessage("object.not.set", getMessage("simple.job.scheduler.repeat.count"))));
-                    state(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatCount() > 0, formatMessage(getMessage("simple.job.scheduler.repeat.count.greater.than", 0)));
-
-                    triggerBuilder = triggerBuilder.withSchedule(repeatHourlyForTotalCount(quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatCount(), quartzDTO.getApiJobData().getSimpleJobScheduler().getRepeatInterval().getRepeatValue()));
+                    if (simpleJobSchedulerData.getRepeatInterval().getRepeatCount() > 0) {
+                        triggerBuilder = triggerBuilder.withSchedule(repeatHourlyForTotalCount(simpleJobSchedulerData.getRepeatInterval().getRepeatCount(), simpleJobSchedulerData.getRepeatInterval().getRepeatValue()));
+                    } else {
+                        throw new InvalidRequestException("");
+                    }
                 }
                 break;
             default:
-                triggerBuilder = null;
-                break;
+                throw new InvalidRequestException("");
         }
-        notNull(triggerBuilder, formatMessage(getMessage("object.not.set", getMessage("trigger.builder"))));
-
-        return triggerBuilder;
+        return getTriggerBuilder(triggerBuilder, simpleJobSchedulerData.getTrigger());
     }
 
+    /**
+     * Fetch job details by job key name and job group name job details co.
+     *
+     * @param keyGroupDescriptionDTO the key group description dto
+     * @return the job details co
+     * @throws SchedulerException the scheduler exception
+     */
+    public JobDetailsCO fetchJobDetailsByJobKeyNameAndJobGroupName(final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException {
+        final JobKey jobKey = new JobKey(keyGroupDescriptionDTO.getKeyName(), keyGroupDescriptionDTO.getGroupName());
+        final JobDetail jobDetail = quartzScheduler.getJobDetail(jobKey);
+        return new JobDetailsCO(
+                jobKey.getName(),
+                jobKey.getGroup(),
+                jobDetail.getDescription(),
+                findJobExecutorClassByValue(jobDetail.getJobClass()),
+                createMapFromJobDataMap(jobDetail.getJobDataMap()),
+                jobDetail.isDurable(),
+                countTriggersOfJob(jobKey) == 0,
+                jobDetail.requestsRecovery(),
+                jobDetail.isConcurrentExectionDisallowed(),
+                jobDetail.isConcurrentExectionDisallowed(),
+                null);
+    }
+
+    public TriggerDetailsCO fetchTriggerDetailsByTriggerKeyNameAndTriggerGroupName(final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException {
+        final Trigger trigger = quartzScheduler.getTrigger(new TriggerKey(keyGroupDescriptionDTO.getKeyName(), keyGroupDescriptionDTO.getGroupName()));
+        TriggerDetailsCO triggerDetail = new TriggerDetailsCO(
+                trigger.getKey().getName(),
+                trigger.getKey().getGroup(),
+                trigger.getDescription(),
+                trigger.getStartTime(),
+                trigger.getNextFireTime(),
+                trigger.getPreviousFireTime(),
+                trigger.getEndTime(),
+                trigger.getFinalFireTime(),
+                trigger.getPriority(),
+                quartzScheduler.getTriggerState(triggerKey(trigger.getKey().getName(), trigger.getKey().getGroup())).toString());
+        return setExtraTriggerDetails(trigger, triggerDetail);
+    }
+
+    private TriggerDetailsCO setExtraTriggerDetails(Trigger trigger, TriggerDetailsCO triggerDetail) {
+        if (trigger instanceof SimpleTrigger) {
+            triggerDetail.setType(SIMPLE);
+            TriggerDetailsCO.SimpleTriggerDetails simpleTriggerDetails = triggerDetail.new SimpleTriggerDetails();
+            simpleTriggerDetails.setCountTriggered(((SimpleTrigger) trigger).getTimesTriggered());
+            simpleTriggerDetails.setRepeatCount(((SimpleTrigger) trigger).getRepeatCount());
+            simpleTriggerDetails.setRepeatInterval(((SimpleTrigger) trigger).getRepeatInterval());
+        } else if (trigger instanceof CronTrigger) {
+            triggerDetail.setType(CRON);
+            TriggerDetailsCO.CronTriggerDetails cronTriggerDetails = triggerDetail.new CronTriggerDetails();
+            cronTriggerDetails.setCronExpression(((CronTrigger) trigger).getCronExpression());
+            cronTriggerDetails.setExpressionSummary(((CronTrigger) trigger).getExpressionSummary());
+            cronTriggerDetails.setTimeZone(((CronTrigger) trigger).getTimeZone());
+        }
+        return triggerDetail;
+    }
 }

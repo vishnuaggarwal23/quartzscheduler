@@ -17,7 +17,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"/>
     <title layout:title-pattern="$CONTENT_TITLE">Quartz Scheduler | Admin</title>
-    <link rel="icon" href="/static/favicon.ico" type="image/x-icon"/>
+    <link rel="icon" th:href="@{/common/img/favicon.ico}" type="image/x-icon"/>
     <div th:replace="common/font :: commonFONT"></div>
     <div th:replace="common/css :: commonCSS"></div>
     <div layout:fragment="customFONT"></div>
@@ -115,7 +115,7 @@
                             <h3 class="uppercase">Dashboard</h3>
                         </li>
                         <li class="nav-item  ">
-                            <a href="javascript:" class="nav-link ">
+                            <a th:href="@{/web/user/dashboard}" class="nav-link ">
                                 <i class="icon-diamond"></i>
                                 <span class="title">Dashboard</span>
                             </a>

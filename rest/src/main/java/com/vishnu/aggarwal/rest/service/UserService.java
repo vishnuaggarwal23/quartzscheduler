@@ -14,9 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import static java.util.Objects.isNull;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
-import static org.springframework.util.Assert.notNull;
 
 /**
  * The type User service.
@@ -46,16 +44,7 @@ public class UserService extends BaseService implements com.vishnu.aggarwal.rest
      * @return the current logged in user
      */
     public User getCurrentLoggedInUser() throws HibernateException {
-        User user = null;
-        Object principal = getContext().getAuthentication().getPrincipal();
-        if (principal instanceof String) {
-            user = findByUsername(((String) principal).trim());
-        } else if (principal instanceof User) {
-            user = (User) principal;
-        }
-        notNull(user, formatMessage(getMessage("")));
-
-        return user;
+        return findByUsername(((String) getContext().getAuthentication().getPrincipal()).trim());
     }
 
     /**
@@ -65,7 +54,7 @@ public class UserService extends BaseService implements com.vishnu.aggarwal.rest
      * @return the user
      * @throws HibernateException the hibernate exception
      */
-    public User findByUsername(String username) throws HibernateException {
+    public User findByUsername(final String username) throws HibernateException {
         return userRepoService.findByUsername(username);
     }
 
@@ -73,15 +62,16 @@ public class UserService extends BaseService implements com.vishnu.aggarwal.rest
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         try {
             User user = userRepoService.findByUsername(username);
-            if (isNull(user)) {
-                throw new UsernameNotFoundException(getMessage("username.not.found"));
-            }
             user.setUserAuthorities(user.getUserAuthorities());
             return user;
         } catch (HibernateException e) {
             throw new UsernameNotFoundException(getMessage("multiple.usernames.found"));
-        } catch (UsernameNotFoundException e) {
+        } catch (UsernameNotFoundException | NullPointerException e) {
             throw new UsernameNotFoundException(e.getMessage(), e);
         }
+    }
+
+    public User findById(final Long id) {
+        return userRepoService.findById(id);
     }
 }

@@ -26,6 +26,7 @@ public class TriggerDetailsCO {
     private Integer priority;
     private ScheduleType type;
     private String state;
+    private Date scheduledDate;
 
     /**
      * Instantiates a new Trigger details co.

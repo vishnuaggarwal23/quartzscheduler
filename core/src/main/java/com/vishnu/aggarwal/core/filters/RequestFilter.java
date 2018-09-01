@@ -1,4 +1,4 @@
-package com.vishnu.aggarwal.rest.filters;
+package com.vishnu.aggarwal.core.filters;
 
 /*
 Created by vishnu on 22/5/18 2:02 PM

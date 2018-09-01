@@ -4,6 +4,7 @@ package com.vishnu.aggarwal.core.controller;
 Created by vishnu on 28/2/18 1:26 PM
 */
 
+import com.google.gson.Gson;
 import com.vishnu.aggarwal.core.config.BaseMessageResolver;
 import com.vishnu.aggarwal.core.vo.DataTableVO;
 import com.vishnu.aggarwal.core.vo.RestResponseVO;
@@ -30,6 +31,9 @@ public class BaseController {
      */
     @Autowired
     BaseMessageResolver baseMessageResolver;
+
+    @Autowired
+    Gson gson;
 
     /**
      * Set rest response vo.
@@ -65,6 +69,10 @@ public class BaseController {
         dataTableVO.setRecordsTotal(recordsTotal);
         dataTableVO.setRecordsFiltered(recordsFiltered);
         dataTableVO.setData(data);
+    }
+
+    protected Gson gson() {
+        return gson;
     }
 
     /**

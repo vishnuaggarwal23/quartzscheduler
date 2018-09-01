@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
 import java.util.Map;
 
 import static java.lang.Boolean.FALSE;
@@ -28,4 +29,5 @@ public class JobDetailsCO {
     private Boolean recover = FALSE;
     private Boolean concurrentExecutionDisallowed = FALSE;
     private Boolean persistJobDataAfterExecution = FALSE;
+    private Date scheduledDate;
 }
