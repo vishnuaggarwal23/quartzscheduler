@@ -1,11 +1,6 @@
 import static java.lang.System.properties
 
 buildscript {
-    ext {
-        projectVersion = '0.0.1-SNAPSHOT'
-        projectGroup = 'com.vishnu.aggarwal'
-        projectBaseName = 'quartz-rest'
-    }
     /*dependencies {
         classpath('org.liquibase:liquibase-core:3.5.5')
     }*/
@@ -15,34 +10,34 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 group = projectGroup
-version = projectVersion
+version = restModuleProjectVersion
 mainClassName = 'com.vishnu.aggarwal.rest.main.Rest'
 
 war {
     enabled = true
-    baseName = projectBaseName
-    version = projectVersion
+    baseName = restModuleProjectBaseName
+    version = restModuleProjectVersion
     exclude('application.yml', 'application-dev.yml', 'banner.txt')
 }
 
 jar {
     enabled = true
-    baseName = projectBaseName
-    version = projectVersion
+    baseName = restModuleProjectBaseName
+    version = restModuleProjectVersion
     exclude('application.yml', 'application-dev.yml', 'banner.txt')
 }
 
 bootJar {
     enabled = true
-    baseName = projectBaseName
-    version = projectVersion
+    baseName = restModuleProjectBaseName
+    version = restModuleProjectVersion
     exclude('application.yml', 'application-dev.yml', 'banner.txt')
 }
 
 bootWar {
     enabled = true
-    baseName = projectBaseName
-    version = projectVersion
+    baseName = restModuleProjectBaseName
+    version = restModuleProjectVersion
     exclude('application.yml', 'application-dev.yml', 'banner.txt')
 }
 

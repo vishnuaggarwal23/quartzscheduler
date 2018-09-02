@@ -1,43 +1,38 @@
 buildscript {
-    ext {
-        projectGroup = 'com.vishnu.aggarwal'
-        projectVersion = '0.0.1-SNAPSHOT'
-        projectBaseName = 'quartz-core'
-    }
 }
 
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 group = projectGroup
-version = projectVersion
+version = coreModuleProjectVersion
 mainClassName = 'com.vishnu.aggarwal.core.main.Core'
 
 war {
     enabled = true
-    baseName = projectBaseName
-    version = projectVersion
+    baseName = coreModuleProjectBaseName
+    version = coreModuleProjectVersion
     exclude('application.yml', 'application-dev.yml', 'banner.txt')
 }
 
 jar {
     enabled = true
-    baseName = projectBaseName
-    version = projectVersion
+    baseName = coreModuleProjectBaseName
+    version = coreModuleProjectVersion
     exclude('application.yml', 'application-dev.yml', 'banner.txt')
 }
 
 bootJar {
     enabled = true
-    baseName = projectBaseName
-    version = projectVersion
+    baseName = coreModuleProjectBaseName
+    version = coreModuleProjectVersion
     exclude('application.yml', 'application-dev.yml', 'banner.txt')
 }
 
 bootWar {
     enabled = true
-    baseName = projectBaseName
-    version = projectVersion
+    baseName = coreModuleProjectBaseName
+    version = coreModuleProjectVersion
     exclude('application.yml', 'application-dev.yml', 'banner.txt')
 }
 

@@ -1,45 +1,40 @@
 import static java.lang.System.getProperties
 
 buildscript {
-    ext {
-        projectVersion = '0.0.1-SNAPSHOT'
-        projectGroup = 'com.vishnu.aggarwal'
-        projectBaseName = 'quartz-admin'
-    }
 }
 
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 group = projectGroup
-version = projectVersion
+version = adminModuleProjectVersion
 mainClassName = 'com.vishnu.aggarwal.admin.main.Admin'
 
 war {
     enabled = true
-    baseName = projectBaseName
-    version = projectVersion
+    baseName = adminModuleProjectBaseName
+    version = adminModuleProjectVersion
     exclude('application.yml', 'application-dev.yml', 'banner.txt')
 }
 
 jar {
     enabled = true
-    baseName = projectBaseName
-    version = projectVersion
+    baseName = adminModuleProjectBaseName
+    version = adminModuleProjectVersion
     exclude('application.yml', 'application-dev.yml', 'banner.txt')
 }
 
 bootJar {
     enabled = true
-    baseName = projectBaseName
-    version = projectVersion
+    baseName = adminModuleProjectBaseName
+    version = adminModuleProjectVersion
     exclude('application.yml', 'application-dev.yml', 'banner.txt')
 }
 
 bootWar {
     enabled = true
-    baseName = projectBaseName
-    version = projectVersion
+    baseName = adminModuleProjectBaseName
+    version = adminModuleProjectVersion
     exclude('application.yml', 'application-dev.yml', 'banner.txt')
 }
 

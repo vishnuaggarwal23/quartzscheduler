@@ -1,4 +1,2 @@
 rootProject.name = rootProjectName
-include 'core'
-include 'rest'
-include 'admin'
+include coreModuleProjectName, adminModuleProjectName, restModuleProjectName
