@@ -12,6 +12,7 @@ spring:
       enabled: true
     restart:
       enabled: true
+      log-condition-evaluation-delta: true
   output:
     ansi:
       enabled: detect
