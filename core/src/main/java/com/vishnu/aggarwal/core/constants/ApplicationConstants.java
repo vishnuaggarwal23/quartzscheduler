@@ -215,4 +215,10 @@ public class ApplicationConstants {
      * The constant HASHMAP_ERROR_KEY.
      */
     public static final String HASHMAP_ERROR_KEY = "error";
+
+    public static final String REDIRECTED = "redirected";
+
+    public static final String QUESTION_MARK = "?";
+
+    public static final String EQUAL_TO = "=";
 }

@@ -42,6 +42,10 @@ public class UrlMapping {
                  * The constant CREATE_TRIGGER.
                  */
                 public static final String CREATE_TRIGGER = "/trigger/create";
+
+                public static final String VIEW_JOB = "/job/view";
+
+                public static final String LIST_JOBS = "/job/list";
             }
 
             /**
@@ -223,71 +227,71 @@ public class UrlMapping {
             /**
              * The constant CREATE_JOB.
              */
-            public static final String CREATE_API_JOB = "/api/job";
+            public static final String CREATE_API_JOB = "/api/job/create";
             /**
              * The constant CREATE_JOB_SCHEDULED_SIMPLE.
              */
-            public static final String CREATE_API_JOB_SCHEDULED_SIMPLE = "/api/job/simple";
+            public static final String CREATE_API_JOB_SCHEDULED_SIMPLE = "/api/simple/job/create";
             /**
              * The constant CREATE_JOB_SCHEDULED_CRON.
              */
-            public static final String CREATE_API_JOB_SCHEDULED_CRON = "/api/job/cron";
+            public static final String CREATE_API_JOB_SCHEDULED_CRON = "/api/cron/job/create";
             /**
              * The constant UPDATE_JOB.
              */
-            public static final String UPDATE_API_JOB = "/api/job";
+            public static final String UPDATE_API_JOB = "/api/job/update";
             /**
              * The constant CREATE_TRIGGER.
              */
-            public static final String CREATE_SIMPLE_TRIGGER = "/simple/trigger";
+            public static final String CREATE_SIMPLE_TRIGGER = "/simple/trigger/create";
             /**
              * The constant CREATE_CRON_TRIGGER.
              */
-            public static final String CREATE_CRON_TRIGGER = "/cron/trigger";
+            public static final String CREATE_CRON_TRIGGER = "/cron/trigger/create";
             /**
              * The constant UPDATE_TRIGGER.
              */
-            public static final String UPDATE_SIMPLE_TRIGGER = "/simple/trigger";
+            public static final String UPDATE_SIMPLE_TRIGGER = "/simple/trigger/update";
             /**
              * The constant UPDATE_CRON_TRIGGER.
              */
-            public static final String UPDATE_CRON_TRIGGER = "/cron/trigger";
+            public static final String UPDATE_CRON_TRIGGER = "/cron/trigger/update";
             /**
              * The constant FETCH_JOB_BY_GROUP_NAME.
              */
-            public static final String FETCH_JOB_BY_JOB_GROUP_NAME = "/job";
+            public static final String FETCH_JOB_BY_JOB_GROUP_NAME = "/job/list";
             /**
              * The constant FETCH_TRIGGER_BY_JOB_KEY_GROUP_NAME.
              */
-            public static final String FETCH_TRIGGER_BY_JOB_KEY_JOB_GROUP_NAME = "/trigger";
+            public static final String FETCH_TRIGGER_BY_JOB_KEY_JOB_GROUP_NAME = "/trigger/list";
             /**
              * The constant FETCH_QUARTZ_DETAILS_GROUP_NAME.
              */
-            public static final String FETCH_QUARTZ_DETAILS_JOB_GROUP_NAME = "/details";
+            public static final String FETCH_QUARTZ_DETAILS_JOB_GROUP_NAME = "/details/list";
             /**
              * The constant RESUME_JOBS.
              */
-            public static final String RESUME_JOBS = "/resume/jobs";
+            public static final String RESUME_JOBS = "/job/resume";
             /**
              * The constant RESUME_TRIGGERS.
              */
-            public static final String RESUME_TRIGGERS = "/resume/triggers";
+            public static final String RESUME_TRIGGERS = "/trigger/resume";
             /**
              * The constant PAUSE_JOBS.
              */
-            public static final String PAUSE_JOBS = "/pause/jobs";
+            public static final String PAUSE_JOBS = "/job/pause";
             /**
              * The constant PAUSE_TRIGGERS.
              */
-            public static final String PAUSE_TRIGGERS = "/pause/triggers";
+            public static final String PAUSE_TRIGGERS = "/trigger/pause";
             /**
              * The constant DELETE_JOBS.
              */
-            public static final String DELETE_JOBS = "/delete/jobs";
+            public static final String DELETE_JOBS = "/job/delete";
             /**
              * The constant DELETE_TRIGGERS.
              */
-            public static final String DELETE_TRIGGERS = "/delete/triggers";
+            public static final String DELETE_TRIGGERS = "/trigger/delete";
         }
 
         /**
@@ -327,11 +331,11 @@ public class UrlMapping {
             /**
              * The constant UNIQUE_JOB_KEY_PER_GROUP.
              */
-            public static final String UNIQUE_JOB_KEY_PER_GROUP = "/uniqueJobKey";
+            public static final String UNIQUE_JOB_KEY_PER_GROUP = "/jobKey/unique";
             /**
              * The constant UNIQUE_TRIGGER_KEY_PER_GROUP.
              */
-            public static final String UNIQUE_TRIGGER_KEY_PER_GROUP = "/uniqueTriggerKey";
+            public static final String UNIQUE_TRIGGER_KEY_PER_GROUP = "/triggerKey/unique";
         }
     }
 }
