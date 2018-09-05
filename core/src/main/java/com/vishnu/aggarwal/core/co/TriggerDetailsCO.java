@@ -1,5 +1,6 @@
 package com.vishnu.aggarwal.core.co;
 
+import com.vishnu.aggarwal.core.dto.KeyGroupDescriptionDTO;
 import com.vishnu.aggarwal.core.enums.ScheduleType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,9 +16,7 @@ import java.util.TimeZone;
 @Setter
 @NoArgsConstructor
 public class TriggerDetailsCO {
-    private String keyName;
-    private String groupName;
-    private String description;
+    private KeyGroupDescriptionDTO details;
     private Date startTime;
     private Date nextFireTime;
     private Date previousFireTime;
@@ -31,9 +30,7 @@ public class TriggerDetailsCO {
     /**
      * Instantiates a new Trigger details co.
      *
-     * @param keyName          the key name
-     * @param groupName        the group name
-     * @param description      the description
+     * @param details          the details
      * @param startTime        the start time
      * @param nextFireTime     the next fire time
      * @param previousFireTime the previous fire time
@@ -42,10 +39,8 @@ public class TriggerDetailsCO {
      * @param priority         the priority
      * @param state            the state
      */
-    public TriggerDetailsCO(String keyName, String groupName, String description, Date startTime, Date nextFireTime, Date previousFireTime, Date endTime, Date finalFireTime, Integer priority, String state) {
-        this.keyName = keyName;
-        this.groupName = groupName;
-        this.description = description;
+    public TriggerDetailsCO(KeyGroupDescriptionDTO details, Date startTime, Date nextFireTime, Date previousFireTime, Date endTime, Date finalFireTime, Integer priority, String state) {
+        this.details = details;
         this.startTime = startTime;
         this.nextFireTime = nextFireTime;
         this.previousFireTime = previousFireTime;

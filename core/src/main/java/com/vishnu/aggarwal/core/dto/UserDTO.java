@@ -11,6 +11,7 @@ import lombok.ToString;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+import static java.lang.Long.valueOf;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -53,6 +54,10 @@ public class UserDTO {
 
     public UserDTO(Long id) {
         this.id = id;
+    }
+
+    public UserDTO(String id) {
+        this.id = valueOf(id);
     }
 
     /**

@@ -12,10 +12,10 @@ import java.util.Date;
 @Getter
 @Setter
 public class JobTriggerResponseDTO extends DataTableCO {
-    private String triggerKeyName;
-    private UserDTO triggerGroupName;
-    private String jobKeyName;
-    private UserDTO jobGroupName;
+    private String triggerKey;
+    private UserDTO triggerGroup;
+    private String jobKey;
+    private UserDTO jobGroup;
     private Integer responseCode;
     private String responseHeader;
     private Object responseBody;

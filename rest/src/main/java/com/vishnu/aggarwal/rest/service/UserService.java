@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import static java.lang.Long.valueOf;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 /**
@@ -73,5 +74,9 @@ public class UserService extends BaseService implements com.vishnu.aggarwal.rest
 
     public User findById(final Long id) {
         return userRepoService.findById(id);
+    }
+
+    public User findById(final String id) {
+        return userRepoService.findById(valueOf(id));
     }
 }

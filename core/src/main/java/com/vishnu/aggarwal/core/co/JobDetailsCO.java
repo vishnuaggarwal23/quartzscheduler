@@ -1,5 +1,6 @@
 package com.vishnu.aggarwal.core.co;
 
+import com.vishnu.aggarwal.core.dto.KeyGroupDescriptionDTO;
 import com.vishnu.aggarwal.core.enums.JobExecutorClass;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,9 +20,7 @@ import static java.lang.Boolean.FALSE;
 @NoArgsConstructor
 @AllArgsConstructor
 public class JobDetailsCO {
-    private String keyName;
-    private String groupName;
-    private String description;
+    private KeyGroupDescriptionDTO details;
     private JobExecutorClass executorClass;
     private Map data;
     private Boolean durability = FALSE;

@@ -32,20 +32,20 @@ public class JobTriggerResponse extends BaseEntity<Long> implements Serializable
     @NotNull
     @NotBlank
     @NotEmpty
-    private String triggerKeyName;
+    private String triggerKey;
 
     @NotNull
     @ManyToOne(fetch = LAZY)
-    private User triggerGroupName;
+    private User triggerGroup;
 
     @NotNull
     @NotBlank
     @NotEmpty
-    private String jobKeyName;
+    private String jobKey;
 
     @NotNull
     @ManyToOne(fetch = LAZY)
-    private User jobGroupName;
+    private User jobGroup;
 
     @NotNull
     private Integer responseCode;

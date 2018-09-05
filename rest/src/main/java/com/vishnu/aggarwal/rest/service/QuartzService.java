@@ -21,6 +21,7 @@ import static com.vishnu.aggarwal.core.constants.ApplicationConstants.*;
 import static com.vishnu.aggarwal.core.enums.JobExecutorClass.findJobExecutorClassByValue;
 import static com.vishnu.aggarwal.core.enums.ScheduleType.CRON;
 import static com.vishnu.aggarwal.core.enums.ScheduleType.SIMPLE;
+import static com.vishnu.aggarwal.rest.util.DTOConversion.convertFromUser;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.lang.Class.forName;
@@ -53,14 +54,20 @@ public class QuartzService extends BaseService {
      */
     private final Scheduler quartzScheduler;
 
+    private final UserService userService;
+
     /**
      * Instantiates a new Quartz service.
      *
      * @param quartzScheduler the quartz scheduler
+     * @param userService
      */
     @Autowired
-    public QuartzService(Scheduler quartzScheduler) {
+    public QuartzService(
+            Scheduler quartzScheduler,
+            UserService userService) {
         this.quartzScheduler = quartzScheduler;
+        this.userService = userService;
     }
 
     /**
@@ -119,8 +126,8 @@ public class QuartzService extends BaseService {
                 getCronTriggerBuilder(
                         quartzDTO.getApiJobData().getCronJobScheduler(),
                         new TriggerKey(
-                                quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getKeyName(),
-                                quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getGroupName()
+                                quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getKey(),
+                                quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getGroup().getId().toString()
                         ),
                         jobDetail
                 ).build()
@@ -143,8 +150,8 @@ public class QuartzService extends BaseService {
                         quartzDTO.getApiJobData().getSimpleJobScheduler(),
                         quartzScheduler.getJobDetail(
                                 new JobKey(
-                                        quartzDTO.getJob().getDetails().getKeyName(),
-                                        quartzDTO.getJob().getDetails().getGroupName()
+                                        quartzDTO.getJob().getDetails().getKey(),
+                                        quartzDTO.getJob().getDetails().getGroup().getId().toString()
                                 )
                         )
                 ).build()
@@ -165,12 +172,12 @@ public class QuartzService extends BaseService {
                 getCronTriggerBuilder(
                         quartzDTO.getApiJobData().getCronJobScheduler(),
                         new TriggerKey(
-                                quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getKeyName(),
-                                quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getGroupName()
+                                quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getKey(),
+                                quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getGroup().getId().toString()
                         ),
                         quartzScheduler.getJobDetail(new JobKey(
-                                quartzDTO.getJob().getDetails().getKeyName(),
-                                quartzDTO.getJob().getDetails().getGroupName()
+                                quartzDTO.getJob().getDetails().getKey(),
+                                quartzDTO.getJob().getDetails().getGroup().getId().toString()
                         ))).build()
         );
     }
@@ -211,8 +218,8 @@ public class QuartzService extends BaseService {
                         quartzDTO.getApiJobData().getSimpleJobScheduler(),
                         quartzScheduler.getJobDetail(
                                 new JobKey(
-                                        quartzDTO.getJob().getDetails().getKeyName(),
-                                        quartzDTO.getJob().getDetails().getGroupName()
+                                        quartzDTO.getJob().getDetails().getKey(),
+                                        quartzDTO.getJob().getDetails().getGroup().getId().toString()
                                 )
                         )
                 ).build()
@@ -233,13 +240,13 @@ public class QuartzService extends BaseService {
                 getCronTriggerBuilder(
                         quartzDTO.getApiJobData().getCronJobScheduler(),
                         new TriggerKey(
-                                quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getKeyName(),
-                                quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getGroupName()
+                                quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getKey(),
+                                quartzDTO.getApiJobData().getCronJobScheduler().getTrigger().getDetails().getGroup().getId().toString()
                         ),
                         quartzScheduler.getJobDetail(
                                 new JobKey(
-                                        quartzDTO.getJob().getDetails().getKeyName(),
-                                        quartzDTO.getJob().getDetails().getGroupName()
+                                        quartzDTO.getJob().getDetails().getKey(),
+                                        quartzDTO.getJob().getDetails().getGroup().getId().toString()
                                 )
                         )
                 ).build()
@@ -256,12 +263,10 @@ public class QuartzService extends BaseService {
      */
     public @NotEmpty List<JobDetailsCO> fetchJobDetailsByJobGroupName(final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException, IllegalArgumentException, NullPointerException {
         List<JobDetailsCO> jobDetails = new ArrayList<JobDetailsCO>();
-        for (JobKey jobKey : quartzScheduler.getJobKeys(jobGroupEquals(keyGroupDescriptionDTO.getGroupName())).parallelStream().sorted(((o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()))).collect(toSet())) {
+        for (JobKey jobKey : quartzScheduler.getJobKeys(jobGroupEquals(keyGroupDescriptionDTO.getGroup().getId().toString())).parallelStream().sorted(((o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()))).collect(toSet())) {
             JobDetail jobDetail = quartzScheduler.getJobDetail(jobKey);
             jobDetails.add(new JobDetailsCO(
-                    jobKey.getName(),
-                    jobKey.getGroup(),
-                    jobDetail.getDescription(),
+                    new KeyGroupDescriptionDTO(jobKey.getName(), convertFromUser(userService.findById(jobKey.getGroup())), jobDetail.getDescription()),
                     findJobExecutorClassByValue(jobDetail.getJobClass()),
                     createMapFromJobDataMap(jobDetail.getJobDataMap()),
                     jobDetail.isDurable(),
@@ -287,11 +292,9 @@ public class QuartzService extends BaseService {
     public @NotEmpty List<TriggerDetailsCO> fetchTriggerDetailsByJobKeyNameAndJobGroupName(final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException, IllegalArgumentException, NullPointerException {
 
         List<TriggerDetailsCO> triggerDetails = new ArrayList<TriggerDetailsCO>();
-        for (Trigger trigger : quartzScheduler.getTriggersOfJob(new JobKey(keyGroupDescriptionDTO.getKeyName(), keyGroupDescriptionDTO.getGroupName())).stream().sorted((o1, o2) -> o1.getKey().getName().compareToIgnoreCase(o2.getKey().getName())).collect(toList())) {
+        for (Trigger trigger : quartzScheduler.getTriggersOfJob(new JobKey(keyGroupDescriptionDTO.getKey(), keyGroupDescriptionDTO.getGroup().getId().toString())).stream().sorted((o1, o2) -> o1.getKey().getName().compareToIgnoreCase(o2.getKey().getName())).collect(toList())) {
             TriggerDetailsCO triggerDetail = new TriggerDetailsCO(
-                    trigger.getKey().getName(),
-                    trigger.getKey().getGroup(),
-                    trigger.getDescription(),
+                    new KeyGroupDescriptionDTO(trigger.getKey().getName(), convertFromUser(userService.findById(trigger.getKey().getGroup())), trigger.getDescription()),
                     trigger.getStartTime(),
                     trigger.getNextFireTime(),
                     trigger.getPreviousFireTime(),
@@ -313,10 +316,10 @@ public class QuartzService extends BaseService {
      * @throws NullPointerException     the null pointer exception
      */
     public @NotEmpty List<QuartzDetailsCO> fetchQuartzDetailsForJobGroupName(final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException, IllegalArgumentException, NullPointerException {
-        List<JobDetailsCO> jobDetails = fetchJobDetailsByJobGroupName(keyGroupDescriptionDTO).stream().sorted(((o1, o2) -> o1.getKeyName().compareToIgnoreCase(o2.getKeyName()))).collect(toList());
+        List<JobDetailsCO> jobDetails = fetchJobDetailsByJobGroupName(keyGroupDescriptionDTO).stream().sorted(((o1, o2) -> o1.getDetails().getKey().compareToIgnoreCase(o2.getDetails().getKey()))).collect(toList());
         List<QuartzDetailsCO> quartzDetails = new ArrayList<QuartzDetailsCO>();
         for (JobDetailsCO jobDetail : jobDetails) {
-            quartzDetails.add(new QuartzDetailsCO(jobDetail, fetchTriggerDetailsByJobKeyNameAndJobGroupName(new KeyGroupDescriptionDTO(jobDetail.getKeyName(), jobDetail.getGroupName(), null))));
+            quartzDetails.add(new QuartzDetailsCO(jobDetail, fetchTriggerDetailsByJobKeyNameAndJobGroupName(new KeyGroupDescriptionDTO(jobDetail.getDetails().getKey(), jobDetail.getDetails().getGroup(), null))));
         }
         return quartzDetails;
     }
@@ -330,11 +333,11 @@ public class QuartzService extends BaseService {
      * @throws NullPointerException     the null pointer exception
      */
     public Boolean resumeTriggers(final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException, NullPointerException {
-        if (isNotEmpty(keyGroupDescriptionDTO.getKeyName())) {
-            quartzScheduler.resumeTrigger(new TriggerKey(keyGroupDescriptionDTO.getKeyName(), keyGroupDescriptionDTO.getGroupName()));
+        if (isNotEmpty(keyGroupDescriptionDTO.getKey())) {
+            quartzScheduler.resumeTrigger(new TriggerKey(keyGroupDescriptionDTO.getKey(), keyGroupDescriptionDTO.getGroup().getId().toString()));
             return true;
         } else {
-            quartzScheduler.resumeTriggers(triggerGroupEquals(keyGroupDescriptionDTO.getGroupName()));
+            quartzScheduler.resumeTriggers(triggerGroupEquals(keyGroupDescriptionDTO.getGroup().getId().toString()));
             return true;
         }
     }
@@ -348,11 +351,11 @@ public class QuartzService extends BaseService {
      * @throws NullPointerException     the null pointer exception
      */
     public Boolean pauseTriggers(final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException, IllegalArgumentException, NullPointerException {
-        if (isNotEmpty(keyGroupDescriptionDTO.getKeyName())) {
-            quartzScheduler.pauseTrigger(new TriggerKey(keyGroupDescriptionDTO.getKeyName(), keyGroupDescriptionDTO.getGroupName()));
+        if (isNotEmpty(keyGroupDescriptionDTO.getKey())) {
+            quartzScheduler.pauseTrigger(new TriggerKey(keyGroupDescriptionDTO.getKey(), keyGroupDescriptionDTO.getGroup().getId().toString()));
             return true;
         } else {
-            quartzScheduler.pauseTriggers(triggerGroupEquals(keyGroupDescriptionDTO.getGroupName()));
+            quartzScheduler.pauseTriggers(triggerGroupEquals(keyGroupDescriptionDTO.getGroup().getId().toString()));
             return true;
         }
     }
@@ -366,11 +369,11 @@ public class QuartzService extends BaseService {
      * @throws NullPointerException     the null pointer exception
      */
     public Boolean resumeJobs(final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException, IllegalArgumentException, NullPointerException {
-        if (isNotEmpty(keyGroupDescriptionDTO.getKeyName())) {
-            quartzScheduler.resumeJob(new JobKey(keyGroupDescriptionDTO.getKeyName(), keyGroupDescriptionDTO.getGroupName()));
+        if (isNotEmpty(keyGroupDescriptionDTO.getKey())) {
+            quartzScheduler.resumeJob(new JobKey(keyGroupDescriptionDTO.getKey(), keyGroupDescriptionDTO.getGroup().getId().toString()));
             return true;
         } else {
-            quartzScheduler.resumeJobs(jobGroupEquals(keyGroupDescriptionDTO.getGroupName()));
+            quartzScheduler.resumeJobs(jobGroupEquals(keyGroupDescriptionDTO.getGroup().getId().toString()));
             return true;
         }
     }
@@ -384,11 +387,11 @@ public class QuartzService extends BaseService {
      * @throws NullPointerException     the null pointer exception
      */
     public Boolean pauseJobs(final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException, IllegalArgumentException, NullPointerException {
-        if (isNotEmpty(keyGroupDescriptionDTO.getKeyName())) {
-            quartzScheduler.pauseJob(new JobKey(keyGroupDescriptionDTO.getKeyName(), keyGroupDescriptionDTO.getGroupName()));
+        if (isNotEmpty(keyGroupDescriptionDTO.getKey())) {
+            quartzScheduler.pauseJob(new JobKey(keyGroupDescriptionDTO.getKey(), keyGroupDescriptionDTO.getGroup().getId().toString()));
             return true;
         } else {
-            quartzScheduler.pauseJobs(jobGroupEquals(keyGroupDescriptionDTO.getGroupName()));
+            quartzScheduler.pauseJobs(jobGroupEquals(keyGroupDescriptionDTO.getGroup().getId().toString()));
             return true;
         }
     }
@@ -401,10 +404,10 @@ public class QuartzService extends BaseService {
      * @throws SchedulerException the scheduler exception
      */
     public Boolean deleteJobs(final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException {
-        if (isNotEmpty(keyGroupDescriptionDTO.getKeyName())) {
-            return quartzScheduler.deleteJob(new JobKey(keyGroupDescriptionDTO.getKeyName(), keyGroupDescriptionDTO.getGroupName()));
+        if (isNotEmpty(keyGroupDescriptionDTO.getKey())) {
+            return quartzScheduler.deleteJob(new JobKey(keyGroupDescriptionDTO.getKey(), keyGroupDescriptionDTO.getGroup().getId().toString()));
         } else {
-            return quartzScheduler.deleteJobs(new ArrayList<>(quartzScheduler.getJobKeys(jobGroupEquals(keyGroupDescriptionDTO.getGroupName()))));
+            return quartzScheduler.deleteJobs(new ArrayList<>(quartzScheduler.getJobKeys(jobGroupEquals(keyGroupDescriptionDTO.getGroup().getId().toString()))));
         }
     }
 
@@ -416,10 +419,10 @@ public class QuartzService extends BaseService {
      * @throws SchedulerException the scheduler exception
      */
     public boolean deleteTriggers(final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException {
-        if (isNotEmpty(keyGroupDescriptionDTO.getKeyName())) {
-            return quartzScheduler.unscheduleJob(new TriggerKey(keyGroupDescriptionDTO.getKeyName(), keyGroupDescriptionDTO.getGroupName()));
+        if (isNotEmpty(keyGroupDescriptionDTO.getKey())) {
+            return quartzScheduler.unscheduleJob(new TriggerKey(keyGroupDescriptionDTO.getKey(), keyGroupDescriptionDTO.getGroup().getId().toString()));
         } else {
-            return quartzScheduler.unscheduleJobs(new ArrayList<>(quartzScheduler.getTriggerKeys(triggerGroupEquals(keyGroupDescriptionDTO.getGroupName()))));
+            return quartzScheduler.unscheduleJobs(new ArrayList<>(quartzScheduler.getTriggerKeys(triggerGroupEquals(keyGroupDescriptionDTO.getGroup().getId().toString()))));
         }
     }
 
@@ -450,7 +453,7 @@ public class QuartzService extends BaseService {
         return newJob(getExecutorClass(apiJobData.getExecutorClass()))
                 .requestRecovery(job.getRecover())
                 .storeDurably(job.getDurability())
-                .withIdentity(new JobKey(job.getDetails().getKeyName(), job.getDetails().getGroupName()))
+                .withIdentity(new JobKey(job.getDetails().getKey(), job.getDetails().getGroup().getId().toString()))
                 .withDescription(job.getDetails().getDescription())
                 .setJobData(new JobDataMap(createJobDataMap(apiJobData.getRequestHeaders(), apiJobData.getRequestUrl(), apiJobData.getRequestType())))
                 .build();
@@ -488,7 +491,7 @@ public class QuartzService extends BaseService {
                 .forJob(jobDetail)
                 .usingJobData(jobDetail.getJobDataMap())
                 .withDescription(simpleJobSchedulerData.getTrigger().getDetails().getDescription())
-                .withIdentity(new TriggerKey(simpleJobSchedulerData.getTrigger().getDetails().getKeyName(), simpleJobSchedulerData.getTrigger().getDetails().getGroupName()));
+                .withIdentity(new TriggerKey(simpleJobSchedulerData.getTrigger().getDetails().getKey(), simpleJobSchedulerData.getTrigger().getDetails().getGroup().getId().toString()));
 
         switch (simpleJobSchedulerData.getRepeatType()) {
             case REPEAT_BY_SECOND:
@@ -538,12 +541,10 @@ public class QuartzService extends BaseService {
      * @throws SchedulerException the scheduler exception
      */
     public JobDetailsCO fetchJobDetailsByJobKeyNameAndJobGroupName(final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException {
-        final JobKey jobKey = new JobKey(keyGroupDescriptionDTO.getKeyName(), keyGroupDescriptionDTO.getGroupName());
+        final JobKey jobKey = new JobKey(keyGroupDescriptionDTO.getKey(), keyGroupDescriptionDTO.getGroup().getId().toString());
         final JobDetail jobDetail = quartzScheduler.getJobDetail(jobKey);
         return new JobDetailsCO(
-                jobKey.getName(),
-                jobKey.getGroup(),
-                jobDetail.getDescription(),
+                new KeyGroupDescriptionDTO(jobKey.getName(), convertFromUser(userService.findById(jobKey.getGroup())), jobDetail.getDescription()),
                 findJobExecutorClassByValue(jobDetail.getJobClass()),
                 createMapFromJobDataMap(jobDetail.getJobDataMap()),
                 jobDetail.isDurable(),
@@ -555,11 +556,9 @@ public class QuartzService extends BaseService {
     }
 
     public TriggerDetailsCO fetchTriggerDetailsByTriggerKeyNameAndTriggerGroupName(final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException {
-        final Trigger trigger = quartzScheduler.getTrigger(new TriggerKey(keyGroupDescriptionDTO.getKeyName(), keyGroupDescriptionDTO.getGroupName()));
+        final Trigger trigger = quartzScheduler.getTrigger(new TriggerKey(keyGroupDescriptionDTO.getKey(), keyGroupDescriptionDTO.getGroup().getId().toString()));
         TriggerDetailsCO triggerDetail = new TriggerDetailsCO(
-                trigger.getKey().getName(),
-                trigger.getKey().getGroup(),
-                trigger.getDescription(),
+                new KeyGroupDescriptionDTO(trigger.getKey().getName(), convertFromUser(userService.findById(trigger.getKey().getGroup())), trigger.getDescription()),
                 trigger.getStartTime(),
                 trigger.getNextFireTime(),
                 trigger.getPreviousFireTime(),

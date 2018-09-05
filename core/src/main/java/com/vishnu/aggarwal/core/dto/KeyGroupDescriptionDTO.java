@@ -59,7 +59,7 @@ public class KeyGroupDescriptionDTO extends DataTableCO {
                     UpdateExistingCronTriggerForJob.class
             }
     )
-    private String keyName;
+    private String key;
 
     @NotNull(
             message = "group name is required",
@@ -83,51 +83,7 @@ public class KeyGroupDescriptionDTO extends DataTableCO {
                     UpdateExistingCronTriggerForJob.class
             }
     )
-    @NotBlank(
-            message = "group name is required",
-            groups = {
-                    CreateNewUnscheduledJob.class,
-                    CreateNewScheduledSimpleTriggeredJob.class,
-                    CreateNewScheduledCronTriggeredJob.class,
-                    DeleteTriggers.class,
-                    DeleteJobs.class,
-                    PauseTriggers.class,
-                    ResumeTriggers.class,
-                    PauseJobs.class,
-                    ResumeJobs.class,
-                    FetchJobsByJobGroupName.class,
-                    FetchTriggerDetailsByJobKeyNameAndJobGroupName.class,
-                    FetchQuartzDetailsByJobGroupName.class,
-                    UpdateExistingJob.class,
-                    CreateNewSimpleTriggerForJob.class,
-                    CreateNewCronTriggerForJob.class,
-                    UpdateExistingSimpleTriggerForJob.class,
-                    UpdateExistingCronTriggerForJob.class
-            }
-    )
-    @NotEmpty(
-            message = "group name is required",
-            groups = {
-                    CreateNewUnscheduledJob.class,
-                    CreateNewScheduledSimpleTriggeredJob.class,
-                    CreateNewScheduledCronTriggeredJob.class,
-                    DeleteTriggers.class,
-                    DeleteJobs.class,
-                    PauseTriggers.class,
-                    ResumeTriggers.class,
-                    PauseJobs.class,
-                    ResumeJobs.class,
-                    FetchJobsByJobGroupName.class,
-                    FetchTriggerDetailsByJobKeyNameAndJobGroupName.class,
-                    FetchQuartzDetailsByJobGroupName.class,
-                    UpdateExistingJob.class,
-                    CreateNewSimpleTriggerForJob.class,
-                    CreateNewCronTriggerForJob.class,
-                    UpdateExistingSimpleTriggerForJob.class,
-                    UpdateExistingCronTriggerForJob.class
-            }
-    )
-    private String groupName;
+    private UserDTO group;
 
     @NotNull(
             message = "description is required",

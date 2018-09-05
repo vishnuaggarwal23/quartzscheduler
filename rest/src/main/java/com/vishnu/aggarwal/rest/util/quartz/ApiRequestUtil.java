@@ -97,10 +97,10 @@ abstract class ApiRequestUtil implements Job {
         jobTriggerResponseDTO.setResponseCode(responseEntity.getStatusCode().value());
         jobTriggerResponseDTO.setResponseHeader(convertResponseToString(responseEntity.getHeaders()));
         jobTriggerResponseDTO.setResponseBody(responseEntity.getBody());
-        jobTriggerResponseDTO.setJobKeyName(jobExecutionContext.getJobDetail().getKey().getName());
-        jobTriggerResponseDTO.setJobGroupName(new UserDTO(valueOf(jobExecutionContext.getJobDetail().getKey().getGroup())));
-        jobTriggerResponseDTO.setTriggerKeyName(jobExecutionContext.getTrigger().getKey().getName());
-        jobTriggerResponseDTO.setTriggerGroupName(new UserDTO(valueOf(jobExecutionContext.getTrigger().getKey().getGroup())));
+        jobTriggerResponseDTO.setJobKey(jobExecutionContext.getJobDetail().getKey().getName());
+        jobTriggerResponseDTO.setJobGroup(new UserDTO(valueOf(jobExecutionContext.getJobDetail().getKey().getGroup())));
+        jobTriggerResponseDTO.setTriggerKey(jobExecutionContext.getTrigger().getKey().getName());
+        jobTriggerResponseDTO.setTriggerGroup(new UserDTO(valueOf(jobExecutionContext.getTrigger().getKey().getGroup())));
         jobTriggerResponseDTO.setFireTime(jobExecutionContext.getTrigger().getPreviousFireTime());
         return jobTriggerResponseDTO;
     }

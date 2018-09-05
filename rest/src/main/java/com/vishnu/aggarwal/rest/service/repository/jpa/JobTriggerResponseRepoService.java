@@ -71,10 +71,10 @@ public class JobTriggerResponseRepoService extends BaseRepoService<JobTriggerRes
     public JobTriggerResponse save(JobTriggerResponseDTO jobTriggerResponseDTO) {
         if (nonNull(jobTriggerResponseDTO)) {
             JobTriggerResponse jobTriggerResponse = new JobTriggerResponse();
-            jobTriggerResponse.setTriggerKeyName(jobTriggerResponseDTO.getTriggerKeyName());
-            jobTriggerResponse.setTriggerGroupName(userService.findById(jobTriggerResponseDTO.getTriggerGroupName().getId()));
-            jobTriggerResponse.setJobKeyName(jobTriggerResponseDTO.getJobKeyName());
-            jobTriggerResponse.setJobGroupName(userService.findById(jobTriggerResponseDTO.getJobGroupName().getId()));
+            jobTriggerResponse.setTriggerKey(jobTriggerResponseDTO.getTriggerKey());
+            jobTriggerResponse.setTriggerGroup(userService.findById(jobTriggerResponseDTO.getTriggerGroup().getId()));
+            jobTriggerResponse.setJobKey(jobTriggerResponseDTO.getJobKey());
+            jobTriggerResponse.setJobGroup(userService.findById(jobTriggerResponseDTO.getJobGroup().getId()));
             jobTriggerResponse.setResponseCode(jobTriggerResponseDTO.getResponseCode());
             jobTriggerResponse.setResponseHeader(jobTriggerResponseDTO.getResponseHeader());
             jobTriggerResponse.setResponseBody(valueOf(jobTriggerResponseDTO.getResponseBody()));
@@ -103,25 +103,25 @@ public class JobTriggerResponseRepoService extends BaseRepoService<JobTriggerRes
     }
 
     private Predicate getRestrictionQuery(final JobTriggerResponseDTO jobTriggerResponseDTO, CriteriaBuilder criteriaBuilder, final Root<JobTriggerResponse> root, final Join<JobTriggerResponse, User> jobGroupJoin, final Join<JobTriggerResponse, User> triggerGroupJoin) {
-        if (isNotBlank(jobTriggerResponseDTO.getJobKeyName()) && isNotBlank(jobTriggerResponseDTO.getTriggerKeyName())) {
+        if (isNotBlank(jobTriggerResponseDTO.getJobKey()) && isNotBlank(jobTriggerResponseDTO.getTriggerKey())) {
             return criteriaBuilder.and(
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("jobName")), jobTriggerResponseDTO.getJobKeyName().toLowerCase()),
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("triggerName")), jobTriggerResponseDTO.getTriggerKeyName().toLowerCase())
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("jobName")), jobTriggerResponseDTO.getJobKey().toLowerCase()),
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("triggerName")), jobTriggerResponseDTO.getTriggerKey().toLowerCase())
             );
-        } else if (isNotBlank(jobTriggerResponseDTO.getJobKeyName())) {
-            return criteriaBuilder.like(criteriaBuilder.lower(root.get("jobName")), jobTriggerResponseDTO.getJobKeyName());
-        } else if (isNotBlank(jobTriggerResponseDTO.getTriggerKeyName())) {
-            return criteriaBuilder.like(criteriaBuilder.lower(root.get("triggerName")), jobTriggerResponseDTO.getTriggerKeyName());
+        } else if (isNotBlank(jobTriggerResponseDTO.getJobKey())) {
+            return criteriaBuilder.like(criteriaBuilder.lower(root.get("jobName")), jobTriggerResponseDTO.getJobKey());
+        } else if (isNotBlank(jobTriggerResponseDTO.getTriggerKey())) {
+            return criteriaBuilder.like(criteriaBuilder.lower(root.get("triggerName")), jobTriggerResponseDTO.getTriggerKey());
         }
-        if (nonNull(jobTriggerResponseDTO.getTriggerGroupName()) && nonNull(jobTriggerResponseDTO.getJobGroupName()) && nonNull(jobTriggerResponseDTO.getJobGroupName().getId()) && nonNull(jobTriggerResponseDTO.getTriggerGroupName().getId())) {
+        if (nonNull(jobTriggerResponseDTO.getTriggerGroup()) && nonNull(jobTriggerResponseDTO.getJobGroup()) && nonNull(jobTriggerResponseDTO.getJobGroup().getId()) && nonNull(jobTriggerResponseDTO.getTriggerGroup().getId())) {
             return criteriaBuilder.and(
-                    criteriaBuilder.equal(jobGroupJoin.<Long>get("id"), jobTriggerResponseDTO.getJobGroupName().getId()),
-                    criteriaBuilder.equal(triggerGroupJoin.<Long>get("id"), jobTriggerResponseDTO.getTriggerGroupName().getId())
+                    criteriaBuilder.equal(jobGroupJoin.<Long>get("id"), jobTriggerResponseDTO.getJobGroup().getId()),
+                    criteriaBuilder.equal(triggerGroupJoin.<Long>get("id"), jobTriggerResponseDTO.getTriggerGroup().getId())
             );
-        } else if (nonNull(jobTriggerResponseDTO.getTriggerGroupName()) && nonNull(jobTriggerResponseDTO.getTriggerGroupName().getId())) {
-            return criteriaBuilder.equal(triggerGroupJoin.<Long>get("id"), jobTriggerResponseDTO.getTriggerGroupName().getId());
-        } else if (nonNull(jobTriggerResponseDTO.getJobGroupName()) && nonNull(jobTriggerResponseDTO.getJobGroupName().getId())) {
-            return criteriaBuilder.equal(jobGroupJoin.<Long>get("id"), jobTriggerResponseDTO.getJobGroupName().getId());
+        } else if (nonNull(jobTriggerResponseDTO.getTriggerGroup()) && nonNull(jobTriggerResponseDTO.getTriggerGroup().getId())) {
+            return criteriaBuilder.equal(triggerGroupJoin.<Long>get("id"), jobTriggerResponseDTO.getTriggerGroup().getId());
+        } else if (nonNull(jobTriggerResponseDTO.getJobGroup()) && nonNull(jobTriggerResponseDTO.getJobGroup().getId())) {
+            return criteriaBuilder.equal(jobGroupJoin.<Long>get("id"), jobTriggerResponseDTO.getJobGroup().getId());
         }
         return criteriaBuilder.isNotNull(root.<Long>get("id"));
     }
