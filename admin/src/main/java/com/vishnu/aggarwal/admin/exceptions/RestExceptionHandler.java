@@ -26,10 +26,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.ServletRequestBindingException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
@@ -54,6 +51,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 
 @RestController
 @RestControllerAdvice(basePackages = {"com.vishnu.aggarwal.admin.controller.api"})
+@ControllerAdvice(basePackages = {"com.vishnu.aggarwal.admin.controller.api"})
 @CommonsLog
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     private final BaseMessageResolver baseMessageResolver;
@@ -226,6 +224,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     public final ResponseEntity<Object> handleHttpServerErrorException(HttpServerErrorException exception, WebRequest webRequest) {
         return getObjectResponseEntity(exception, new HttpHeaders(), INTERNAL_SERVER_ERROR, webRequest, null, new JsonParser().parse(exception.getResponseBodyAsString()).getAsJsonObject());
     }
+
+    /*@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    @ResponseStatus(INTERNAL_SERVER_ERROR)
+    public final ResponseEntity<Object> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException exception, WebRequest webRequest) {
+        return getObjectResponseEntity(exception, new HttpHeaders(), INTERNAL_SERVER_ERROR, webRequest, null, null);
+    }*/
 
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(INTERNAL_SERVER_ERROR)

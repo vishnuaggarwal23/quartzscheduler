@@ -17,10 +17,10 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static com.vishnu.aggarwal.core.constants.ApplicationConstants.REDIRECTED;
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.TYPE;
 import static com.vishnu.aggarwal.core.constants.UrlMapping.Admin.Web.BASE_URI;
-import static com.vishnu.aggarwal.core.constants.UrlMapping.Admin.Web.Quartz.CREATE_JOB;
-import static com.vishnu.aggarwal.core.constants.UrlMapping.Admin.Web.Quartz.CREATE_TRIGGER;
+import static com.vishnu.aggarwal.core.constants.UrlMapping.Admin.Web.Quartz.*;
 
 /**
  * The type Quartz controller.
@@ -42,7 +42,7 @@ public class QuartzController extends BaseController {
     public ModelAndView createNewJob(@RequestParam(TYPE) JobType jobType, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         ModelMap modelMap = new ModelMap();
         modelMap.addAttribute("jobType", jobType);
-        return new ModelAndView("quartz/job/create", modelMap);
+        return new ModelAndView("quartz/job/api/create", modelMap);
     }
 
     /**
@@ -55,5 +55,18 @@ public class QuartzController extends BaseController {
     @RequestMapping(CREATE_TRIGGER)
     public ModelAndView createNewTrigger(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         return new ModelAndView("quartz/trigger/create");
+    }
+
+    @RequestMapping(VIEW_JOB)
+    public ModelAndView viewJob(@RequestParam(value = REDIRECTED, defaultValue = "false") Boolean redirected, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        ModelMap modelMap = new ModelMap();
+        return new ModelAndView("quartz/job/api/view", modelMap);
+    }
+
+    @RequestMapping(LIST_JOBS)
+    public ModelAndView listJobs(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        ModelMap modelMap = new ModelMap();
+
+        return new ModelAndView("quartz/job/api/list", modelMap);
     }
 }

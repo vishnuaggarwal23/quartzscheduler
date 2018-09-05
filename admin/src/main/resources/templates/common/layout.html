@@ -29,13 +29,16 @@
 <input type="hidden" id="isUserLoggedIn" th:value="${#bools.isTrue(userLoggedIn)}"/>
 
 <div th:if="${#bools.isTrue(userLoggedIn)}">
-    <input type="hidden" th:value="@{/api/user/current}" name="currentLoggedInUserApi" id="currentLoggedInUserApi"/>
+    <input type="hidden"
+           th:value="@{${T(com.vishnu.aggarwal.core.constants.ThymeleafUrlMapping).currentLoggedInUserUri()}}"
+           name="currentLoggedInUserApi" id="currentLoggedInUserApi"/>
     <input type="hidden" id="currentLoggedInUserJson"/>
     <header class="page-header">
         <nav class="navbar" role="navigation">
             <div class="container-fluid">
                 <div class="havbar-header">
-                    <a id="index" class="navbar-brand" th:href="@{/web/user/dashboard}">
+                    <a id="index" class="navbar-brand"
+                       th:href="@{${T(com.vishnu.aggarwal.core.constants.ThymeleafUrlMapping).dashboardUri()}}">
                         <img th:src="@{/common/img/logo.png}" alt="Logo"/> </a>
                     <div class="topbar-actions">
                         <div class="btn-group-notification btn-group" id="header_notification_bar">
@@ -115,7 +118,8 @@
                             <h3 class="uppercase">Dashboard</h3>
                         </li>
                         <li class="nav-item  ">
-                            <a th:href="@{/web/user/dashboard}" class="nav-link ">
+                            <a th:href="@{${T(com.vishnu.aggarwal.core.constants.ThymeleafUrlMapping).dashboardUri()}}"
+                               class="nav-link ">
                                 <i class="icon-diamond"></i>
                                 <span class="title">Dashboard</span>
                             </a>
@@ -132,10 +136,18 @@
                             </a>
                             <ul class="sub-menu">
                                 <li class="nav-item">
-                                    <a th:href="@{/web/quartz/job/create?type=API}" class="nav-link">
+                                    <a th:href="@{${T(com.vishnu.aggarwal.core.constants.ThymeleafUrlMapping).createApiJobUri()}}"
+                                       class="nav-link">
                                         <i class="icon-bar-chart"></i> API Job </a>
                                 </li>
                             </ul>
+                        </li>
+                        <li class="nav-item  ">
+                            <a th:href="@{${T(com.vishnu.aggarwal.core.constants.ThymeleafUrlMapping).listJobsUri()}}"
+                               class="nav-link nav-toggle">
+                                <i class="icon-diamond"></i>
+                                <span class="title">List</span>
+                            </a>
                         </li>
                         <li class="nav-item  ">
                             <a href="javascript:" class="nav-link nav-toggle">
