@@ -13,9 +13,11 @@ import io.jsonwebtoken.JwtException;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
@@ -36,6 +38,7 @@ import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
  */
 @Service
 @CommonsLog
+@Transactional
 public class TokenHandlerService extends BaseService implements com.vishnu.aggarwal.rest.interfaces.TokenHandlerService {
 
     /**
@@ -76,6 +79,7 @@ public class TokenHandlerService extends BaseService implements com.vishnu.aggar
         this.httpServletRequest = httpServletRequest;
     }
 
+    @Cacheable(value = "parseTokenToGetUser", key = "#token", unless = "#result == null")
     public User parseToken(final String token) throws JwtException {
         try {
             log.info("[Request Interceptor Id : " + httpServletRequest.getAttribute(CUSTOM_REQUEST_ID) + "] Parsing X-AUTH-TOKEN " + token);

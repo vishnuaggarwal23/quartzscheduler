@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
-import static javax.persistence.FetchType.LAZY;
+import static javax.persistence.FetchType.EAGER;
 
 /**
  * The type Job trigger response.
@@ -35,7 +35,7 @@ public class JobTriggerResponse extends BaseEntity<Long> implements Serializable
     private String triggerKey;
 
     @NotNull
-    @ManyToOne(fetch = LAZY)
+    @ManyToOne(fetch = EAGER)
     private User triggerGroup;
 
     @NotNull
@@ -44,7 +44,7 @@ public class JobTriggerResponse extends BaseEntity<Long> implements Serializable
     private String jobKey;
 
     @NotNull
-    @ManyToOne(fetch = LAZY)
+    @ManyToOne(fetch = EAGER)
     private User jobGroup;
 
     @NotNull

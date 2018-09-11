@@ -158,6 +158,7 @@ public abstract class BaseRepoService<T, ID extends Serializable> extends BaseSe
      * @return the object
      * @throws NoResultException the no result exception
      */
+    @Transactional
     Object selectQuery(CriteriaQuery<T> criteriaQuery, Boolean isDistinct, Boolean isSingleResultExpected, DataTableCO dataTableCO) {
         criteriaQuery.distinct(isDistinct);
         if (nonNull(dataTableCO)) {
@@ -201,8 +202,14 @@ public abstract class BaseRepoService<T, ID extends Serializable> extends BaseSe
      * @param id the id
      * @return the t
      */
+    @Transactional
     T findOne(ID id) {
         return getJpaRepository().findById(id).orElse(null);
+    }
+
+    @Transactional
+    T getOne(ID id) {
+        return getJpaRepository().getOne(id);
     }
 
 }

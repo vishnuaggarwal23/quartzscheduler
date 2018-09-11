@@ -1,9 +1,9 @@
 server:
-  port: 9090
+  port: "${REST_MODULE_SERVER_PORT:9090}"
   servlet:
-    context-path: "/admin"
+    context-path: "${ADMIN_MODULE_CONTEXT_PATH:/admin}"
 bootstrap:
-  enabled: true
+  enabled: "${BOOTSTRAP_ENABLED:true}"
 spring:
   thymeleaf:
     cache: false
@@ -24,7 +24,7 @@ logging:
     org.quartz: info
     org.springframework.web: info
     com.vishnu.aggarwal: info
-  file: "/home/vishnu/quartzscheduler/logging/admin.log"
+  file: "${LOGGING_FILE_PATH:/home/vishnu/quartzscheduler/logging/admin.log}"
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
@@ -32,5 +32,7 @@ logging:
     level: "%5p"
 rest:
   application:
-    baseUrl: "${REST_APPLICATION_URL:http://localhost:7070}"
-    contextPath: "/rest/api"
+    baseUrl: "${REST_MODULE_URL:http://localhost:7070}"
+    host: "${REST_MODULE_HOST:localhost}"
+    port: "${REST_MODULE_SERVER_PORT:7070}"
+    contextPath: "${REST_MODULE_CONTEXT_PATH:/rest/api}"

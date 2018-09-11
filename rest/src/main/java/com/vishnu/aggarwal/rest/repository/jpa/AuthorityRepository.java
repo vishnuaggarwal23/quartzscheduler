@@ -3,6 +3,7 @@ package com.vishnu.aggarwal.rest.repository.jpa;
 import com.vishnu.aggarwal.rest.entity.Authority;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /*
 Created by vishnu on 6/3/18 10:37 AM
@@ -12,6 +13,7 @@ Created by vishnu on 6/3/18 10:37 AM
  * The interface Authority repository.
  */
 @Repository
+@Transactional
 public interface AuthorityRepository extends JpaRepository<Authority, Long> {
     /**
      * Find by name and is deleted authority.

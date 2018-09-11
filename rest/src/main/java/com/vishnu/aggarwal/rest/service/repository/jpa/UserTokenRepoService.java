@@ -7,8 +7,11 @@ import com.vishnu.aggarwal.rest.entity.UserToken;
 import com.vishnu.aggarwal.rest.repository.jpa.UserTokenRepository;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.NoResultException;
 import javax.persistence.criteria.*;
@@ -28,6 +31,7 @@ Created by vishnu on 20/4/18 12:20 PM
  */
 @Service
 @CommonsLog
+@Transactional
 public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
 
     /**
@@ -55,6 +59,7 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
         return userTokenRepository;
     }
 
+    @CacheEvict(value = {"findUserTokenByToken", "findAllUserTokens", "findUserTokenByUserAndStatus"}, allEntries = true, beforeInvocation = true)
     @SuppressWarnings("unchecked")
     public UserToken save(UserToken userToken) {
         return super.save(userToken);
@@ -66,6 +71,7 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
      * @param xAuthToken the x auth token
      * @return the user token
      */
+    @Cacheable(value = "findUserTokenByToken", key = "#xAuthToken", unless = "#result == null")
     @SuppressWarnings("unchecked")
     public UserToken findByToken(String xAuthToken) {
         CriteriaQuery<UserToken> criteriaQuery = getBaseCriteriaSelectImpl();
@@ -89,6 +95,7 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
      * @param user the user
      * @return the boolean
      */
+    @CacheEvict(value = {"findUserTokenByToken", "findAllUserTokens", "findUserTokenByUserAndStatus"}, allEntries = true, beforeInvocation = true)
     public Boolean inactivatePreviousUserTokens(User user) {
         CriteriaUpdate<UserToken> criteriaUpdate = getBaseCriteriaUpdateImpl();
         CriteriaBuilder criteriaBuilder = getCriteriaBuilder();
@@ -107,6 +114,7 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
      * @param tokens the tokens
      * @return the boolean
      */
+    @CacheEvict(value = {"findUserTokenByToken", "findAllUserTokens", "findUserTokenByUserAndStatus"}, allEntries = true, beforeInvocation = true)
     public Boolean inactivateExpiredUserTokens(List<Token> tokens) {
         CriteriaUpdate<UserToken> criteriaUpdate = getBaseCriteriaUpdateImpl();
         Root<UserToken> root = getRoot(criteriaUpdate);
@@ -122,6 +130,7 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
      * @param user the user
      * @return the list
      */
+    @Cacheable(value = "findAllUserTokens", key = "#user.toString()", unless = "#result == null")
     @SuppressWarnings("unchecked")
     public List<UserToken> findAllUserTokens(User user) throws NoResultException {
         CriteriaQuery<UserToken> criteriaQuery = getBaseCriteriaSelectImpl();
@@ -134,14 +143,6 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
                         criteriaBuilder.equal(userToken.get("user"), user)
                 );
         return (List<UserToken>) selectQuery(criteriaQuery, TRUE, FALSE, null);
-
-
-        /*return (List<UserToken>) getBaseCriteriaSelectImpl().setReadOnly(TRUE)
-                .add(eq("user", user))
-                .add(not(in("status", asList(EXPIRED, PASSIVE))))
-                .add(eq("isDeleted", FALSE))
-                .setResultTransformer(DISTINCT_ROOT_ENTITY)
-                .list();*/
     }
 
     /**
@@ -151,6 +152,7 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
      * @param status the status
      * @return the user token
      */
+    @Cacheable(value = "findUserTokenByUserAndStatus", key = "#user.toString() + #status.toString()", unless = "#result == null")
     @SuppressWarnings("unchecked")
     public UserToken findByUserAndStatus(User user, Status status) throws NoResultException {
         CriteriaQuery<UserToken> criteriaQuery = getBaseCriteriaSelectImpl();
@@ -163,14 +165,5 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
                         criteriaBuilder.equal(userToken.get("user"), user)
                 );
         return (UserToken) selectQuery(criteriaQuery, TRUE, TRUE, null);
-
-
-        /*return (UserToken) getBaseCriteriaSelectImpl()
-                .setReadOnly(TRUE)
-                .add(eq("user", user))
-                .add(eq("status", status))
-                .add(eq("isDeleted", FALSE))
-                .setResultTransformer(DISTINCT_ROOT_ENTITY)
-                .uniqueResult();*/
     }
 }

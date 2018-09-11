@@ -12,6 +12,7 @@ import static org.springframework.boot.SpringApplication.run;
 @SpringBootApplication
 @ComponentScan("com.vishnu.aggarwal")
 @EnableScheduling
+//@EnableCaching
 public class Rest {
     /**
      * The entry point of application.

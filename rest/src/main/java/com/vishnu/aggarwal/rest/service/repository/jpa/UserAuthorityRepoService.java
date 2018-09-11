@@ -6,8 +6,15 @@ import com.vishnu.aggarwal.rest.entity.UserAuthority;
 import com.vishnu.aggarwal.rest.repository.jpa.UserAuthorityRepository;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import static java.lang.Boolean.FALSE;
 
 /*
 Created by vishnu on 20/4/18 2:55 PM
@@ -18,6 +25,7 @@ Created by vishnu on 20/4/18 2:55 PM
  */
 @Service
 @CommonsLog
+@Transactional
 public class UserAuthorityRepoService extends BaseRepoService<UserAuthority, Long> {
     /**
      * The User authority repository.
@@ -39,6 +47,14 @@ public class UserAuthorityRepoService extends BaseRepoService<UserAuthority, Lon
         return userAuthorityRepository;
     }
 
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "findUserAuthorityByUserAndAuthority", key = "#userAuthority.user.toString() + #userAuthority.authority.toString()", beforeInvocation = true)
+            },
+            put = {
+                    @CachePut(value = "findUserAuthorityByUserAndAuthority", key = "#userAuthority.user.toString() + #userAuthority.authority.toString()", unless = "#result == null")
+            }
+    )
     @SuppressWarnings("unchecked")
     public UserAuthority save(UserAuthority userAuthority) {
         return userAuthorityRepository.save(userAuthority);
@@ -49,10 +65,10 @@ public class UserAuthorityRepoService extends BaseRepoService<UserAuthority, Lon
      *
      * @param user      the user
      * @param authority the authority
-     * @param isDeleted the is deleted
      * @return the user authority
      */
-    public UserAuthority findByUserAndAuthorityAndIsDeleted(User user, Authority authority, Boolean isDeleted) {
-        return userAuthorityRepository.findByUserAndAuthorityAndIsDeleted(user, authority, isDeleted);
+    @Cacheable(value = "findUserAuthorityByUserAndAuthority", key = "#user.toString() + #authority.toString()", unless = "#result == null")
+    public UserAuthority findByUserAndAuthority(User user, Authority authority) {
+        return userAuthorityRepository.findByUserAndAuthorityAndIsDeleted(user, authority, FALSE);
     }
 }

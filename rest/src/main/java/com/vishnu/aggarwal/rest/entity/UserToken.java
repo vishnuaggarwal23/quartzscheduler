@@ -37,7 +37,7 @@ public class UserToken extends BaseEntity<Long> implements Serializable {
     private User user;
 
     @JoinColumn(name = "tokenId", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = EAGER)
     @NotNull
     private Token token;
 

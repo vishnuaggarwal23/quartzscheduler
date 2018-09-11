@@ -9,6 +9,10 @@ import com.vishnu.aggarwal.rest.repository.jpa.UserRepository;
 import lombok.extern.apachecommons.CommonsLog;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +30,7 @@ import static java.lang.Boolean.TRUE;
  */
 @Service
 @CommonsLog
+@Transactional
 public class UserRepoService extends BaseRepoService<User, Long> {
 
     /**
@@ -54,12 +59,23 @@ public class UserRepoService extends BaseRepoService<User, Long> {
      * @param username the username
      * @return the boolean
      */
+//    @Cacheable(value = "isUsernameUnique", key = "#username", unless = "#result == null")
     public Boolean checkIfUsernameIsUnique(String username) {
         return userRepository.countByUsernameAndIsDeleted(username, FALSE) == 0;
     }
 
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "findUserByUsername", key = "#user.username", beforeInvocation = true),
+                    @CacheEvict(value = "findUserById", key = "#user.id", beforeInvocation = true),
+                    @CacheEvict(value = "isUsernameUnique", key = "#user.id", beforeInvocation = true)
+            },
+            put = {
+                    @CachePut(value = "findUserByUsername", key = "#user.username", unless = "#result == null"),
+                    @CachePut(value = "findUserById", key = "#user.id", unless = "#result == null")
+            }
+    )
     @SuppressWarnings("unchecked")
-    @Transactional
     public User save(final User user) {
         return super.save(user);
     }
@@ -71,7 +87,7 @@ public class UserRepoService extends BaseRepoService<User, Long> {
      * @return the user
      * @throws HibernateException the hibernate exception
      */
-    @Transactional(readOnly = true)
+    @Cacheable(value = "findUserByUsername", key = "#username", unless = "#result == null")
     public User findByUsername(final String username) throws HibernateException, NoResultException {
         CriteriaQuery<User> criteriaQuery = getBaseCriteriaSelectImpl();
         CriteriaBuilder criteriaBuilder = getCriteriaBuilder();
@@ -88,7 +104,8 @@ public class UserRepoService extends BaseRepoService<User, Long> {
         return (User) selectQuery(criteriaQuery, TRUE, TRUE, null);
     }
 
+    @Cacheable(value = "findUserById", key = "#id", unless = "#result == null")
     public User findById(Long id) {
-        return getJpaRepository().getOne(id);
+        return super.getOne(id);
     }
 }

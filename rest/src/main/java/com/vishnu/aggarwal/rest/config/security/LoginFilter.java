@@ -85,7 +85,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         log.info("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Attempting User Authentication");
-        return tokenAuthenticationService.getAuthenticationForLogin(request, response, authenticationManager);
+        return tokenAuthenticationService.getAuthentication(request, response, authenticationManager);
     }
 
     @Override

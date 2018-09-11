@@ -9,6 +9,8 @@ import com.vishnu.aggarwal.core.service.BaseService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,7 +62,7 @@ public class QuartzService extends BaseService {
      * Instantiates a new Quartz service.
      *
      * @param quartzScheduler the quartz scheduler
-     * @param userService
+     * @param userService     the user service
      */
     @Autowired
     public QuartzService(
@@ -79,6 +81,7 @@ public class QuartzService extends BaseService {
      * @throws ClassNotFoundException   the class not found exception
      * @throws IllegalArgumentException the illegal argument exception
      */
+    @CacheEvict(value = "isUniqueJobKey", allEntries = true, beforeInvocation = true)
     public void createNewUnscheduledApiJob(final QuartzDTO quartzDTO) throws SchedulerException, NullPointerException, ClassNotFoundException, IllegalArgumentException {
         quartzScheduler.addJob(
                 createJobDetail(
@@ -99,6 +102,12 @@ public class QuartzService extends BaseService {
      * @throws SchedulerException      the scheduler exception
      * @throws InvalidRequestException the invalid request exception
      */
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "isUniqueJobKey", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(value = "isUniqueTriggerKey", allEntries = true, beforeInvocation = true)
+            }
+    )
     public Date createNewScheduledApiSimpleJob(final QuartzDTO quartzDTO) throws ClassNotFoundException, SchedulerException, InvalidRequestException {
         final JobDetail jobDetail = createJobDetail(quartzDTO.getApiJobData(), quartzDTO.getJob());
         return quartzScheduler.scheduleJob(
@@ -119,6 +128,12 @@ public class QuartzService extends BaseService {
      * @throws SchedulerException      the scheduler exception
      * @throws InvalidRequestException the invalid request exception
      */
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "isUniqueJobKey", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(value = "isUniqueTriggerKey", allEntries = true, beforeInvocation = true)
+            }
+    )
     public Date createNewScheduledApiCronJob(final QuartzDTO quartzDTO) throws ClassNotFoundException, SchedulerException, InvalidRequestException {
         final JobDetail jobDetail = createJobDetail(quartzDTO.getApiJobData(), quartzDTO.getJob());
         return quartzScheduler.scheduleJob(
@@ -144,6 +159,7 @@ public class QuartzService extends BaseService {
      * @throws NullPointerException     the null pointer exception
      * @throws IllegalStateException    the illegal state exception
      */
+    @CacheEvict(value = "isUniqueTriggerKey", allEntries = true, beforeInvocation = true)
     public Date createNewSimpleTriggerForJob(final QuartzDTO quartzDTO) throws SchedulerException, IllegalArgumentException, NullPointerException, IllegalStateException {
         return quartzScheduler.scheduleJob(
                 getSimpleTriggerBuilder(
@@ -167,6 +183,7 @@ public class QuartzService extends BaseService {
      * @throws IllegalArgumentException the illegal argument exception
      * @throws NullPointerException     the null pointer exception
      */
+    @CacheEvict(value = "isUniqueTriggerKey", allEntries = true, beforeInvocation = true)
     public Date createNewCronTriggerForJob(final QuartzDTO quartzDTO) throws SchedulerException, IllegalArgumentException, NullPointerException {
         return quartzScheduler.scheduleJob(
                 getCronTriggerBuilder(
@@ -191,6 +208,7 @@ public class QuartzService extends BaseService {
      * @throws IllegalArgumentException the illegal argument exception
      * @throws NullPointerException     the null pointer exception
      */
+    @CacheEvict(value = "isUniqueJobKey", allEntries = true, beforeInvocation = true)
     public void updateExistingJob(final QuartzDTO quartzDTO) throws ClassNotFoundException, SchedulerException, IllegalArgumentException, NullPointerException {
         quartzScheduler.addJob(
                 createJobDetail(
@@ -212,6 +230,7 @@ public class QuartzService extends BaseService {
      * @throws NullPointerException     the null pointer exception
      * @throws IllegalStateException    the illegal state exception
      */
+    @CacheEvict(value = "isUniqueTriggerKey", allEntries = true, beforeInvocation = true)
     public Date updateExistingSimpleTrigger(final QuartzDTO quartzDTO) throws SchedulerException, IllegalArgumentException, NullPointerException, IllegalStateException {
         return quartzScheduler.scheduleJob(
                 getSimpleTriggerBuilder(
@@ -235,6 +254,7 @@ public class QuartzService extends BaseService {
      * @throws IllegalArgumentException the illegal argument exception
      * @throws NullPointerException     the null pointer exception
      */
+    @CacheEvict(value = "isUniqueTriggerKey", allEntries = true, beforeInvocation = true)
     public Date updateExistingCronTrigger(final QuartzDTO quartzDTO) throws SchedulerException, IllegalArgumentException, NullPointerException {
         return quartzScheduler.scheduleJob(
                 getCronTriggerBuilder(
@@ -256,6 +276,7 @@ public class QuartzService extends BaseService {
     /**
      * Fetch job details by group name list.
      *
+     * @param keyGroupDescriptionDTO the key group description dto
      * @return the list
      * @throws SchedulerException       the scheduler exception
      * @throws IllegalArgumentException the illegal argument exception
@@ -310,6 +331,7 @@ public class QuartzService extends BaseService {
     /**
      * Fetch quartz details for a group name list.
      *
+     * @param keyGroupDescriptionDTO the key group description dto
      * @return the list
      * @throws SchedulerException       the scheduler exception
      * @throws IllegalArgumentException the illegal argument exception
@@ -328,9 +350,9 @@ public class QuartzService extends BaseService {
      * Resume triggers.
      *
      * @param keyGroupDescriptionDTO the key group description dto
-     * @throws SchedulerException       the scheduler exception
-     * @throws IllegalArgumentException the illegal argument exception
-     * @throws NullPointerException     the null pointer exception
+     * @return the boolean
+     * @throws SchedulerException   the scheduler exception
+     * @throws NullPointerException the null pointer exception
      */
     public Boolean resumeTriggers(final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException, NullPointerException {
         if (isNotEmpty(keyGroupDescriptionDTO.getKey())) {
@@ -346,6 +368,7 @@ public class QuartzService extends BaseService {
      * Pause triggers.
      *
      * @param keyGroupDescriptionDTO the key group description dto
+     * @return the boolean
      * @throws SchedulerException       the scheduler exception
      * @throws IllegalArgumentException the illegal argument exception
      * @throws NullPointerException     the null pointer exception
@@ -364,6 +387,7 @@ public class QuartzService extends BaseService {
      * Resume jobs.
      *
      * @param keyGroupDescriptionDTO the key group description dto
+     * @return the boolean
      * @throws SchedulerException       the scheduler exception
      * @throws IllegalArgumentException the illegal argument exception
      * @throws NullPointerException     the null pointer exception
@@ -382,6 +406,7 @@ public class QuartzService extends BaseService {
      * Pause jobs.
      *
      * @param keyGroupDescriptionDTO the key group description dto
+     * @return the boolean
      * @throws SchedulerException       the scheduler exception
      * @throws IllegalArgumentException the illegal argument exception
      * @throws NullPointerException     the null pointer exception
@@ -403,6 +428,12 @@ public class QuartzService extends BaseService {
      * @return the boolean
      * @throws SchedulerException the scheduler exception
      */
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "isUniqueJobKey", allEntries = true, beforeInvocation = true),
+                    @CacheEvict(value = "isUniqueTriggerKey", allEntries = true, beforeInvocation = true)
+            }
+    )
     public Boolean deleteJobs(final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException {
         if (isNotEmpty(keyGroupDescriptionDTO.getKey())) {
             return quartzScheduler.deleteJob(new JobKey(keyGroupDescriptionDTO.getKey(), keyGroupDescriptionDTO.getGroup().getId().toString()));
@@ -418,6 +449,7 @@ public class QuartzService extends BaseService {
      * @return the boolean
      * @throws SchedulerException the scheduler exception
      */
+    @CacheEvict(value = "isUniqueTriggerKey", allEntries = true, beforeInvocation = true)
     public boolean deleteTriggers(final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException {
         if (isNotEmpty(keyGroupDescriptionDTO.getKey())) {
             return quartzScheduler.unscheduleJob(new TriggerKey(keyGroupDescriptionDTO.getKey(), keyGroupDescriptionDTO.getGroup().getId().toString()));
@@ -555,6 +587,13 @@ public class QuartzService extends BaseService {
                 null);
     }
 
+    /**
+     * Fetch trigger details by trigger key name and trigger group name trigger details co.
+     *
+     * @param keyGroupDescriptionDTO the key group description dto
+     * @return the trigger details co
+     * @throws SchedulerException the scheduler exception
+     */
     public TriggerDetailsCO fetchTriggerDetailsByTriggerKeyNameAndTriggerGroupName(final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException {
         final Trigger trigger = quartzScheduler.getTrigger(new TriggerKey(keyGroupDescriptionDTO.getKey(), keyGroupDescriptionDTO.getGroup().getId().toString()));
         TriggerDetailsCO triggerDetail = new TriggerDetailsCO(

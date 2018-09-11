@@ -10,12 +10,14 @@ import com.vishnu.aggarwal.rest.service.repository.jpa.TokenRepoService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * The type Token service.
  */
 @Service
 @CommonsLog
+@Transactional
 public class TokenService extends BaseService {
     /**
      * The Token repo service.
@@ -45,11 +47,10 @@ public class TokenService extends BaseService {
     /**
      * Find by token and is deleted token.
      *
-     * @param token     the token
-     * @param isDeleted the is deleted
+     * @param token the token
      * @return the token
      */
-    public Token findByTokenAndIsDeleted(String token, Boolean isDeleted) {
-        return tokenRepoService.findByTokenAndIsDeleted(token, isDeleted);
+    public Token findByToken(String token) {
+        return tokenRepoService.findByToken(token);
     }
 }

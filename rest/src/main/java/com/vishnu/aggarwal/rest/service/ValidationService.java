@@ -5,6 +5,7 @@ import lombok.extern.apachecommons.CommonsLog;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /*
 Created by vishnu on 18/4/18 11:06 AM
@@ -15,6 +16,7 @@ Created by vishnu on 18/4/18 11:06 AM
  */
 @Service
 @CommonsLog
+@Transactional
 public class ValidationService {
 
     /**

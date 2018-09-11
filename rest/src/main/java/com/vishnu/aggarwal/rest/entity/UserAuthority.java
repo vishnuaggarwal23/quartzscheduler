@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 import static javax.persistence.EnumType.STRING;
+import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.GenerationType.AUTO;
 
 /*
@@ -32,11 +33,11 @@ public class UserAuthority extends BaseEntity<Long> implements Serializable {
     private Long id;
 
     @JoinColumn(name = "userId", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = EAGER)
     private User user;
 
     @JoinColumn(name = "authorityId", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = EAGER)
     private Authority authority;
 
     @NotNull

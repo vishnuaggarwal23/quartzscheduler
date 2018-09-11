@@ -21,13 +21,19 @@ public class RestApplicationConfig {
     @Value("${rest.application.contextPath}")
     private String contextPath;
 
+    @Value("${rest.application.host}")
+    private String host;
+
+    @Value(("${rest.application.port}"))
+    private Integer port;
+
     /**
      * Rest application url string.
      *
      * @return the string
      */
     public String restApplicationUrl() {
-        return format("%s%s", this.baseUrl, this.contextPath);
+        return format("%s%s", this.baseUrl, this.contextPath).trim();
     }
 
     /**
@@ -37,6 +43,6 @@ public class RestApplicationConfig {
      * @return the string
      */
     public String restApplicationUrl(final String baseUri) {
-        return format("%s%s%s", this.baseUrl, this.contextPath, baseUri);
+        return format("%s%s", restApplicationUrl(), baseUri).trim();
     }
 }

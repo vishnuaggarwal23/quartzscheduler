@@ -34,7 +34,9 @@ public class Jobs {
     private final UserTokenRepoService userTokenRepoService;
 
     @Autowired
-    public Jobs(TokenRepoService tokenRepoService, UserTokenRepoService userTokenRepoService) {
+    public Jobs(
+            TokenRepoService tokenRepoService,
+            UserTokenRepoService userTokenRepoService) {
         this.tokenRepoService = tokenRepoService;
         this.userTokenRepoService = userTokenRepoService;
     }

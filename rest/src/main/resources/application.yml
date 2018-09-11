@@ -1,22 +1,29 @@
 server:
-  port: 7070
+  port: "${REST_MODULE_SERVER_PORT:7070}"
   servlet:
-    context-path: "/rest/api"
+    context-path: "${REST_MODULE_CONTEXT_PATH:/rest/api}"
 bootstrap:
   enabled: "${BOOTSTRAP_ENABLED:true}"
+cache:
+  clear:
+    enabled: "${CACHE_CLEAR_ENABLED:true}"
 spring:
   session:
     store-type: jdbc
   jpa:
     properties:
       hibernate:
+        generate_statistics: true
+        cache:
+          use_second_level_cache: true
+          use_query_cache: true
         jdbc:
           time_zone: "UTC"
         dialect: com.vishnu.aggarwal.rest.config.MySqlDialect
         show_sql: true
         format_sql: true
-        sql: info
-        type: info
+        sql: debug
+        type: debug
         use_sql_comments: true
         naming:
           implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
@@ -29,12 +36,14 @@ spring:
       naming:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: true
+    database-platform: mysql
   datasource:
     url: "${JDBC_DATABASE_URL:jdbc:mysql://localhost:3306/quartz_job_scheduler?useSSL=false&autoReconnect=true&useUnicode=yes&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&serverTimezone=UTC&useLegacyDatetimeCode=false&user=root&password=igdefault}"
     pooled: true
     jmxExport: true
     driverClassName: com.mysql.cj.jdbc.Driver
-    dialect: org.hibernate.dialect.MySQL5Dialect
+    dialect: com.vishnu.aggarwal.rest.config.MySqlDialect
     dbCreate: update
     logSql: true
     testWhileIdle: true
@@ -58,18 +67,24 @@ spring:
       logAbandoned: false
       dbProperties:
         autoReconnect: true
-        zeroDateTimeBehavior: convertToNull # mysql 0-date conversion
-        dontTrackOpenResources: true # Tomcat JDBC Pool's StatementFinalizer keeps track
+        zeroDateTimeBehavior: convertToNull
+        dontTrackOpenResources: true
         holdResultsOpenOverStatementClose: false
         useServerPrepStmts: false
-        cacheServerConfiguration: true # metadata caching
-        cacheResultSetMetadata: true # metadata caching
-        metadataCacheSize: 100 # metadata caching
-        maintainTimeStats: false # timer tuning (disable)
+        cacheServerConfiguration: true
+        cacheResultSetMetadata: true
+        metadataCacheSize: 100
+        maintainTimeStats: false
         enableQueryTimeouts: false
         noDatetimeStringSync: true
     platform: mysql
     initialization-mode: embedded
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      connection-timeout: 50000
+      minimum-idle: 10
+      maximum-pool-size: 15
+      idle-timeout: 10000
   devtools:
     livereload:
       enabled: true
@@ -83,23 +98,15 @@ spring:
     charset: UTF-8
   data:
     mongodb:
-      uri: mongodb://localhost:27017/quartz_job_scheduler
-hibernate:
-  dialect: org.hibernate.dialect.MySQL5Dialect
-  show_sql: true
-  format_sql: true
-  sql: info
-  type: info
-  use_sql_comments: true
-  jdbc:
-    time_zone: "UTC"
-  hbm2ddl:
-    auto: update
-  ddl-auto: update
-  naming:
-    implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
-    physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    strategy: org.hibernate.cfg.ImprovedNamingStrategy
+      uri: "${MONGO_DB_URI:mongodb://localhost:27017/quartz_job_scheduler}"
+#  redis:
+#    host: 127.0.0.1
+#    port: 6379
+#  cache:
+#    type: redis
+#    redis:
+#      cache-null-values: false
+#    cache-names: isUniqueTriggerKey,isUniqueJobKey,parseTokenToGetUser,isUsernameUnique,findAuthorityByName,fetchJobTriggerResponseDTOs,findAllExpiredTokens,findTokenByToken,findUserAuthorityByUserAndAuthority,findUserById,findUserByUsername,findAllUserTokens,findUserTokenByToken,findUserTokenByUserAndStatus
 logging:
   level:
     root: info
@@ -109,9 +116,11 @@ logging:
     org.hibernate.tool.hbm2ddl: info
     org.hibernate.sql: debug
     org.hibernate.type.descriptor.sql.BasicBinder: trace
-    org.hibernate.type: info
+    org.hibernate.type: debug
+    org.hibernate.stat: debug
     com.vishnu.aggarwal: info
-  file: "/home/vishnu/Desktop/quartzscheduler/logs/rest.log"
+    org.springframework.cache: trace
+  file: "${LOGGING_FILE_PATH:/home/vishnu/Desktop/quartzscheduler/logs/rest.log}"
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
@@ -124,6 +133,14 @@ management:
     defaults:
       enabled: true
     diskspace:
+      enabled: true
+    redis:
+      enabled: true
+    rabbit:
+      enabled: true
+    mail:
+      enabled: true
+    mongo:
       enabled: true
   info:
     build:
@@ -142,6 +159,9 @@ management:
     web:
       exposure:
         include: "*"
+  endpoint:
+    info:
+      enabled: true
 jwt:
-  secret: MyJwtSecretStringKeyToBeUsedInSpringSecurityRest
-  expirationTime: "100000000"
+  secret: "${JWT_SECRET_KEY:MyJwtSecretStringKeyToBeUsedInSpringSecurityRest}"
+  expirationTime: "${JWT_EXPIRATION_TIME:100000000}"

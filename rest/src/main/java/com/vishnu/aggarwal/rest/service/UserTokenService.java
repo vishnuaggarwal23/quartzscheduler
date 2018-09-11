@@ -11,6 +11,7 @@ import com.vishnu.aggarwal.rest.entity.UserToken;
 import com.vishnu.aggarwal.rest.service.repository.jpa.UserTokenRepoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ import java.util.List;
  * The type User token service.
  */
 @Service
+@Transactional
 public class UserTokenService extends BaseService {
 
     /**

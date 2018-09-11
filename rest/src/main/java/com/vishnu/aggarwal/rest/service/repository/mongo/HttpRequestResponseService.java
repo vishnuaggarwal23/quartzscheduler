@@ -11,6 +11,7 @@ import com.vishnu.aggarwal.rest.repository.mongo.HttpRequestResponseRepository;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
@@ -27,6 +28,7 @@ import static org.springframework.web.util.WebUtils.*;
 
 @Service
 @CommonsLog
+@Transactional
 public class HttpRequestResponseService {
 
     private final HttpRequestResponseRepository httpRequestResponseRepository;

@@ -37,7 +37,6 @@ import java.util.Map;
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.CUSTOM_REQUEST_ID;
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.X_AUTH_TOKEN;
 import static com.vishnu.aggarwal.core.enums.Status.ACTIVE;
-import static java.lang.Boolean.FALSE;
 import static java.lang.String.valueOf;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -108,7 +107,7 @@ public class TokenAuthenticationService extends BaseService implements com.vishn
     }
 
     @Override
-    public Authentication getAuthenticationForLogin(HttpServletRequest request, HttpServletResponse response, AuthenticationManager authenticationManager) throws AuthenticationException {
+    public Authentication getAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationManager authenticationManager) throws AuthenticationException {
         try {
             final UserDTO login = objectMapper.readValue(IOUtils.toString(request.getReader()), UserDTO.class);
             if (isNull(login)) {
@@ -167,7 +166,7 @@ public class TokenAuthenticationService extends BaseService implements com.vishn
             accountStatusUserDetailsCheck.check(user);
 
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities());
-            usernamePasswordAuthenticationToken.setDetails(tokenService.findByTokenAndIsDeleted(xAuthToken, FALSE));
+            usernamePasswordAuthenticationToken.setDetails(tokenService.findByToken(xAuthToken));
             log.info("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] User " + user + " authenticated for JWT token " + xAuthToken);
             return usernamePasswordAuthenticationToken;
         } catch (JwtException e) {
@@ -213,7 +212,7 @@ public class TokenAuthenticationService extends BaseService implements com.vishn
             }
             log.info("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] JWT Token " + tokenMap.get("key") + " generated for user " + user);
 
-            Token token = tokenService.findByTokenAndIsDeleted(valueOf(tokenMap.get("key")), FALSE);
+            Token token = tokenService.findByToken(valueOf(tokenMap.get("key")));
             if (isNull(token)) {
                 token = Token.getInstance();
                 token.setIssueId(valueOf(tokenMap.get("issueId")));

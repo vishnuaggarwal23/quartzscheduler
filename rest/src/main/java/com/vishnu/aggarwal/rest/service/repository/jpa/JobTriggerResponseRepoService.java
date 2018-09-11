@@ -7,12 +7,14 @@ import com.vishnu.aggarwal.rest.interfaces.UserService;
 import com.vishnu.aggarwal.rest.repository.jpa.JobTriggerResponseRepository;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.NoResultException;
 import javax.persistence.criteria.*;
-import javax.transaction.Transactional;
 import java.util.List;
 
 import static java.lang.Boolean.FALSE;
@@ -68,6 +70,7 @@ public class JobTriggerResponseRepoService extends BaseRepoService<JobTriggerRes
      * @param jobTriggerResponseDTO the job trigger response dto
      * @return the job trigger response
      */
+    @CacheEvict(value = "fetchJobTriggerResponseDTOs", allEntries = true, beforeInvocation = true)
     public JobTriggerResponse save(JobTriggerResponseDTO jobTriggerResponseDTO) {
         if (nonNull(jobTriggerResponseDTO)) {
             JobTriggerResponse jobTriggerResponse = new JobTriggerResponse();
@@ -79,7 +82,7 @@ public class JobTriggerResponseRepoService extends BaseRepoService<JobTriggerRes
             jobTriggerResponse.setResponseHeader(jobTriggerResponseDTO.getResponseHeader());
             jobTriggerResponse.setResponseBody(valueOf(jobTriggerResponseDTO.getResponseBody()));
             jobTriggerResponse.setFireTime(jobTriggerResponseDTO.getFireTime());
-            return save(jobTriggerResponse);
+            return super.save(jobTriggerResponse);
         }
         return null;
     }
@@ -91,6 +94,7 @@ public class JobTriggerResponseRepoService extends BaseRepoService<JobTriggerRes
      * @return the list
      * @throws NoResultException the no result exception
      */
+    @Cacheable(value = "fetchJobTriggerResponseDTOs", key = "#jobTriggerResponseDTO.toString()", unless = "#result == null")
     @SuppressWarnings("unchecked")
     public List<JobTriggerResponseDTO> fetch(JobTriggerResponseDTO jobTriggerResponseDTO) throws NoResultException {
         CriteriaQuery<JobTriggerResponse> criteriaQuery = getBaseCriteriaSelectImpl();

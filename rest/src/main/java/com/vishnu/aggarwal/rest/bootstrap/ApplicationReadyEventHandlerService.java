@@ -9,6 +9,7 @@ import com.vishnu.aggarwal.rest.service.repository.jpa.UserAuthorityRepoService;
 import com.vishnu.aggarwal.rest.service.repository.jpa.UserRepoService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -17,7 +18,6 @@ import static com.vishnu.aggarwal.core.constants.ApplicationConstants.*;
 import static com.vishnu.aggarwal.core.constants.RoleType.ROLE_ADMIN;
 import static com.vishnu.aggarwal.core.constants.RoleType.ROLE_USER;
 import static com.vishnu.aggarwal.core.enums.Status.ACTIVE;
-import static java.lang.Boolean.FALSE;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
@@ -49,20 +49,37 @@ public class ApplicationReadyEventHandlerService extends com.vishnu.aggarwal.cor
      */
     private final UserAuthorityRepoService userAuthorityRepoService;
 
+    //    private final CacheManager cacheManager;
+    @Value("${cache.clear.enabled:false}")
+    Boolean clearCacheEnabled;
+
     @Autowired
     public ApplicationReadyEventHandlerService(
             UserRepoService userRepoService,
             AuthorityRepoService authorityRepoService,
             BCryptPasswordEncoder bCryptPasswordEncoder,
-            UserAuthorityRepoService userAuthorityRepoService) {
+            UserAuthorityRepoService userAuthorityRepoService/*,
+            CacheManager cacheManager*/) {
         this.userRepoService = userRepoService;
         this.authorityRepoService = authorityRepoService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userAuthorityRepoService = userAuthorityRepoService;
+//        this.cacheManager = cacheManager;
     }
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
+        if (clearCacheEnabled) {
+            /*cacheManager.getCacheNames().stream().filter(Objects::nonNull).forEach(it -> {
+                try {
+                    requireNonNull(cacheManager.getCache(it)).clear();
+                    log.info("[Application Bootstrap] Clearing cache " + it);
+                } catch (Exception e) {
+                    log.error("[Application Bootstrap] Unable to clear cache " + it);
+                    log.error(getStackTrace(e));
+                }
+            });*/
+        }
         if (getBootstrapEnabled()) {
             log.info("[Application Bootstrap] Application Ready Event Handler called for Rest Application");
             createAuthorities();
@@ -73,7 +90,7 @@ public class ApplicationReadyEventHandlerService extends com.vishnu.aggarwal.cor
 
     private void createAuthorities() {
         RoleType.getValues().forEach(it -> {
-            Authority authority = authorityRepoService.findByAuthorityAndIsDeleted(it, FALSE);
+            Authority authority = authorityRepoService.findByName(it);
             if (isNull(authority)) {
                 log.info("[Application Bootstrap] Creating " + it + " Authority");
                 authority = new Authority();
@@ -100,14 +117,14 @@ public class ApplicationReadyEventHandlerService extends com.vishnu.aggarwal.cor
     private void createUserAuthorities() {
         User adminUser = userRepoService.findByUsername(ADMIN_USER_USERNAME);
         if (nonNull(adminUser)) {
-            createUserAuthority(adminUser, authorityRepoService.findByAuthorityAndIsDeleted(ROLE_ADMIN, FALSE));
-            createUserAuthority(adminUser, authorityRepoService.findByAuthorityAndIsDeleted(ROLE_USER, FALSE));
+            createUserAuthority(adminUser, authorityRepoService.findByName(ROLE_ADMIN));
+            createUserAuthority(adminUser, authorityRepoService.findByName(ROLE_USER));
         }
     }
 
     private void createUserAuthority(final User user, final Authority authority) {
         if (nonNull(authority)) {
-            UserAuthority userAuthority = userAuthorityRepoService.findByUserAndAuthorityAndIsDeleted(user, authority, FALSE);
+            UserAuthority userAuthority = userAuthorityRepoService.findByUserAndAuthority(user, authority);
             if (isNull(userAuthority)) {
                 log.info("[Application Bootstrap] Creating User Authority for [User " + user + "] and [Authority " + authority + "]");
                 userAuthority = new UserAuthority();

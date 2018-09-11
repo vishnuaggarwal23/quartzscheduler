@@ -6,12 +6,14 @@ Created by vishnu on 20/4/18 12:11 PM
 
 import com.vishnu.aggarwal.rest.entity.User;
 import io.jsonwebtoken.JwtException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
 /**
  * The interface Token handler service.
  */
+@Transactional
 public interface TokenHandlerService {
     /**
      * Parse token user.

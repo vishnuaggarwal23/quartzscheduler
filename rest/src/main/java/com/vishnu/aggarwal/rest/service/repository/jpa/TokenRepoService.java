@@ -8,6 +8,10 @@ import com.vishnu.aggarwal.rest.entity.Token;
 import com.vishnu.aggarwal.rest.repository.jpa.TokenRepository;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +33,7 @@ import static java.lang.System.currentTimeMillis;
  */
 @Service
 @CommonsLog
+@Transactional
 public class TokenRepoService extends BaseRepoService<Token, Long> {
 
     /**
@@ -56,8 +61,16 @@ public class TokenRepoService extends BaseRepoService<Token, Long> {
         return tokenRepository;
     }
 
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "findTokenByToken", key = "#token.token", beforeInvocation = true),
+                    @CacheEvict(value = "findAllExpiredTokens", allEntries = true, beforeInvocation = true)
+            },
+            put = {
+                    @CachePut(value = "findTokenByToken", key = "#token.token", unless = "#result == null")
+            }
+    )
     @SuppressWarnings("unchecked")
-    @Transactional
     public Token save(Token token) {
         return super.save(token);
     }
@@ -65,12 +78,12 @@ public class TokenRepoService extends BaseRepoService<Token, Long> {
     /**
      * Find by token and is deleted token.
      *
-     * @param token     the token
-     * @param isDeleted the is deleted
+     * @param token the token
      * @return the token
      */
-    public Token findByTokenAndIsDeleted(String token, Boolean isDeleted) {
-        return tokenRepository.findByTokenAndIsDeleted(token, isDeleted);
+    @Cacheable(value = "findTokenByToken", key = "#token", unless = "#result == null")
+    public Token findByToken(String token) {
+        return tokenRepository.findByTokenAndIsDeleted(token, FALSE);
     }
 
     /**
@@ -78,6 +91,7 @@ public class TokenRepoService extends BaseRepoService<Token, Long> {
      *
      * @return the list
      */
+    @Cacheable(value = "findAllExpiredTokens", unless = "#result == null")
     public List<Token> findAllExpiredTokens() {
         CriteriaQuery<Token> criteriaQuery = getBaseCriteriaSelectImpl();
         CriteriaBuilder criteriaBuilder = getCriteriaBuilder();

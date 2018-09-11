@@ -221,4 +221,6 @@ public class ApplicationConstants {
     public static final String QUESTION_MARK = "?";
 
     public static final String EQUAL_TO = "=";
+
+    public static final String HYPHEN = "-";
 }
