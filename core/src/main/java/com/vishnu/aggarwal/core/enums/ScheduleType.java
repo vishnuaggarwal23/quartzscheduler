@@ -21,4 +21,13 @@ public enum ScheduleType {
     ScheduleType(String key) {
         this.key = key;
     }
+
+    public static ScheduleType getScheduleType(String nameOrKey) {
+        for (ScheduleType scheduleType : values()) {
+            if (scheduleType.name().equalsIgnoreCase(nameOrKey) || scheduleType.getKey().equalsIgnoreCase(nameOrKey)) {
+                return scheduleType;
+            }
+        }
+        return null;
+    }
 }

@@ -131,15 +131,15 @@ public class UrlMapping {
                 /**
                  * The constant FETCH_JOB_BY_GROUP_NAME.
                  */
-                public static final String FETCH_JOB_BY_JOB_GROUP_NAME = Rest.Quartz.FETCH_JOB_BY_JOB_GROUP_NAME;
+                public static final String FETCH_JOBS_OF_CURRENT_USER_GROUP = Rest.Quartz.FETCH_JOBS_OF_CURRENT_USER_GROUP;
                 /**
                  * The constant FETCH_TRIGGER_BY_JOB_KEY_GROUP_NAME.
                  */
-                public static final String FETCH_TRIGGER_BY_JOB_KEY_JOB_GROUP_NAME = Rest.Quartz.FETCH_TRIGGER_BY_JOB_KEY_JOB_GROUP_NAME;
+                public static final String FETCH_TRIGGERS_BY_JOB_KEY_AND_CURRENT_USER_GROUP = Rest.Quartz.FETCH_TRIGGERS_BY_JOB_KEY_AND_CURRENT_USER_GROUP;
                 /**
                  * The constant FETCH_QUARTZ_DETAILS_GROUP_NAME.
                  */
-                public static final String FETCH_QUARTZ_DETAILS_JOB_GROUP_NAME = Rest.Quartz.FETCH_QUARTZ_DETAILS_JOB_GROUP_NAME;
+                public static final String FETCH_QUARTZ_DETAILS_BY_CURRENT_USER_GROUP = Rest.Quartz.FETCH_QUARTZ_DETAILS_BY_CURRENT_USER_GROUP;
                 /**
                  * The constant RESUME_JOBS.
                  */
@@ -164,6 +164,8 @@ public class UrlMapping {
                  * The constant DELETE_TRIGGERS.
                  */
                 public static final String DELETE_TRIGGERS = Rest.Quartz.DELETE_TRIGGERS;
+
+                public static final String JOB_KEYS_AUTOCOMPLETE = Rest.Quartz.JOB_KEYS_AUTOCOMPLETE;
             }
 
             /**
@@ -259,15 +261,15 @@ public class UrlMapping {
             /**
              * The constant FETCH_JOB_BY_GROUP_NAME.
              */
-            public static final String FETCH_JOB_BY_JOB_GROUP_NAME = "/job/list";
+            public static final String FETCH_JOBS_OF_CURRENT_USER_GROUP = "/job/list";
             /**
              * The constant FETCH_TRIGGER_BY_JOB_KEY_GROUP_NAME.
              */
-            public static final String FETCH_TRIGGER_BY_JOB_KEY_JOB_GROUP_NAME = "/trigger/list";
+            public static final String FETCH_TRIGGERS_BY_JOB_KEY_AND_CURRENT_USER_GROUP = "/trigger/list";
             /**
              * The constant FETCH_QUARTZ_DETAILS_GROUP_NAME.
              */
-            public static final String FETCH_QUARTZ_DETAILS_JOB_GROUP_NAME = "/details/list";
+            public static final String FETCH_QUARTZ_DETAILS_BY_CURRENT_USER_GROUP = "/details/list";
             /**
              * The constant RESUME_JOBS.
              */
@@ -292,6 +294,7 @@ public class UrlMapping {
              * The constant DELETE_TRIGGERS.
              */
             public static final String DELETE_TRIGGERS = "/trigger/delete";
+            public static final String JOB_KEYS_AUTOCOMPLETE = "/autocomplete/job/keys";
         }
 
         /**
@@ -336,6 +339,11 @@ public class UrlMapping {
              * The constant UNIQUE_TRIGGER_KEY_PER_GROUP.
              */
             public static final String UNIQUE_TRIGGER_KEY_PER_GROUP = "/triggerKey/unique";
+        }
+
+        public static class Dashboard {
+            public static final String BASE_URI = "/dashboard";
+            public static final String COUNTER = "/counter";
         }
     }
 }

@@ -72,7 +72,7 @@ public class AuthenticationFilter extends GenericFilterBean {
      * @param ignoredRequestMatcher        the ignored request matcher
      * @param loginRequestMatcher          the login request matcher
      * @param authenticationRequestMatcher the authentication request matcher
-     * @param gson
+     * @param gson                         the gson
      */
     public AuthenticationFilter(
             TokenAuthenticationService tokenAuthenticationService,

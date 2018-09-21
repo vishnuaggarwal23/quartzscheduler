@@ -88,16 +88,16 @@ $.validator.addMethod('customRequestHeadersRequired', function (value, element, 
 });
 
 $.validator.addMethod('customUniqueKey', function (value, element, options) {
-    var isValid = false;
+    let isValid = false;
     $.ajax({
         url: $(element).data('customUniqueKeyValidation'),
-        type: "get",
+        type: HTTP_GET,
         async: false,
         data: {
             keyName: $(element).val()
         },
-        contentType: "application/json",
-        dataType: "json",
+        contentType: APPLICATION_JSON,
+        dataType: JSON_DATA_TYPE,
         complete: function (response) {
             if (response && is2xxResponseCode(response.status) && response.responseJSON) {
                 isValid = response.responseJSON.valid;
@@ -107,8 +107,130 @@ $.validator.addMethod('customUniqueKey', function (value, element, options) {
     return isValid;
 });
 
+let formSubmitHandler = function (form) {
+    trimText();
+
+    let createJobUri = $(form).data('createNewUnscheduledApiJobUri');
+    let requestHeaders = [];
+    $.each($('tr.request-header-row'), function (index, value) {
+        let $headerKey = $(value).find('input.request-header-key');
+        let $headerValue = $(value).find('input.request-header-value');
+        if ($headerKey.length > 0 && $headerValue.length > 0) {
+            if ($($headerKey).val().trim().length > 0 && $($headerValue).val().trim().length > 0) {
+                requestHeaders.push({
+                    key: $($headerKey).val().trim(),
+                    value: $($headerValue).val().trim()
+                })
+            }
+        }
+    });
+
+    let apiJobDataCO = {
+        executorClass: $('select#jobExecutorClass').find(':selected').val(),
+        requestType: $('select#requestType').find(':selected').val(),
+        requestUrl: $('input#requestUrl').val().trim()
+    };
+
+    if (requestHeaders.length > 0) {
+        apiJobDataCO["requestHeaders"] = requestHeaders;
+    }
+
+    if ($('input#jobScheduled').is(':checked')) {
+        let triggerCO = {
+            details: {
+                key: $('input#triggerKeyName').val().trim(),
+                description: $('textarea#triggerDescription').val().trim()
+            }
+        };
+
+        if ($('input#triggerEndTime').val().trim().length > 0) {
+            triggerCO["endTime"] = $('input#triggerEndTime').data("DateTimePicker").date();
+        }
+
+        if ($('input#triggerStartNow').is(':checked')) {
+            triggerCO["startNow"] = true;
+        } else {
+            triggerCO["startNow"] = false;
+            triggerCO["startTime"] = $('#input#triggerStartTime').data("DateTimePicker").date()
+        }
+
+        if ($('select#scheduleType').find(':selected').val() === "SIMPLE") {
+            let repeatInterval = {
+                repeatValue: $('input#repeatValue').val()
+            };
+
+            if ($('input#repeatForever').is(':checked')) {
+                repeatInterval["repeatForever"] = true;
+            } else {
+                repeatInterval["repeatForever"] = false;
+                repeatInterval["repeatCount"] = $('input#repeatCount').val()
+            }
+
+            apiJobDataCO["simpleJobScheduler"] = {
+                trigger: triggerCO,
+                repeatType: $('select#repeatType').find(':selected').val(),
+                repeatInterval: repeatInterval
+            };
+            createJobUri = $(form).data('createNewSimpleApiJobUri');
+        } else if ($('select#scheduleType').find(':selected').val() === "CRON") {
+            apiJobDataCO["cronJobScheduler"] = {
+                trigger: triggerCO,
+                second: $('input#cronExpressionSecond').val(),
+                minute: $('input#cronExpressionMinute').val(),
+                hour: $('input#cronExpressionHour').val(),
+                dayOfMonth: $('input#cronExpressionDayOfMonth').val(),
+                month: $('input#cronExpressionMonth').val(),
+                dayOfWeek: $('input#cronExpressionDayOfWeek').val(),
+                year: $('input#cronExpressionYear').val()
+            };
+            createJobUri = $(form).data('createNewCronApiJobUri');
+        }
+    }
+
+    $.ajax({
+        url: createJobUri,
+        type: HTTP_POST,
+        contentType: APPLICATION_JSON,
+        dataType: JSON_DATA_TYPE,
+        data: JSON.stringify({
+            job: {
+                details: {
+                    key: $('input#jobKeyName').val().trim(),
+                    description: $('textarea#jobDescription').val().trim()
+                },
+                durability: $('input#jobDurability').is(':checked'),
+                recover: $('input#jobRecovery').is(':checked'),
+                type: $('input#jobType').val(),
+                scheduled: $('input#jobScheduled').is(':checked')
+            },
+            scheduleType: $('select#scheduleType').find(':selected').val() ? $('select#scheduleType').find(':selected').val() : null,
+            apiJobData: apiJobDataCO
+        }),
+        complete: function (response) {
+            let goForError = true;
+            if (response && is2xxResponseCode(response.status) && response.responseJSON) {
+                if ($('input#jobScheduled').is(':checked')) {
+                    showSuccessMessage("Job is successfully created and scheduled at " + response.responseJSON.jobDetails.jobScheduledDate);
+                } else {
+                    showSuccessMessage("Job is successfully created");
+                }
+                goForError = false;
+            }
+            if (goForError) {
+                showErrorMessage("Unable to create the job" + response.responseJSON.error.message);
+            }
+        }
+    });
+};
+const handleCreateJob = function () {
+    $('form#createApiJobForm').validate({
+        submitHandler: function (form) {
+            formSubmitHandler(form);
+        }
+    });
+};
 $(document).ready(function () {
-    var userJson = JSON.parse($('input#currentLoggedInUserJson').val()).user;
+    let userJson = JSON.parse($('input#currentLoggedInUserJson').val()).user;
 
     $('input#jobGroupName').val(userJson.firstName.trim().toString() + " " + userJson.lastName.trim().toString() + " : " + userJson.id);
     $('input#triggerGroupName').val(userJson.firstName.trim().toString() + " " + userJson.lastName.trim().toString() + " : " + userJson.id);
@@ -123,15 +245,15 @@ $(document).ready(function () {
     });
 
     $(document).on('click', 'button[name=addRequestHeaderRow]', function () {
-        var $parentRow = $('button[name=addRequestHeaderRow]').closest('tr.request-header-row');
-        var currentRowNumber = $parentRow.data('rowNumber');
-        var nextRowNumber = currentRowNumber + 1;
-        var nextHeaderKeyRowId = "requestHeaderKey_" + nextRowNumber;
-        var nextHeaderValueRowId = "requestHeaderValue_" + nextRowNumber;
-        var nextHeaderKeyRowReference = "input#" + nextHeaderKeyRowId;
-        var nextHeaderValueRowReference = "input#" + nextHeaderValueRowId;
-        var nextRemoveHeaderKeyValueRowId = "removeRequestHeaderRow_" + nextRowNumber;
-        var newRowHtml = "<tr data-row-number='" + nextRowNumber + "' class=\"request-header-row\">\n" +
+        let $parentRow = $('button[name=addRequestHeaderRow]').closest('tr.request-header-row');
+        let currentRowNumber = $parentRow.data('rowNumber');
+        let nextRowNumber = currentRowNumber + 1;
+        let nextHeaderKeyRowId = "requestHeaderKey_" + nextRowNumber;
+        let nextHeaderValueRowId = "requestHeaderValue_" + nextRowNumber;
+        let nextHeaderKeyRowReference = "input#" + nextHeaderKeyRowId;
+        let nextHeaderValueRowReference = "input#" + nextHeaderValueRowId;
+        let nextRemoveHeaderKeyValueRowId = "removeRequestHeaderRow_" + nextRowNumber;
+        let newRowHtml = "<tr data-row-number='" + nextRowNumber + "' class=\"request-header-row\">\n" +
             "            <td>\n" +
             "                <input type=\"text\" id='" + nextHeaderKeyRowId + "'\n" +
             "                       name=\"requestHeaderKey\"\n" +
@@ -170,22 +292,22 @@ $(document).ready(function () {
     });
 
     $(document).on('click', 'button[name=removeRequestHeaderRow]', function () {
-        var $currentRow = $(this).closest('tr.request-header-row');
-        var $previousRow = $currentRow.prev()[0];
-        var $nextRow = $currentRow.next()[0];
-        var deleteRow = false;
+        let $currentRow = $(this).closest('tr.request-header-row');
+        let $previousRow = $currentRow.prev()[0];
+        let $nextRow = $currentRow.next()[0];
+        let deleteRow = false;
 
-        var isCurrentRowLast = $($currentRow).is(':last-child');
-        var isCurrentRowFirst = $($currentRow).is(':first-child');
-        var isPreviousRowFirst = $previousRow !== undefined || $previousRow !== null ? $($previousRow).is(':first-child') : null;
+        let isCurrentRowLast = $($currentRow).is(':last-child');
+        let isCurrentRowFirst = $($currentRow).is(':first-child');
+        let isPreviousRowFirst = $previousRow !== undefined || $previousRow !== null ? $($previousRow).is(':first-child') : null;
 
         if (isCurrentRowFirst && !isCurrentRowLast && ($nextRow === null || $nextRow === undefined) && ($previousRow === null || $previousRow === undefined)) {
             deleteRow = false;
         }
         if (isCurrentRowLast) {
             if (($previousRow !== null || $previousRow !== undefined) && isPreviousRowFirst !== null) {
-                var $lastTd = $($previousRow).find('td').eq(2);
-                var addButtonHtml = "<span>" +
+                let $lastTd = $($previousRow).find('td').eq(2);
+                let addButtonHtml = "<span>" +
                     "                   <button type=\"button\" id=\"addRequestHeaderRow\"" +
                     "                       data-previous-row-number=\"\"" +
                     "                       name=\"addRequestHeaderRow\"" +
@@ -216,7 +338,7 @@ $(document).ready(function () {
     handleCreateJob();
 });
 
-var toggleTriggerStartTimeBasedOnTriggerStartNow = function (triggerStartNowElement, triggerStartTimeRowElement) {
+const toggleTriggerStartTimeBasedOnTriggerStartNow = function (triggerStartNowElement, triggerStartTimeRowElement) {
     if (triggerStartNowElement.checked) {
         $(triggerStartTimeRowElement).addClass('hidden');
     } else {
@@ -225,7 +347,7 @@ var toggleTriggerStartTimeBasedOnTriggerStartNow = function (triggerStartNowElem
     $(triggerStartTimeRowElement).find('input[type=text]').val('');
 };
 
-var toggleRepeatCountBasedOnRepeatForever = function (repeatForeverElement, repeatCountThElement, repeatCountTdElement) {
+const toggleRepeatCountBasedOnRepeatForever = function (repeatForeverElement, repeatCountThElement, repeatCountTdElement) {
     if (repeatForeverElement.checked) {
         $(repeatCountThElement).addClass('hidden');
         $(repeatCountTdElement).addClass('hidden');
@@ -236,7 +358,7 @@ var toggleRepeatCountBasedOnRepeatForever = function (repeatForeverElement, repe
     $(repeatCountTdElement).find('input[type=text]').val('');
 };
 
-var toggleTriggerFormVisibilityBasedOnJobScheduled = function (jobScheduledElement, triggerFormElement) {
+const toggleTriggerFormVisibilityBasedOnJobScheduled = function (jobScheduledElement, triggerFormElement) {
     if (jobScheduledElement.checked) {
         $(triggerFormElement).removeClass('hidden');
     } else {
@@ -244,7 +366,7 @@ var toggleTriggerFormVisibilityBasedOnJobScheduled = function (jobScheduledEleme
     }
 };
 
-var toggleSchedulerTypeVisibilityBasedOnType = function (schedulerTypeElement, simpleSchedulerTypeElement, cronSchedulerTypeElement) {
+const toggleSchedulerTypeVisibilityBasedOnType = function (schedulerTypeElement, simpleSchedulerTypeElement, cronSchedulerTypeElement) {
     if ($(schedulerTypeElement).val() === "SIMPLE") {
         $(simpleSchedulerTypeElement).removeClass('hidden');
         $(cronSchedulerTypeElement).addClass('hidden');
@@ -259,137 +381,7 @@ var toggleSchedulerTypeVisibilityBasedOnType = function (schedulerTypeElement, s
     }
 };
 
-var changeRequestTypeBasedOnExecutorClass = function (executorClassElement, requestTypeElement) {
+const changeRequestTypeBasedOnExecutorClass = function (executorClassElement, requestTypeElement) {
     $(requestTypeElement).val($($(executorClassElement).find(':selected')).data('associatedHttpMethod'));
 
-};
-
-var handleCreateJob = function () {
-    $('form#createApiJobForm').validate({
-        submitHandler: function (form) {
-            formSubmitHandler(form);
-        }
-    });
-};
-
-var formSubmitHandler = function (form) {
-    trimText();
-
-    var quartzDTO = {};
-    var createJobUri = $(form).data('createNewUnscheduledApiJobUri');
-
-    var jobCO = {
-        details: {
-            keyName: $('input#jobKeyName').val().trim(),
-            groupName: $('input#jobGroupName').val().split(':')[1].trim(),
-            description: $('textarea#jobDescription').val().trim()
-        },
-        durability: $('input#jobDurability').is(':checked'),
-        recover: $('input#jobRecovery').is(':checked'),
-        type: $('input#jobType').val(),
-        scheduled: $('input#jobScheduled').is(':checked')
-    };
-
-    var requestHeaders = [];
-    $.each($('tr.request-header-row'), function (index, value) {
-        var $headerKey = $(value).find('input.request-header-key');
-        var $headerValue = $(value).find('input.request-header-value');
-        if ($headerKey.length > 0 && $headerValue.length > 0) {
-            if ($($headerKey).val().trim().length > 0 && $($headerValue).val().trim().length > 0) {
-                requestHeaders.push({
-                    key: $($headerKey).val().trim(),
-                    value: $($headerValue).val().trim()
-                })
-            }
-        }
-    });
-
-    var apiJobDataCO = {
-        executorClass: $('select#jobExecutorClass').find(':selected').val(),
-        requestType: $('select#requestType').find(':selected').val(),
-        requestUrl: $('input#requestUrl').val().trim()
-    };
-
-    if (requestHeaders.length > 0) {
-        apiJobDataCO["requestHeaders"] = requestHeaders;
-    }
-
-    if ($('input#jobScheduled').is(':checked')) {
-        var triggerCO = {
-            details: {
-                keyName: $('input#triggerKeyName').val().trim(),
-                groupName: $('input#triggerGroupName').val().split(':')[1].trim(),
-                description: $('textarea#triggerDescription').val().trim()
-            }
-        };
-
-        if ($('input#triggerEndTime').val().trim().length > 0) {
-            triggerCO["endTime"] = $('input#triggerEndTime').data("DateTimePicker").date();
-        }
-
-        if ($('input#triggerStartNow').is(':checked')) {
-            triggerCO["startNow"] = true;
-        } else {
-            triggerCO["startTime"] = $('#input#triggerStartTime').data("DateTimePicker").date()
-        }
-
-        quartzDTO["scheduleType"] = $('select#scheduleType').find(':selected').val();
-        if ($('select#scheduleType').find(':selected').val() === "SIMPLE") {
-            var repeatInterval = {
-                repeatValue: $('input#repeatValue').val()
-            };
-
-            if ($('input#repeatForever').is(':checked')) {
-                repeatInterval["repeatForever"] = true;
-            } else {
-                repeatInterval["repeatCount"] = $('input#repeatCount').val()
-            }
-
-            apiJobDataCO["simpleJobScheduler"] = {
-                trigger: triggerCO,
-                repeatType: $('select#repeatType').find(':selected').val(),
-                repeatInterval: repeatInterval
-            };
-            createJobUri = $(form).data('createNewSimpleApiJobUri');
-        } else if ($('select#scheduleType').find(':selected').val() === "CRON") {
-            apiJobDataCO["cronJobScheduler"] = {
-                trigger: triggerCO,
-                second: $('input#cronExpressionSecond').val(),
-                minute: $('input#cronExpressionMinute').val(),
-                hour: $('input#cronExpressionHour').val(),
-                dayOfMonth: $('input#cronExpressionDayOfMonth').val(),
-                month: $('input#cronExpressionMonth').val(),
-                dayOfWeek: $('input#cronExpressionDayOfWeek').val(),
-                year: $('input#cronExpressionYear').val()
-            };
-            createJobUri = $(form).data('createNewCronApiJobUri');
-        }
-    }
-
-    quartzDTO["job"] = jobCO;
-    quartzDTO["apiJobData"] = apiJobDataCO;
-
-    $.ajax({
-        url: createJobUri,
-        type: "post",
-        contentType: "application/json",
-        dataType: "json",
-        data: JSON.stringify(quartzDTO),
-        complete: function (response) {
-            var goForError = true;
-            if (response) {
-                if (is2xxResponseCode(response.status) && response.responseJSON) {
-                    if ($('input#jobScheduled').is(':checked')) {
-                        showSuccessMessage("Job is successfully created and scheduled at " + response.responseJSON.jobDetails.jobScheduledDate);
-                    } else {
-                        showSuccessMessage("Job is successfully created");
-                    }
-                    goForError = false;
-                }
-            }
-            if (goForError) {
-                showErrorMessage("Unable to create the job" + response.responseJSON.error.message);
-            }
-        }
-    });
 };

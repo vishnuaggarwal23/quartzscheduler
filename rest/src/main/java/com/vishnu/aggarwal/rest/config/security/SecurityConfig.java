@@ -64,7 +64,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      * @param logoutSuccessHandler       the logout success handler
      * @param logoutHandler              the logout handler
      * @param accessDeniedHandler        the access denied handler
-     * @param gson
+     * @param gson                       the gson
      */
     @Autowired
     public SecurityConfig(
@@ -116,6 +116,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(POST, "/**/user/logout").authenticated()
                 .antMatchers("/**/actuator/**/").hasAuthority(ROLE_ADMIN)
                 .antMatchers("/**/error").denyAll()
+                .antMatchers("/**/monitoring/**/").hasAuthority(ROLE_ADMIN)
                 .anyRequest().authenticated();
     }
 

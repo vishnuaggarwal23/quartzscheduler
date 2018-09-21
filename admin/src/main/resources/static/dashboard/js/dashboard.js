@@ -1,4 +1,4 @@
-var Dashboard = function () {
+let Dashboard = function () {
     return {
         init: function () {
         }
@@ -6,8 +6,6 @@ var Dashboard = function () {
 
 }();
 
-if (App.isAngularJsApp() === false) {
-    $(document).ready(function () {
-        Dashboard.init();
-    });
-}
+$(document).ready(function () {
+    Dashboard.init();
+});

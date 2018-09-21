@@ -165,3 +165,9 @@ management:
 jwt:
   secret: "${JWT_SECRET_KEY:MyJwtSecretStringKeyToBeUsedInSpringSecurityRest}"
   expirationTime: "${JWT_EXPIRATION_TIME:100000000}"
+javamelody:
+  enabled: true
+  advisor-auto-proxy-creator-enabled: false
+  scheduled-monitoring-enabled: true
+  init-parameters:
+    log: true

@@ -223,4 +223,8 @@ public class ApplicationConstants {
     public static final String EQUAL_TO = "=";
 
     public static final String HYPHEN = "-";
+
+    public static final String JOB_KEY = "jobKey";
+
+    public static final String SEARCH_TEXT = "searchText";
 }

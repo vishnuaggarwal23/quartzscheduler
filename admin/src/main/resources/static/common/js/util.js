@@ -1,12 +1,17 @@
 "use strict";
 
-var HTTP_RESPONSE_CODE_ENUM = Object.freeze({
+const HTTP_RESPONSE_CODE_ENUM = Object.freeze({
     INFORMATIONAL: 1,
     SUCCESSFUL: 2,
     REDIRECTION: 3,
     CLIENT_ERROR: 4,
     SERVER_ERROR: 5
 });
+
+const APPLICATION_JSON = "application/json";
+const JSON_DATA_TYPE = "json";
+const HTTP_GET = "GET";
+const HTTP_POST = "POST";
 
 toastr.options = {
     "closeButton": true,
@@ -72,14 +77,13 @@ function reloadDataTable(table) {
     table.ajax.reload();
 }
 
-function compareStringWithBoolean(string) {
-    return (string === 'true')
+function compareStringWithBoolean(string, boolean) {
+    return (string === boolean ? 'true' : 'false') || (string === boolean ? "true" : "false") || (string === boolean)
 }
 
 function trimText() {
     $("input[type=text],textarea").each(function (index, object) {
-        var text = $.trim($(object).val());
-        $(object).val(text.trim())
+        $(object).val($.trim($(object).val()).trim())
     });
 }
 
@@ -112,8 +116,8 @@ function bootBoxConfirmDialog(message, callback) {
 
 function showFlashMessagesOnPageLoad() {
     $(['info', 'success', 'error', 'warning']).each(function (index, value) {
-        var $element = $('.message-text-' + value + ':first', '.messageContainer');
-        var message = $.trim($element.text());
+        let $element = $('.message-text-' + value + ':first', '.messageContainer');
+        let message = $.trim($element.text());
         if ($element.length > 0 && message.length > 0) {
             switch (value) {
                 case 'info':
@@ -140,6 +144,10 @@ function getResponseCodeValue(responseCode) {
 
 function is2xxResponseCode(responseCode) {
     return HTTP_RESPONSE_CODE_ENUM.SUCCESSFUL === getResponseCodeValue(responseCode);
+}
+
+function createGroupNameFieldText(groupJson) {
+    return groupJson.firstName.trim().toString() + " " + groupJson.lastName.trim().toString() + " : " + groupJson.id;
 }
 
 $(document).ready(function () {

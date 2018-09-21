@@ -66,11 +66,12 @@ public class RestService extends BaseService {
     /**
      * Gets response from backend service.
      *
-     * @param <T>           the type parameter
-     * @param requestObject the request object
-     * @param xAuthToken    the x auth token
-     * @param apiEndPoint   the api end point
-     * @param httpMethod    the http method
+     * @param requestObject  the request object
+     * @param xAuthToken     the x auth token
+     * @param apiEndPoint    the api end point
+     * @param httpMethod     the http method
+     * @param urlQueryParams the url query params
+     * @param urlParams      the url params
      * @return the response from backend service
      * @throws RestClientException the rest client exception
      */

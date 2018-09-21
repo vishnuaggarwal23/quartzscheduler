@@ -8,10 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.HASHMAP_USER_KEY;
@@ -51,8 +50,14 @@ public class UserController extends BaseController {
         this.userService = userService;
     }
 
+    /**
+     * Gets current logged in user.
+     *
+     * @return the current logged in user
+     */
     @RequestMapping(value = CURRENT_LOGGED_IN_USER, method = GET)
-    public ResponseEntity<String> getCurrentLoggedInUser(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> getCurrentLoggedInUser() {
         HashMap<String, UserDTO> response = new HashMap<String, UserDTO>();
         response.put(HASHMAP_USER_KEY, convertFromUser(userService.getCurrentLoggedInUser()));
         return new ResponseEntity<String>(gson().toJson(response, getHashMapOfStringAndUserDTO()), ACCEPTED);

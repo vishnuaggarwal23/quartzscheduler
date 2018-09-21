@@ -13,29 +13,33 @@ mainClassName = 'com.vishnu.aggarwal.admin.main.Admin'
 war {
     enabled = true
     baseName = adminModuleProjectBaseName
+    archivesBaseName = adminModuleProjectBaseName
     version = adminModuleProjectVersion
-    exclude('application.yml', 'application-dev.yml', 'banner.txt')
+    exclude('application-dev.yml', 'banner.txt')
 }
 
 jar {
     enabled = true
     baseName = adminModuleProjectBaseName
+    archivesBaseName = adminModuleProjectBaseName
     version = adminModuleProjectVersion
-    exclude('application.yml', 'application-dev.yml', 'banner.txt')
+    exclude('application-dev.yml', 'banner.txt')
 }
 
 bootJar {
     enabled = true
     baseName = adminModuleProjectBaseName
+    archivesBaseName = adminModuleProjectBaseName
     version = adminModuleProjectVersion
-    exclude('application.yml', 'application-dev.yml', 'banner.txt')
+    exclude('application-dev.yml', 'banner.txt')
 }
 
 bootWar {
     enabled = true
     baseName = adminModuleProjectBaseName
+    archivesBaseName = adminModuleProjectBaseName
     version = adminModuleProjectVersion
-    exclude('application.yml', 'application-dev.yml', 'banner.txt')
+    exclude('application-dev.yml', 'banner.txt')
 }
 
 bootRun {

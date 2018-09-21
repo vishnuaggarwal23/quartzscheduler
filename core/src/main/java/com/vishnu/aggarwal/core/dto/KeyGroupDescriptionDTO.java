@@ -61,7 +61,7 @@ public class KeyGroupDescriptionDTO extends DataTableCO {
     )
     private String key;
 
-    @NotNull(
+    /*@NotNull(
             message = "group name is required",
             groups = {
                     CreateNewUnscheduledJob.class,
@@ -82,7 +82,7 @@ public class KeyGroupDescriptionDTO extends DataTableCO {
                     UpdateExistingSimpleTriggerForJob.class,
                     UpdateExistingCronTriggerForJob.class
             }
-    )
+    )*/
     private UserDTO group;
 
     @NotNull(

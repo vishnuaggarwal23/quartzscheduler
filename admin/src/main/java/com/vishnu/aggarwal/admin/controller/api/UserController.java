@@ -57,7 +57,7 @@ public class UserController extends BaseController {
      *
      * @param authenticationService the authentication service
      * @param objectMapper          the object mapper
-     * @param gson
+     * @param gson                  the gson
      */
     @Autowired
     public UserController(

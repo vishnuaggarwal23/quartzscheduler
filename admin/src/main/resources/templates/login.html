@@ -1,51 +1,98 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
       th:with="lang=${#locale.language}"
       th:lang="${lang}"
       layout:decorate="common/layout">
 <head>
     <div layout:fragment="customCSS">
-        <link rel="stylesheet" type="text/css" th:href="@{/webjars/select2/4.0.3/css/select2.css}"/>
-        <link rel="stylesheet" type="text/css" th:href="@{/webjars/select2-bootstrap-css/1.4.6/select2-bootstrap.css}"/>
-        <link rel="stylesheet" type="text/css" th:href="@{/login/css/login.css}"/>
+        <link rel="stylesheet"
+              type="text/css"
+              th:href="@{/webjars/select2/4.0.3/css/select2.css}"/>
+        <link rel="stylesheet"
+              type="text/css"
+              th:href="@{/webjars/select2-bootstrap-css/1.4.6/select2-bootstrap.css}"/>
+        <link rel="stylesheet"
+              type="text/css"
+              th:href="@{/login/css/login.css}"/>
     </div>
 </head>
 
 <body class="login">
 <div layout:fragment="htmlContent">
     <div class="content">
-        <form class="login-form" th:attr="data-user-login-uri=@{/api/user/login}" method="post">
-            <h3 class="form-title font-green">Sign In</h3>
+        <form class="login-form"
+              th:attr="data-user-login-uri=@{/api/user/login}"
+              method="post">
+            <h3 class="form-title font-green">
+                Sign In
+            </h3>
             <div class="alert alert-danger display-hide">
-                <button class="close" data-close="alert"></button>
-                <span> Enter your username and password. </span>
+                <button class="close"
+                        data-close="alert">
+
+                </button>
+                <span>
+                    Enter your username and password.
+                </span>
             </div>
             <div class="form-group">
-                <label class="control-label visible-ie8 visible-ie9">Username</label>
-                <input class="form-control form-control-solid placeholder-no-fix" type="text" autocomplete="username"
-                       placeholder="Username" name="username" id="username" required="required"/>
+                <label class="control-label visible-ie8 visible-ie9">
+                    Username
+                </label>
+                <input class="form-control form-control-solid placeholder-no-fix"
+                       type="text"
+                       autocomplete="username"
+                       placeholder="Username"
+                       name="username"
+                       id="username"
+                       required="required"/>
             </div>
             <div class="form-group">
-                <label class="control-label visible-ie8 visible-ie9">Password</label>
-                <input class="form-control form-control-solid placeholder-no-fix" type="password"
-                       autocomplete="current-password" required="required"
-                       placeholder="Password" name="password" id="password"/>
+                <label class="control-label visible-ie8 visible-ie9">
+                    Password
+                </label>
+                <input class="form-control form-control-solid placeholder-no-fix"
+                       type="password"
+                       autocomplete="current-password"
+                       required="required"
+                       placeholder="Password"
+                       name="password"
+                       id="password"/>
             </div>
             <div class="form-actions">
-                <button type="submit" class="btn green uppercase">Login</button>
-                <a th:href="@{/web/forgotPassword}" id="forget-password" class="forget-password">Forgot Password?</a>
+                <button type="submit"
+                        class="btn green uppercase">
+                    Login
+                </button>
+                <a th:href="@{/web/forgotPassword}"
+                   id="forget-password"
+                   class="forget-password">
+                    Forgot Password?
+                </a>
             </div>
         </form>
-        <form class="redirect-login-form"></form>
+        <form class="redirect-login-form">
+        </form>
     </div>
-    <div class="copyright"> 2018 © Quartz Job Scheduler.</div>
+    <div class="copyright">
+        2018 © Quartz Job Scheduler.
+    </div>
 </div>
 
 <div layout:fragment="customJS">
-    <script type="text/javascript" th:src="@{/webjars/jquery-validation/1.17.0/jquery.validate.js}"></script>
-    <script type="text/javascript" th:src="@{/webjars/jquery-validation/1.17.0/additional-methods.js}"></script>
-    <script type="text/javascript" th:src="@{/webjars/select2/4.0.3/js/select2.full.js}"></script>
-    <script type="text/javascript" th:src="@{/login/js/login.js}"></script>
+    <script type="text/javascript"
+            th:src="@{/webjars/jquery-validation/1.17.0/jquery.validate.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/webjars/jquery-validation/1.17.0/additional-methods.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/webjars/select2/4.0.3/js/select2.full.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/login/js/login.js}">
+    </script>
 </div>
 </body>
 </html>

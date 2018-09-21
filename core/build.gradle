@@ -3,6 +3,7 @@ buildscript {
 
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'maven-publish'
 
 group = projectGroup
 version = coreModuleProjectVersion
@@ -11,6 +12,7 @@ mainClassName = 'com.vishnu.aggarwal.core.main.Core'
 war {
     enabled = true
     baseName = coreModuleProjectBaseName
+    archivesBaseName = coreModuleProjectBaseName
     version = coreModuleProjectVersion
     exclude('application.yml', 'application-dev.yml', 'banner.txt')
 }
@@ -18,6 +20,7 @@ war {
 jar {
     enabled = true
     baseName = coreModuleProjectBaseName
+    archivesBaseName = coreModuleProjectBaseName
     version = coreModuleProjectVersion
     exclude('application.yml', 'application-dev.yml', 'banner.txt')
 }
@@ -25,6 +28,7 @@ jar {
 bootJar {
     enabled = true
     baseName = coreModuleProjectBaseName
+    archivesBaseName = coreModuleProjectBaseName
     version = coreModuleProjectVersion
     exclude('application.yml', 'application-dev.yml', 'banner.txt')
 }
@@ -32,6 +36,7 @@ bootJar {
 bootWar {
     enabled = true
     baseName = coreModuleProjectBaseName
+    archivesBaseName = coreModuleProjectBaseName
     version = coreModuleProjectVersion
     exclude('application.yml', 'application-dev.yml', 'banner.txt')
 }
@@ -41,19 +46,28 @@ dependencies {
     compile group: 'com.google.code.gson', name: 'gson', version: '2.8.2'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
     compile group: 'commons-io', name: 'commons-io', version: '2.6'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-mobile', version: '1.5.12.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-mobile', version: '1.5.16.RELEASE'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: "${springBootVersion}"
     compile group: 'org.springframework.boot', name: 'spring-boot-devtools', version: "${springBootVersion}"
     providedRuntime group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version: "${springBootVersion}"
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: "${springBootVersion}"
     compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
     compile group: 'com.google.code.findbugs', name: 'annotations', version: '3.0.1'
-
+    compile group: 'net.bull.javamelody', name: 'javamelody-spring-boot-starter', version: '1.74.0'
 
     idea {
         module {
             inheritOutputDirs = false
             outputDir = file("$buildDir/classes/main/")
+        }
+    }
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            artifactId = coreModuleProjectBaseName
         }
     }
 }

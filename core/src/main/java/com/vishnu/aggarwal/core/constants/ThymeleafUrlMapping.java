@@ -8,6 +8,8 @@ import com.vishnu.aggarwal.core.constants.UrlMapping.Admin;
 
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.*;
 import static com.vishnu.aggarwal.core.enums.JobType.API;
+import static com.vishnu.aggarwal.core.enums.ScheduleType.CRON;
+import static com.vishnu.aggarwal.core.enums.ScheduleType.SIMPLE;
 import static java.lang.String.format;
 
 public class ThymeleafUrlMapping extends Admin {
@@ -23,8 +25,28 @@ public class ThymeleafUrlMapping extends Admin {
         return format("%s%s%s", Api.BASE_URI, Api.Quartz.BASE_URI, Api.Quartz.CREATE_API_JOB_SCHEDULED_CRON);
     }
 
+    public static String createSimpleTriggerApiUri() {
+        return format("%s%s%s", Api.BASE_URI, Api.Quartz.BASE_URI, Api.Quartz.CREATE_SIMPLE_TRIGGER);
+    }
+
     public static String currentLoggedInUserUri() {
         return format("%s%s%s", Api.BASE_URI, Api.User.BASE_URI, Api.User.CURRENT_LOGGED_IN_USER);
+    }
+
+    public static String listJobsApiUri() {
+        return Api.BASE_URI + Api.Quartz.BASE_URI + Api.Quartz.FETCH_JOBS_OF_CURRENT_USER_GROUP;
+    }
+
+    public static String uniqueJobKeyValidationUri() {
+        return Api.BASE_URI + Api.Validation.BASE_URI + Api.Validation.UNIQUE_JOB_KEY_PER_GROUP;
+    }
+
+    public static String uniqueTriggerKeyValidationUri() {
+        return Api.BASE_URI + Api.Validation.BASE_URI + Api.Validation.UNIQUE_TRIGGER_KEY_PER_GROUP;
+    }
+
+    public static String jobKeysAutocomplete() {
+        return Api.BASE_URI + Api.Quartz.BASE_URI + Api.Quartz.JOB_KEYS_AUTOCOMPLETE;
     }
 
     public static String dashboardUri() {
@@ -33,6 +55,14 @@ public class ThymeleafUrlMapping extends Admin {
 
     public static String createApiJobUri() {
         return format("%s%s%s%s%s%s%s", Web.BASE_URI, Web.Quartz.BASE_URI, Web.Quartz.CREATE_JOB, QUESTION_MARK, TYPE, EQUAL_TO, API);
+    }
+
+    public static String createSimpleTriggerUri() {
+        return format("%s%s%s%s%s%s%s", Web.BASE_URI, Web.Quartz.BASE_URI, Web.Quartz.CREATE_TRIGGER, QUESTION_MARK, TYPE, EQUAL_TO, SIMPLE);
+    }
+
+    public static String createCronTriggerUri() {
+        return format("%s%s%s%s%s%s%s", Web.BASE_URI, Web.Quartz.BASE_URI, Web.Quartz.CREATE_TRIGGER, QUESTION_MARK, TYPE, EQUAL_TO, CRON);
     }
 
     public static String listJobsUri() {

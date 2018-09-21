@@ -16,29 +16,33 @@ mainClassName = 'com.vishnu.aggarwal.rest.main.Rest'
 war {
     enabled = true
     baseName = restModuleProjectBaseName
+    archivesBaseName = restModuleProjectBaseName
     version = restModuleProjectVersion
-    exclude('application.yml', 'application-dev.yml', 'banner.txt')
+    exclude('application-dev.yml', 'banner.txt')
 }
 
 jar {
     enabled = true
     baseName = restModuleProjectBaseName
+    archivesBaseName = restModuleProjectBaseName
     version = restModuleProjectVersion
-    exclude('application.yml', 'application-dev.yml', 'banner.txt')
+    exclude('application-dev.yml', 'banner.txt')
 }
 
 bootJar {
     enabled = true
     baseName = restModuleProjectBaseName
+    archivesBaseName = restModuleProjectBaseName
     version = restModuleProjectVersion
-    exclude('application.yml', 'application-dev.yml', 'banner.txt')
+    exclude('application-dev.yml', 'banner.txt')
 }
 
 bootWar {
     enabled = true
     baseName = restModuleProjectBaseName
+    archivesBaseName = restModuleProjectBaseName
     version = restModuleProjectVersion
-    exclude('application.yml', 'application-dev.yml', 'banner.txt')
+    exclude('application-dev.yml', 'banner.txt')
 }
 
 bootRun {
@@ -61,9 +65,9 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: "${springBootVersion}"
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: "${springBootVersion}"
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: "${springBootVersion}"
-    compile group: 'org.springframework', name: 'spring-context-support', version: '5.0.5.RELEASE'
+    compile group: 'org.springframework', name: 'spring-context-support', version: "${springVersion}"
     compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.0'
-    runtime group: 'mysql', name: 'mysql-connector-java', version: '6.0.6'
-    testCompile group: 'org.springframework.security', name: 'spring-security-test', version: '5.0.4.RELEASE'
     compile group: 'com.mchange', name: 'c3p0', version: '0.9.5.2'
+    runtime group: 'mysql', name: 'mysql-connector-java', version: '6.0.6'
+    testCompile group: 'org.springframework.security', name: 'spring-security-test', version: "${springSecurityVersion}"
 }

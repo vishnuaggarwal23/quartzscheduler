@@ -46,9 +46,9 @@ public class ApplicationConfig extends WebConfig {
      * Instantiates a new Application config.
      *
      * @param requestInterceptor  the request interceptor
-     * @param objectMapper
-     * @param baseMessageResolver
-     * @param gson
+     * @param objectMapper        the object mapper
+     * @param baseMessageResolver the base message resolver
+     * @param gson                the gson
      */
     @Autowired
     public ApplicationConfig(

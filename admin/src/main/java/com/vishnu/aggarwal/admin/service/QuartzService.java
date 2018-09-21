@@ -15,7 +15,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
 import javax.servlet.http.Cookie;
+import java.util.HashMap;
+import java.util.Map;
 
+import static com.vishnu.aggarwal.core.constants.ApplicationConstants.JOB_KEY;
+import static com.vishnu.aggarwal.core.constants.ApplicationConstants.SEARCH_TEXT;
 import static com.vishnu.aggarwal.core.enums.RestApiEndPoint.*;
 
 
@@ -144,39 +148,39 @@ public class QuartzService extends BaseService {
     /**
      * Fetch jobs by group name data table vo.
      *
-     * @param keyGroupDescriptionDTO the key group description dto
-     * @param cookie                 the cookie
+     * @param cookie the cookie
      * @return the data table vo
      * @throws RestClientException the rest client exception
      */
-    public ResponseEntity<String> fetchJobsByJobGroupName(KeyGroupDescriptionDTO keyGroupDescriptionDTO, Cookie cookie) throws RestClientException {
-        return restService.getResponseFromBackendService(keyGroupDescriptionDTO, cookie.getValue(), FETCH_JOB_BY_JOB_GROUP_NAME.getApiEndPoint(), FETCH_JOB_BY_JOB_GROUP_NAME.getHttpMethod(), null, null);
+    public ResponseEntity<String> fetchJobsByJobGroupName(Cookie cookie) throws RestClientException {
+        return restService.getResponseFromBackendService(null, cookie.getValue(), FETCH_JOBS_OF_CURRENT_USER_GROUP.getApiEndPoint(), FETCH_JOBS_OF_CURRENT_USER_GROUP.getHttpMethod(), null, null);
     }
 
 
     /**
      * Fetch triggers by job key name and group name data table vo.
      *
-     * @param keyGroupDescriptionDTO the key group description dto
-     * @param cookie                 the cookie
+     * @param jobKeyName the key group description dto
+     * @param cookie     the cookie
      * @return the data table vo
      * @throws RestClientException the rest client exception
      */
-    public ResponseEntity<String> fetchTriggersByJobKeyNameAndJobGroupName(KeyGroupDescriptionDTO keyGroupDescriptionDTO, Cookie cookie) throws RestClientException {
-        return restService.getResponseFromBackendService(keyGroupDescriptionDTO, cookie.getValue(), FETCH_TRIGGER_BY_JOB_KEY_JOB_GROUP_NAME.getApiEndPoint(), FETCH_TRIGGER_BY_JOB_KEY_JOB_GROUP_NAME.getHttpMethod(), null, null);
+    public ResponseEntity<String> fetchTriggersByJobKeyNameAndJobGroupName(final String jobKeyName, Cookie cookie) throws RestClientException {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put(JOB_KEY, jobKeyName);
+        return restService.getResponseFromBackendService(null, cookie.getValue(), FETCH_TRIGGERS_BY_JOB_KEY_AND_CURRENT_USER_GROUP.getApiEndPoint(), FETCH_TRIGGERS_BY_JOB_KEY_AND_CURRENT_USER_GROUP.getHttpMethod(), params, params);
     }
 
 
     /**
      * Fetch triggers by job key name and group name data table vo.
      *
-     * @param keyGroupDescriptionDTO the key group description dto
-     * @param cookie                 the cookie
+     * @param cookie the cookie
      * @return the data table vo
      * @throws RestClientException the rest client exception
      */
-    public ResponseEntity<String> fetchQuartzDetailsForJobGroupName(KeyGroupDescriptionDTO keyGroupDescriptionDTO, Cookie cookie) throws RestClientException {
-        return restService.getResponseFromBackendService(keyGroupDescriptionDTO, cookie.getValue(), FETCH_QUARTZ_DETAILS_JOB_GROUP_NAME.getApiEndPoint(), FETCH_QUARTZ_DETAILS_JOB_GROUP_NAME.getHttpMethod(), null, null);
+    public ResponseEntity<String> fetchQuartzDetailsForJobGroupName(Cookie cookie) throws RestClientException {
+        return restService.getResponseFromBackendService(null, cookie.getValue(), FETCH_QUARTZ_DETAILS_BY_CURRENT_USER_GROUP.getApiEndPoint(), FETCH_QUARTZ_DETAILS_BY_CURRENT_USER_GROUP.getHttpMethod(), null, null);
     }
 
 
@@ -255,5 +259,11 @@ public class QuartzService extends BaseService {
      */
     public ResponseEntity<String> deleteTriggers(KeyGroupDescriptionDTO keyGroupDescriptionDTO, Cookie cookie) throws RestClientException {
         return restService.getResponseFromBackendService(keyGroupDescriptionDTO, cookie.getValue(), DELETE_TRIGGERS.getApiEndPoint(), DELETE_TRIGGERS.getHttpMethod(), null, null);
+    }
+
+    public ResponseEntity<String> jobKeysAutocomplete(String searchText, Cookie cookie) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put(SEARCH_TEXT, searchText);
+        return restService.getResponseFromBackendService(null, cookie.getValue(), JOB_KEYS_AUTOCOMPLETE.getApiEndPoint(), JOB_KEYS_AUTOCOMPLETE.getHttpMethod(), params, params);
     }
 }

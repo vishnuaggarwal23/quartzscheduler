@@ -58,17 +58,17 @@ public enum RestApiEndPoint {
     /**
      * Fetch jobs by group name quartz rest api end point enum.
      */
-    FETCH_JOB_BY_JOB_GROUP_NAME(getQuartzRestUrlEndPoint(Quartz.FETCH_JOB_BY_JOB_GROUP_NAME), GET),
+    FETCH_JOBS_OF_CURRENT_USER_GROUP(getQuartzRestUrlEndPoint(Quartz.FETCH_JOBS_OF_CURRENT_USER_GROUP), GET),
 
     /**
      * Fetch triggers by job key name and group name quartz rest api end point enum.
      */
-    FETCH_TRIGGER_BY_JOB_KEY_JOB_GROUP_NAME(getQuartzRestUrlEndPoint(Quartz.FETCH_TRIGGER_BY_JOB_KEY_JOB_GROUP_NAME), GET),
+    FETCH_TRIGGERS_BY_JOB_KEY_AND_CURRENT_USER_GROUP(getQuartzRestUrlEndPoint(Quartz.FETCH_TRIGGERS_BY_JOB_KEY_AND_CURRENT_USER_GROUP), GET),
 
     /**
      * Fetch quartz details by group name quartz rest api end point enum.
      */
-    FETCH_QUARTZ_DETAILS_JOB_GROUP_NAME(getQuartzRestUrlEndPoint(Quartz.FETCH_QUARTZ_DETAILS_JOB_GROUP_NAME), GET),
+    FETCH_QUARTZ_DETAILS_BY_CURRENT_USER_GROUP(getQuartzRestUrlEndPoint(Quartz.FETCH_QUARTZ_DETAILS_BY_CURRENT_USER_GROUP), GET),
 
     /**
      * Resume jobs quartz rest api end point enum.
@@ -128,7 +128,9 @@ public enum RestApiEndPoint {
     /**
      * Unique trigger key per group rest api end point.
      */
-    UNIQUE_TRIGGER_KEY_PER_GROUP(getValidationRestUrlEndPoint(Validation.UNIQUE_TRIGGER_KEY_PER_GROUP), GET);
+    UNIQUE_TRIGGER_KEY_PER_GROUP(getValidationRestUrlEndPoint(Validation.UNIQUE_TRIGGER_KEY_PER_GROUP), GET),
+
+    JOB_KEYS_AUTOCOMPLETE(getQuartzRestUrlEndPoint(Quartz.JOB_KEYS_AUTOCOMPLETE), GET);
 
     private String apiEndPoint;
     private HttpMethod httpMethod;

@@ -71,13 +71,14 @@ public class AuthenticationService {
         return restService.getResponseFromBackendService(login, null, LOGIN.getApiEndPoint(), LOGIN.getHttpMethod(), null, null);
     }
 
+
     /**
-     * Logout user rest response vo.
+     * Logout user.
      *
      * @param cookie the cookie
-     * @return the rest response vo
+     * @return the response entity
      */
-    public void logoutUser(final Cookie cookie) {
-        restService.getResponseFromBackendService(null, cookie.getValue(), LOGOUT.getApiEndPoint(), LOGOUT.getHttpMethod(), null, null);
+    public ResponseEntity<String> logoutUser(final Cookie cookie) {
+        return restService.getResponseFromBackendService(null, cookie.getValue(), LOGOUT.getApiEndPoint(), LOGOUT.getHttpMethod(), null, null);
     }
 }

@@ -43,7 +43,7 @@ public class MvcExceptionHandler extends DefaultHandlerExceptionResolver {
      * Instantiates a new Mvc exception handler.
      *
      * @param baseMessageResolver the base message resolver
-     * @param gson
+     * @param gson                the gson
      */
     @Autowired
     public MvcExceptionHandler(BaseMessageResolver baseMessageResolver, Gson gson) {

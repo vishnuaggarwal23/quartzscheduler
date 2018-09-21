@@ -4,42 +4,79 @@
 <div th:fragment="commonJS">
 
     <!--[if lt IE 9]>
-    <script type="text/javascript" th:src="@{/webjars/respond/1.4.2/src/respond.js}"></script>
-    <script type="text/javascript" th:src="@{/webjars/excanvas/3/excanvas.js}"></script>
+    <script type="text/javascript"
+            th:src="@{/webjars/respond/1.4.2/src/respond.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/webjars/excanvas/3/excanvas.js}">
+    </script>
     <![endif]-->
 
-    <script type="text/javascript" th:src="@{/webjars/jquery/2.2.4/jquery.js}"></script>
-    <script type="text/javascript" th:src="@{/webjars/popper.js/1.12.9/umd/popper.js}"></script>
-    <script type="text/javascript" th:src="@{/webjars/popper.js/1.12.9/umd/popper-utils.js}"></script>
-    <script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.js}"></script>
-    <script type="text/javascript" th:src="@{/webjars/font-awesome/5.0.6/svg-with-js/js/fontawesome-all.js}"></script>
-    <!--<script type="text/javascript" th:src="@{/webjars/jquery-cookie/1.4.1-1/jquery.cookie.js}"></script>-->
-    <script type="text/javascript" th:src="@{/webjars/js-cookie/2.1.4/js.cookie.js}"></script>
-    <script type="text/javascript" th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.js}"></script>
-    <script type="text/javascript" th:src="@{/webjars/toastr/2.1.2/toastr.js}"></script>
     <script type="text/javascript"
-            th:src="@{/webjars/bootstrap-hover-dropdown/2.2.1/bootstrap-hover-dropdown.js}"></script>
-    <script type="text/javascript" th:src="@{/webjars/jquery-blockui/2.70/jquery.blockUI.js}"></script>
-    <script type="text/javascript" th:src="@{/webjars/uniform/2.1.2/jquery.uniform.js}"></script>
-    <script type="text/javascript" th:src="@{/webjars/bootstrap-switch/3.3.2/js/bootstrap-switch.js}"></script>
-    <script type="text/javascript" th:src="@{/webjars/jQuery-slimScroll/1.3.8/jquery.slimscroll.js}"></script>
-    <script type="text/javascript" th:src="@{/common/js/util.js}"></script>
-    <script type="text/javascript" th:src="@{/common/js/app.js}"></script>
-    <script type="text/javascript" th:src="@{/common/js/layout.js}"></script>
-    <script type="text/javascript" th:src="@{/common/js/logout.js}"></script>
+            th:src="@{/webjars/jquery/2.2.4/jquery.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/webjars/popper.js/1.12.9/umd/popper.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/webjars/popper.js/1.12.9/umd/popper-utils.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/webjars/font-awesome/5.0.6/svg-with-js/js/fontawesome-all.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/webjars/js-cookie/2.1.4/js.cookie.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/webjars/toastr/2.1.2/toastr.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/webjars/bootstrap-hover-dropdown/2.2.1/bootstrap-hover-dropdown.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/webjars/jquery-blockui/2.70/jquery.blockUI.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/webjars/uniform/2.1.2/jquery.uniform.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/webjars/bootstrap-switch/3.3.2/js/bootstrap-switch.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/webjars/jQuery-slimScroll/1.3.8/jquery.slimscroll.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/common/js/util.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/common/js/app.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/common/js/layout.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/common/js/logout.js}">
+    </script>
 
     <script>
         $(document).ready(function () {
-            if ($('input#isUserLoggedIn').length > 0 && ($('input#isUserLoggedIn').val() === true || $('input#isUserLoggedIn').val() === 'true' || $('input#isUserLoggedIn').val() === "true") && $('input#currentLoggedInUserJson').length > 0) {
+            let $inputIsUserLoggedIn = $('input#isUserLoggedIn');
+            if ($inputIsUserLoggedIn.length > 0 && ($inputIsUserLoggedIn.val() === true || $inputIsUserLoggedIn.val() === 'true' || $inputIsUserLoggedIn.val() === "true") && $('input#currentLoggedInUserJson').length > 0) {
                 $.ajax({
                     url: $('input[name=currentLoggedInUserApi]').val(),
-                    contentType: 'application/json',
-                    dataType: 'json',
+                    contentType: APPLICATION_JSON,
+                    dataType: JSON_DATA_TYPE,
                     cache: true,
-                    type: 'GET',
+                    type: HTTP_GET,
                     async: false,
                     complete: function (response) {
-                        if (response && response.responseJSON) {
+                        if (response && response.responseJSON && is2xxResponseCode(response.status)) {
                             $('input#currentLoggedInUserJson').val(response.responseText);
                         }
                     }

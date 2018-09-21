@@ -2,6 +2,10 @@ package com.vishnu.aggarwal.core.enums;
 
 import lombok.Getter;
 
+import java.util.List;
+
+import static java.util.Arrays.asList;
+
 /**
  * The enum Repeat type.
  */
@@ -24,5 +28,9 @@ public enum RepeatType {
 
     RepeatType(String displayText) {
         this.displayText = displayText;
+    }
+
+    public List<RepeatType> getValues() {
+        return asList(values());
     }
 }

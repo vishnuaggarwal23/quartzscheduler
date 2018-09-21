@@ -1,7 +1,7 @@
 "use strict";
 
-var ForgotPassword = function () {
-    var handleForgotPassword = function () {
+let ForgotPassword = function () {
+    let handleForgotPassword = function () {
     };
 
     return {

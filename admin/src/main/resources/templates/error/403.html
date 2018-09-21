@@ -1,58 +1,107 @@
 <!DOCTYPE html>
 <!--[if IE 8]>
-<html xmlns:th="http://www.thymeleaf.org" th:with="lang=${#locale.language}" th:lang="${lang}"
-      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" class="ie8 no-js">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:with="lang=${#locale.language}"
+      th:lang="${lang}"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      class="ie8 no-js">
 <![endif]-->
 <!--[if IE 9]>
-<html xmlns:th="http://www.thymeleaf.org" th:with="lang=${#locale.language}" th:lang="${lang}"
-      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" class="ie9 no-js">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:with="lang=${#locale.language}"
+      th:lang="${lang}"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      class="ie9 no-js">
 <![endif]-->
 <!--[if !IE]><!-->
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
       th:with="lang=${#locale.language}"
       th:lang="${lang}">
 <head>
     <meta charset="UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"/>
-    <title layout:title-pattern="$CONTENT_TITLE">Quartz Scheduler | Admin</title>
-    <link rel="icon" th:href="@{/common/img/favicon.ico}" type="image/x-icon"/>
-    <div th:replace="common/font :: commonFONT"></div>
-    <div th:replace="common/css :: commonCSS"></div>
-    <div layout:fragment="customFONT"></div>
+    <meta http-equiv="X-UA-Compatible"
+          content="IE=Edge"/>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+          name="viewport"/>
+    <title layout:title-pattern="$CONTENT_TITLE">
+        Quartz Scheduler | Admin
+    </title>
+    <link rel="icon"
+          th:href="@{/common/img/favicon.ico}"
+          type="image/x-icon"/>
+    <div th:replace="common/font :: commonFONT">
+    </div>
+    <div th:replace="common/css :: commonCSS">
+    </div>
+    <div layout:fragment="customFONT">
+    </div>
     <div layout:fragment="customCSS">
-        <link rel="stylesheet" type="text/css" th:href="@{/error/css/error.css}"/>
+        <link rel="stylesheet"
+              type="text/css"
+              th:href="@{/error/css/error.css}"/>
     </div>
 </head>
 
 <body class=" page-500-full-page">
 <div class="row">
     <div class="col-md-12 page-500">
-        <div class=" number font-red"> 403</div>
+        <div class=" number font-red">
+            403
+        </div>
         <div class=" details">
-            <h3>Oops! Something went wrong.</h3>
-            <p> We are fixing it! Please come back in a while.
-                <br/></p>
+            <h3>
+                Oops! Something went wrong.
+            </h3>
             <p>
-                <a href="index.html" class="btn red btn-outline"> Return home </a>
-                <br></p>
+                We are fixing it! Please come back in a while.
+                <br/>
+            </p>
+            <p>
+                <a th:href="@{/web/user/login}"
+                   class="btn red btn-outline">
+                    Return home
+                </a>
+                <br>
+            </p>
         </div>
     </div>
 </div>
 <!--[if lt IE 9]>
-<script type="text/javascript" th:src="@{/webjars/respond/1.4.2/src/respond.js}"></script>
-<script type="text/javascript" th:src="@{/webjars/excanvas/3/excanvas.js}"></script>
-<![endif]-->
-<script type="text/javascript" th:src="@{/webjars/jquery/2.2.4/jquery.js}"></script>
-<script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.js}"></script>
-<script type="text/javascript" th:src="@{/webjars/js-cookie/2.1.4/js.cookie.js}"></script>
 <script type="text/javascript"
-        th:src="@{/webjars/bootstrap-hover-dropdown/2.2.1/bootstrap-hover-dropdown.js}"></script>
-<script type="text/javascript" th:src="@{/webjars/jQuery-slimScroll/1.3.8/jquery.slimscroll.js}"></script>
-<script type="text/javascript" th:src="@{/webjars/jquery-blockui/2.70/jquery.blockUI.js}"></script>
-<script type="text/javascript" th:src="@{/webjars/uniform/2.1.2/jquery.uniform.js}"></script>
-<script type="text/javascript" th:src="@{/webjars/bootstrap-switch/3.3.2/js/bootstrap-switch.js}"></script>
-<script type="text/javascript" th:src="@{/common/js/app.js}"></script>
+        th:src="@{/webjars/respond/1.4.2/src/respond.js}">
+</script>
+<script type="text/javascript"
+        th:src="@{/webjars/excanvas/3/excanvas.js}">
+</script>
+<![endif]-->
+<script type="text/javascript"
+        th:src="@{/webjars/jquery/2.2.4/jquery.js}">
+</script>
+<script type="text/javascript"
+        th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.js}">
+</script>
+<script type="text/javascript"
+        th:src="@{/webjars/js-cookie/2.1.4/js.cookie.js}">
+</script>
+<script type="text/javascript"
+        th:src="@{/webjars/bootstrap-hover-dropdown/2.2.1/bootstrap-hover-dropdown.js}">
+</script>
+<script type="text/javascript"
+        th:src="@{/webjars/jQuery-slimScroll/1.3.8/jquery.slimscroll.js}">
+</script>
+<script type="text/javascript"
+        th:src="@{/webjars/jquery-blockui/2.70/jquery.blockUI.js}">
+</script>
+<script type="text/javascript"
+        th:src="@{/webjars/uniform/2.1.2/jquery.uniform.js}">
+</script>
+<script type="text/javascript"
+        th:src="@{/webjars/bootstrap-switch/3.3.2/js/bootstrap-switch.js}">
+</script>
+<script type="text/javascript"
+        th:src="@{/common/js/app.js}">
+</script>
 </body>
 
 </html>

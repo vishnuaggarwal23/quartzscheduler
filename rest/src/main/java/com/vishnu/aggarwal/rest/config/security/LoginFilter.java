@@ -62,7 +62,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
      * @param objectMapper               the object mapper
      * @param authenticationManager      the authentication manager
      * @param userService                the user service
-     * @param gson
+     * @param gson                       the gson
      */
     public LoginFilter(
             RequestMatcher requestMatcher,

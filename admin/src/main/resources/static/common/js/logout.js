@@ -4,8 +4,8 @@ $(document).ready(function () {
 
         $.ajax({
             url: $(this).data('logoutUri'),
-            contentType: "application/json",
-            dataType: "json",
+            contentType: APPLICATION_JSON,
+            dataType: JSON_DATA_TYPE,
             complete: function (response) {
                 if (response && response.responseJSON) {
                     if (response.responseJSON.logout === 'true' || response.responseJSON.logout === true) {

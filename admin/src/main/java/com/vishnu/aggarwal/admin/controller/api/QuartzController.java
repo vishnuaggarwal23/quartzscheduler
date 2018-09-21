@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static com.vishnu.aggarwal.core.constants.ApplicationConstants.SEARCH_TEXT;
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.X_AUTH_TOKEN;
 import static com.vishnu.aggarwal.core.constants.UrlMapping.Admin.Api.BASE_URI;
 import static com.vishnu.aggarwal.core.constants.UrlMapping.Admin.Api.Quartz.*;
@@ -179,48 +180,43 @@ public class QuartzController extends BaseController {
     /**
      * Fetch jobs by group name response entity.
      *
-     * @param keyGroupDescriptionDTO the key group description dto
      * @param httpServletRequest     the http servlet request
-     * @param httpServletResponse    the http servlet response
      * @return the response entity
      */
-    @RequestMapping(value = FETCH_JOB_BY_JOB_GROUP_NAME, method = GET)
+    @RequestMapping(value = FETCH_JOBS_OF_CURRENT_USER_GROUP, method = GET)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
-    public ResponseEntity<String> fetchJobsByJobGroupName(@RequestBody final KeyGroupDescriptionDTO keyGroupDescriptionDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        return quartzService.fetchJobsByJobGroupName(keyGroupDescriptionDTO, getCookie(httpServletRequest, X_AUTH_TOKEN));
+    public ResponseEntity<String> fetchJobsByJobGroupName(HttpServletRequest httpServletRequest) {
+        return quartzService.fetchJobsByJobGroupName(getCookie(httpServletRequest, X_AUTH_TOKEN));
     }
 
 
     /**
      * Fetch triggers by job key name and group name response entity.
      *
-     * @param keyGroupDescriptionDTO the key group description dto
      * @param httpServletRequest     the http servlet request
      * @param httpServletResponse    the http servlet response
      * @return the response entity
      */
-    @RequestMapping(value = FETCH_TRIGGER_BY_JOB_KEY_JOB_GROUP_NAME, method = GET)
+    @RequestMapping(value = FETCH_TRIGGERS_BY_JOB_KEY_AND_CURRENT_USER_GROUP, method = GET)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
-    public ResponseEntity<String> fetchTriggersByJobKeyNameAndJobGroupName(@RequestBody final KeyGroupDescriptionDTO keyGroupDescriptionDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        return quartzService.fetchTriggersByJobKeyNameAndJobGroupName(keyGroupDescriptionDTO, getCookie(httpServletRequest, X_AUTH_TOKEN));
+    public ResponseEntity<String> fetchTriggersByJobKeyNameAndJobGroupName(@RequestParam("jobKey") final String jobKeyName, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        return quartzService.fetchTriggersByJobKeyNameAndJobGroupName(jobKeyName, getCookie(httpServletRequest, X_AUTH_TOKEN));
     }
 
 
     /**
      * Fetch quartz details for group name response entity.
      *
-     * @param keyGroupDescriptionDTO the key group description dto
      * @param httpServletRequest     the http servlet request
-     * @param httpServletResponse    the http servlet response
      * @return the response entity
      */
-    @RequestMapping(value = FETCH_QUARTZ_DETAILS_JOB_GROUP_NAME, method = GET)
+    @RequestMapping(value = FETCH_QUARTZ_DETAILS_BY_CURRENT_USER_GROUP, method = GET)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
-    public ResponseEntity<String> fetchQuartzDetailsForJobGroupName(@RequestBody final KeyGroupDescriptionDTO keyGroupDescriptionDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        return quartzService.fetchQuartzDetailsForJobGroupName(keyGroupDescriptionDTO, getCookie(httpServletRequest, X_AUTH_TOKEN));
+    public ResponseEntity<String> fetchQuartzDetailsForJobGroupName(HttpServletRequest httpServletRequest) {
+        return quartzService.fetchQuartzDetailsForJobGroupName(getCookie(httpServletRequest, X_AUTH_TOKEN));
     }
 
 
@@ -309,14 +305,20 @@ public class QuartzController extends BaseController {
      *
      * @param keyGroupDescriptionDTO the trigger key group name dto
      * @param httpServletRequest     the http servlet request
-     * @param httpServletResponse    the http servlet response
      * @return the response entity
      */
     @RequestMapping(value = DELETE_TRIGGERS, method = DELETE)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
-    public ResponseEntity<String> deleteTriggers(@RequestBody KeyGroupDescriptionDTO keyGroupDescriptionDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+    public ResponseEntity<String> deleteTriggers(@RequestBody KeyGroupDescriptionDTO keyGroupDescriptionDTO, HttpServletRequest httpServletRequest) {
         return quartzService.deleteTriggers(keyGroupDescriptionDTO, getCookie(httpServletRequest, X_AUTH_TOKEN));
+    }
+
+    @RequestMapping(value = JOB_KEYS_AUTOCOMPLETE, method = GET)
+    @ResponseBody
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> jobKeysAutocomplete(@RequestParam(SEARCH_TEXT) final String searchText, HttpServletRequest httpServletRequest) {
+        return quartzService.jobKeysAutocomplete(searchText, getCookie(httpServletRequest, X_AUTH_TOKEN));
     }
 
 }

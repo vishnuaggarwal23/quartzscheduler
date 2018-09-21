@@ -1,7 +1,7 @@
 "use strict";
 
-var Login = function () {
-    var handleLogin = function () {
+let Login = function () {
+    let handleLogin = function () {
         $('form.login-form').validate({
             rules: {
                 username: {
@@ -22,19 +22,20 @@ var Login = function () {
             submitHandler: function (form) {
                 $.ajax({
                     url: $('form.login-form').data('userLoginUri'),
-                    type: "post",
-                    contentType: "application/json",
+                    type: HTTP_POST,
+                    contentType: APPLICATION_JSON,
                     data: JSON.stringify({
                         username: $('input#username').val(),
                         password: $('input#password').val()
                     }),
                     complete: function (response) {
-                        if (response && response.responseJSON) {
-                            if (response.responseJSON.path) {
-                                window.location.href = response.responseJSON.path.trim().toString();
-                            } else {
-                                alert(response.responseJSON.message);
-                            }
+                        let goForError = true;
+                        if (response && is2xxResponseCode(response.status) && response.responseJSON && response.responseJSON.path) {
+                            window.location.href = response.responseJSON.path.trim().toString();
+                            goForError = false;
+                        }
+                        if (goForError) {
+                            showErrorMessage(response.responseJSON.error.message)
                         }
                     }
                 })

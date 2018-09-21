@@ -8,6 +8,7 @@ import com.google.gson.reflect.TypeToken;
 import com.vishnu.aggarwal.core.co.JobDetailsCO;
 import com.vishnu.aggarwal.core.co.QuartzDetailsCO;
 import com.vishnu.aggarwal.core.co.TriggerDetailsCO;
+import com.vishnu.aggarwal.core.dto.DashboardDTO;
 import com.vishnu.aggarwal.core.dto.ErrorResponseDTO;
 import com.vishnu.aggarwal.core.dto.UserAuthenticationDTO;
 import com.vishnu.aggarwal.core.dto.UserDTO;
@@ -77,6 +78,11 @@ public class TypeTokenUtils {
      */
     public static Type getHashMapOfStringAndTriggerDetailsCO() {
         return new TypeToken<HashMap<String, TriggerDetailsCO>>() {
+        }.getType();
+    }
+
+    public static Type getHashMapOfStringAndDashboardDTO() {
+        return new TypeToken<HashMap<String, DashboardDTO>>() {
         }.getType();
     }
 
