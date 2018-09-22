@@ -15,7 +15,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.vishnu.aggarwal.core.enums.Status.ACTIVE;
 import static java.lang.Long.valueOf;
+import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toList;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 /**
@@ -64,8 +67,8 @@ public class UserService extends BaseService implements com.vishnu.aggarwal.rest
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         try {
-            User user = userRepoService.findByUsername(username);
-            user.setUserAuthorities(user.getUserAuthorities());
+            User user = findByUsername(username);
+            user.setUserAuthorities(user.getUserAuthorities().stream().filter(userAuthority -> nonNull(userAuthority) && (userAuthority.getStatus() == ACTIVE)).collect(toList()));
             return user;
         } catch (HibernateException e) {
             throw new UsernameNotFoundException(getMessage("multiple.usernames.found"));

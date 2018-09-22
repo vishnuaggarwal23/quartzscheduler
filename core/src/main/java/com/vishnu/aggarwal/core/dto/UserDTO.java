@@ -5,9 +5,12 @@ Created by vishnu on 5/3/18 11:01 AM
 */
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.util.List;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
@@ -34,11 +37,12 @@ public class UserDTO {
     private Boolean isDeleted = FALSE;
     private String firstName;
     private String lastName;
+    private List<AuthorityDTO> roles;
 
     public UserDTO() {
     }
 
-    public UserDTO(Long id, String username, String email, String password, Boolean accountExpired, Boolean accountLocked, Boolean credentialsExpired, Boolean accountEnabled, Boolean isDeleted, String firstName, String lastName) {
+    public UserDTO(Long id, String username, String email, String password, Boolean accountExpired, Boolean accountLocked, Boolean credentialsExpired, Boolean accountEnabled, Boolean isDeleted, String firstName, String lastName, List<AuthorityDTO> roles) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -50,6 +54,7 @@ public class UserDTO {
         this.isDeleted = isDeleted;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.roles = roles;
     }
 
     public UserDTO(Long id) {
@@ -100,6 +105,7 @@ public class UserDTO {
         return this.accountEnabled;
     }
 
+    @JsonInclude
     public String getFullName() {
         String fullName = EMPTY;
         if (isNotBlank(this.firstName)) {

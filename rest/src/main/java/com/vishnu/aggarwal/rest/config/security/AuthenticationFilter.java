@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import com.vishnu.aggarwal.core.config.BaseMessageResolver;
 import com.vishnu.aggarwal.core.dto.ErrorResponseDTO;
 import com.vishnu.aggarwal.core.dto.UserAuthenticationDTO;
-import com.vishnu.aggarwal.core.dto.UserDTO;
 import com.vishnu.aggarwal.core.exceptions.UserNotAuthenticatedException;
 import com.vishnu.aggarwal.rest.entity.Token;
 import com.vishnu.aggarwal.rest.entity.User;
@@ -32,6 +31,7 @@ import java.util.HashMap;
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.*;
 import static com.vishnu.aggarwal.core.util.TypeTokenUtils.getHashMapOfStringAndErrorResponseDTO;
 import static com.vishnu.aggarwal.core.util.TypeTokenUtils.getHashMapOfStringAndUserAuthenticationDTO;
+import static com.vishnu.aggarwal.rest.util.DTOConversion.convertFromUser;
 import static java.lang.Boolean.FALSE;
 import static java.util.Objects.nonNull;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
@@ -115,20 +115,7 @@ public class AuthenticationFilter extends GenericFilterBean {
                             final User user = userService.findByUsername(authentication.getPrincipal().toString());
                             HashMap<String, UserAuthenticationDTO> responseMap = new HashMap<String, UserAuthenticationDTO>();
                             responseMap.put(HASHMAP_USER_KEY, new UserAuthenticationDTO(
-                                    new UserDTO
-                                            (
-                                                    user.getId(),
-                                                    user.getUsername(),
-                                                    user.getEmail(),
-                                                    null,
-                                                    user.getAccountExpired(),
-                                                    user.getAccountLocked(),
-                                                    user.getCredentialsExpired(),
-                                                    user.getAccountEnabled(),
-                                                    user.getIsDeleted(),
-                                                    user.getFirstName(),
-                                                    user.getLastName()
-                                            ),
+                                    convertFromUser(user),
                                     authentication.isAuthenticated(),
                                     ((Token) authentication.getDetails()).getKey()
                             ));
