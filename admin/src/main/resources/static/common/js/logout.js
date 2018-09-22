@@ -7,13 +7,16 @@ $(document).ready(function () {
             contentType: APPLICATION_JSON,
             dataType: JSON_DATA_TYPE,
             complete: function (response) {
-                if (response && response.responseJSON) {
-                    if (response.responseJSON.logout === 'true' || response.responseJSON.logout === true) {
-                        removeCookie('X-AUTH-TOKEN');
+                let goForError = true;
+                if (response && is2xxResponseCode(response.status) && response.responseJSON && response.responseJSON.path) {
+                    if (compareVariableWithBoolean(response.responseJSON.logout, true)) {
+                        goForError = false;
+                        removeCookie(X_AUTH_TOKEN);
                         window.location.href = response.responseJSON.path.trim().toString();
-                    } else {
-                        showErrorMessage("Unable to logout the user.")
                     }
+                }
+                if (goForError) {
+                    showErrorMessage("Unable to logout the user.")
                 }
             }
         })

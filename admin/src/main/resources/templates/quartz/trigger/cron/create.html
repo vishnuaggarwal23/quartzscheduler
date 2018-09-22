@@ -1,10 +1,472 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      th:with="lang=${#locale.language}"
+      th:lang="${lang}"
+      layout:decorate="common/layout">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <div layout:fragment="customCSS">
+        <link rel="stylesheet"
+              type="text/css"
+              th:href="@{/webjars/select2/4.0.3/css/select2.css}"/>
+        <link rel="stylesheet"
+              type="text/css"
+              th:href="@{/webjars/select2-bootstrap-css/1.4.6/select2-bootstrap.css}"/>
+        <link rel="stylesheet"
+              type="text/css"
+              th:href="@{/webjars/Eonasdan-bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.css}"/>
+    </div>
 </head>
-<body>
 
+<body>
+<div layout:fragment="htmlContent">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="portlet box green">
+                <div class="portlet-title">
+                    <div class="caption">
+                        <i class="fa fa-gift">
+                        </i>
+                        Create New Cron Trigger
+                    </div>
+                </div>
+                <div class="portlet-body form">
+                    <form method="post"
+                          th:attr="data-create-new-cron-trigger-uri=@{${T(com.vishnu.aggarwal.core.constants.ThymeleafUrlMapping).createCronTriggerApiUri()}}"
+                          name="createCronTriggerForm"
+                          id="createCronTriggerForm"
+                          class="form-horizontal">
+                        <div class="form-body"
+                             th:id="jobInfoForm"
+                             th:name="jobInfoForm">
+                            <h3 class="form-section">
+                                Job Info
+                            </h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="jobKeyName"
+                                               class="control-label col-md-3">
+                                            Key Name
+                                            <span class="required"
+                                                  aria-required="true">
+                                                *
+                                            </span>
+                                        </label>
+                                        <div class="col-md-9">
+                                            <input type="text"
+                                                   id="jobKeyName"
+                                                   name="jobKeyName"
+                                                   autocomplete="false"
+                                                   data-rule-required="true"
+                                                   data-msg-required="Job Key Name is missing."
+                                                   onkeyup="callAutocompleteAndPopulate(this)"
+                                                   th:attr="data-job-key-name-auto-complete=@{${T(com.vishnu.aggarwal.core.constants.ThymeleafUrlMapping).jobKeysAutocomplete()}}"
+                                                   data-group-name-selector="input#jobGroupName"
+                                                   class="form-control typeahead"
+                                                   placeholder="Job Key Name"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="jobGroupName"
+                                               class="control-label col-md-3">
+                                            Group Name
+                                            <span class="required"
+                                                  aria-required="true">
+                                                *
+                                            </span>
+                                        </label>
+                                        <div class="col-md-9">
+                                            <input type="text"
+                                                   readonly="readonly"
+                                                   data-rule-required="true"
+                                                   data-msg-required="Job Group Name is missing."
+                                                   id="jobGroupName"
+                                                   name="jobGroupName"
+                                                   class="form-control"
+                                                   placeholder="Job Group Name"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="jobDescription"
+                                               class="control-label col-md-3">
+                                            Description
+                                            <span class="required"
+                                                  aria-required="true">
+                                                *
+                                            </span>
+                                        </label>
+                                        <div class="col-md-9">
+                                            <textarea th:rows="5"
+                                                      th:cols="5"
+                                                      id="jobDescription"
+                                                      readonly="readonly"
+                                                      data-rule-required="true"
+                                                      data-msg-required="Job Description is missing."
+                                                      name="jobDescription"
+                                                      class="form-control"
+                                                      placeholder="Job Description">
+                                            </textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-body"
+                             th:id="triggerInfoForm"
+                             th:name="triggerInfoForm">
+                            <h3 class="form-section">
+                                Cron Trigger Info
+                            </h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label col-md-3">
+                                            Type
+                                            <span class="required"
+                                                  aria-required="true">
+                                                *
+                                            </span>
+                                        </label>
+                                        <div class="col-md-9">
+                                            <input type="text"
+                                                   id="scheduleType"
+                                                   name="scheduleType"
+                                                   data-rule-required="true"
+                                                   data-msg-required="Schedule Type is missing."
+                                                   readonly="readonly"
+                                                   class="form-control"
+                                                   placeholder="Schedule Type"
+                                                   th:value="${T(com.vishnu.aggarwal.core.enums.ScheduleType).CRON}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="triggerKeyName"
+                                               class="control-label col-md-3">
+                                            Key Name
+                                            <span class="required"
+                                                  aria-required="true">
+                                                *
+                                            </span>
+                                        </label>
+                                        <div class="col-md-9">
+                                            <input type="text"
+                                                   id="triggerKeyName"
+                                                   data-rule-required="true"
+                                                   data-msg-required="Trigger Key Name is missing."
+                                                   data-rule-customUniqueKey="true"
+                                                   data-msg-customUniqueKey="Trigger key already exists."
+                                                   th:attr="data-custom-unique-key-validation=@{${T(com.vishnu.aggarwal.core.constants.ThymeleafUrlMapping).uniqueTriggerKeyValidationUri()}}"
+                                                   data-group-name-selector="input#triggerGroupName"
+                                                   name="triggerKeyName"
+                                                   class="form-control"
+                                                   placeholder="Trigger Key Name"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="triggerGroupName"
+                                               class="control-label col-md-3">
+                                            Group Name
+                                            <span class="required"
+                                                  aria-required="true">
+                                                *
+                                            </span>
+                                        </label>
+                                        <div class="col-md-9">
+                                            <input type="text"
+                                                   readonly="readonly"
+                                                   data-rule-required="true"
+                                                   data-msg-required="Trigger Group Name is missing."
+                                                   id="triggerGroupName"
+                                                   name="triggerGroupName"
+                                                   class="form-control"
+                                                   placeholder="Trigger Group Name"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="triggerDescription"
+                                               class="control-label col-md-3">
+                                            Description
+                                            <span class="required"
+                                                  aria-required="true">
+                                                *
+                                            </span>
+                                        </label>
+                                        <div class="col-md-9">
+                                            <textarea th:rows="5"
+                                                      th:cols="5"
+                                                      data-rule-required="true"
+                                                      data-msg-required="Trigger Description is missing."
+                                                      id="triggerDescription"
+                                                      name="triggerDescription"
+                                                      class="form-control"
+                                                      placeholder="Trigger Description">
+                                            </textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="triggerStartNow"
+                                               class="control-label col-md-3">
+                                            Start Now
+                                        </label>
+                                        <div class="col-md-9">
+                                            <div class="checkbox-list">
+                                                <label class="checkbox-inline">
+                                                    <input type="checkbox"
+                                                           checked="checked"
+                                                           data-rule-customTriggerStartNowRequired="true"
+                                                           data-msg-customTriggerStartNowRequired="Start Now needs to be checked."
+                                                           onclick="toggleTriggerStartTimeBasedOnTriggerStartNow(this, 'div#triggerStartTimeRow')"
+                                                           id="triggerStartNow"
+                                                           name="triggerStartNow"
+                                                           class="form-control"/>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group hidden"
+                                         id="triggerStartTimeRow">
+                                        <label for="triggerStartTime"
+                                               class="control-label col-md-3">
+                                            Start Time
+                                            <span class="required"
+                                                  aria-required="true">
+                                                *
+                                            </span>
+                                        </label>
+                                        <div class="col-md-9">
+                                            <input type='text'
+                                                   placeholder="Trigger Start Time"
+                                                   data-rule-customTriggerStartTimeRequired="true"
+                                                   data-msg-customTriggerStartTimeRequired="Start Time is missing."
+                                                   class="form-control date-time-picker"
+                                                   id='triggerStartTime'
+                                                   name="triggerStartTime"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="triggerEndTime"
+                                               class="control-label col-md-3">
+                                            End Time
+                                        </label>
+                                        <div class="col-md-9">
+                                            <input type='text'
+                                                   placeholder="Trigger End Time"
+                                                   class="form-control date-time-picker"
+                                                   id='triggerEndTime'
+                                                   name="triggerEndTime"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row"
+                                 id="cronSchedulerDataRow">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <div class="col-md-12">
+                                            <div class="table-responsive">
+                                                <table class="table table-striped table-bordered table-hover">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>
+                                                            Second
+                                                            <span class="required"
+                                                                  aria-required="true">
+                                                                        *
+                                                                    </span>
+                                                        </th>
+                                                        <th>
+                                                            Minute
+                                                            <span class="required"
+                                                                  aria-required="true">
+                                                                        *
+                                                                    </span>
+                                                        </th>
+                                                        <th>
+                                                            Hour
+                                                            <span class="required"
+                                                                  aria-required="true">
+                                                                        *
+                                                                    </span>
+                                                        </th>
+                                                        <th>
+                                                            Day of Month
+                                                            <span class="required"
+                                                                  aria-required="true">
+                                                                        *
+                                                                    </span>
+                                                        </th>
+                                                        <th>
+                                                            Month
+                                                            <span class="required"
+                                                                  aria-required="true">
+                                                                        *
+                                                                    </span>
+                                                        </th>
+                                                        <th>
+                                                            Day of Week
+                                                            <span class="required"
+                                                                  aria-required="true">
+                                                                        *
+                                                                    </span>
+                                                        </th>
+                                                        <th>
+                                                            Year
+                                                        </th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <input type="text"
+                                                                   id="cronExpressionSecond"
+                                                                   name="cronExpressionSecond"
+                                                                   data-rule-required="true"
+                                                                   data-msg-required="Second is missing."
+                                                                   placeholder="Second"
+                                                                   class="form-control cron-seconds"/>
+                                                        </td>
+                                                        <td>
+                                                            <input type="text"
+                                                                   id="cronExpressionMinute"
+                                                                   name="cronExpressionMinute"
+                                                                   data-rule-required="true"
+                                                                   data-msg-required="Minute is missing."
+                                                                   placeholder="Minute"
+                                                                   class="form-control cron-minutes"/>
+                                                        </td>
+                                                        <td>
+                                                            <input type="text"
+                                                                   id="cronExpressionHour"
+                                                                   name="cronExpressionHour"
+                                                                   placeholder="Hour"
+                                                                   data-rule-required="true"
+                                                                   data-msg-required="Hour is missing."
+                                                                   class="form-control cron-hours"/>
+                                                        </td>
+                                                        <td>
+                                                            <input type="text"
+                                                                   id="cronExpressionDayOfMonth"
+                                                                   name="cronExpressionDayOfMonth"
+                                                                   placeholder="Day of Month"
+                                                                   data-rule-required="true"
+                                                                   data-msg-required="Day of Month is missing."
+                                                                   class="form-control cron-day-of-month"/>
+                                                        </td>
+                                                        <td>
+                                                            <input type="text"
+                                                                   id="cronExpressionMonth"
+                                                                   name="cronExpressionMonth"
+                                                                   data-rule-required="true"
+                                                                   data-msg-required="Month is missing."
+                                                                   placeholder="Month"
+                                                                   class="form-control cron-month"/>
+                                                        </td>
+                                                        <td>
+                                                            <input type="text"
+                                                                   id="cronExpressionDayOfWeek"
+                                                                   name="cronExpressionDayOfWeek"
+                                                                   placeholder="Day of Week"
+                                                                   data-rule-required="true"
+                                                                   data-msg-required="Day of Week is missing."
+                                                                   class="form-control cron-day-of-week"/>
+                                                        </td>
+                                                        <td>
+                                                            <input type="text"
+                                                                   id="cronExpressionYear"
+                                                                   name="cronExpressionYear"
+                                                                   placeholder="Year"
+                                                                   class="form-control cron-years"/>
+                                                        </td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="row">
+                                        <div class="col-md-offset-3 col-md-9">
+                                            <button type="submit"
+                                                    class="btn green">
+                                                Submit
+                                            </button>
+                                            <button type="reset"
+                                                    class="btn default">
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6"></div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+</div>
+
+<div layout:fragment="customJS">
+    <script type="text/javascript"
+            th:src="@{/webjars/select2/4.0.3/js/select2.full.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/webjars/jquery-validation/1.17.0/jquery.validate.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/webjars/jquery-validation/1.17.0/additional-methods.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/webjars/momentjs/2.21.0/moment.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/webjars/momentjs/2.21.0/min/moment-with-locales.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/webjars/bootstrap/3.3.7/js/transition.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/webjars/bootstrap/3.3.7/js/collapse.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/webjars/Eonasdan-bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/webjars/Bootstrap-3-Typeahead/3.1.1/bootstrap3-typeahead.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/common/js/components-date-time-pickers.js}">
+    </script>
+    <script type="text/javascript"
+            th:src="@{/quartz/trigger/js/cron/create.js}">
+    </script>
+</div>
 </body>
 </html>

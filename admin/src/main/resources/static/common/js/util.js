@@ -12,6 +12,7 @@ const APPLICATION_JSON = "application/json";
 const JSON_DATA_TYPE = "json";
 const HTTP_GET = "GET";
 const HTTP_POST = "POST";
+const X_AUTH_TOKEN = "X-AUTH-TOKEN";
 
 toastr.options = {
     "closeButton": true,
@@ -77,8 +78,8 @@ function reloadDataTable(table) {
     table.ajax.reload();
 }
 
-function compareStringWithBoolean(string, boolean) {
-    return (string === boolean ? 'true' : 'false') || (string === boolean ? "true" : "false") || (string === boolean)
+function compareVariableWithBoolean(variable, boolean) {
+    return (variable === boolean ? 'true' : 'false') || (variable === boolean ? "true" : "false") || (variable === boolean)
 }
 
 function trimText() {

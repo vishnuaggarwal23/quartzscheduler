@@ -29,24 +29,28 @@ public class ThymeleafUrlMapping extends Admin {
         return format("%s%s%s", Api.BASE_URI, Api.Quartz.BASE_URI, Api.Quartz.CREATE_SIMPLE_TRIGGER);
     }
 
+    public static String createCronTriggerApiUri() {
+        return format("%s%s%s", Api.BASE_URI, Api.Quartz.BASE_URI, Api.Quartz.CREATE_CRON_TRIGGER);
+    }
+
     public static String currentLoggedInUserUri() {
         return format("%s%s%s", Api.BASE_URI, Api.User.BASE_URI, Api.User.CURRENT_LOGGED_IN_USER);
     }
 
     public static String listJobsApiUri() {
-        return Api.BASE_URI + Api.Quartz.BASE_URI + Api.Quartz.FETCH_JOBS_OF_CURRENT_USER_GROUP;
+        return format("%s%s%s", Api.BASE_URI, Api.Quartz.BASE_URI, Api.Quartz.FETCH_JOBS_OF_CURRENT_USER_GROUP);
     }
 
     public static String uniqueJobKeyValidationUri() {
-        return Api.BASE_URI + Api.Validation.BASE_URI + Api.Validation.UNIQUE_JOB_KEY_PER_GROUP;
+        return format("%s%s%s", Api.BASE_URI, Api.Validation.BASE_URI, Api.Validation.UNIQUE_JOB_KEY_PER_GROUP);
     }
 
     public static String uniqueTriggerKeyValidationUri() {
-        return Api.BASE_URI + Api.Validation.BASE_URI + Api.Validation.UNIQUE_TRIGGER_KEY_PER_GROUP;
+        return format("%s%s%s", Api.BASE_URI, Api.Validation.BASE_URI, Api.Validation.UNIQUE_TRIGGER_KEY_PER_GROUP);
     }
 
     public static String jobKeysAutocomplete() {
-        return Api.BASE_URI + Api.Quartz.BASE_URI + Api.Quartz.JOB_KEYS_AUTOCOMPLETE;
+        return format("%s%s%s", Api.BASE_URI, Api.Quartz.BASE_URI, Api.Quartz.JOB_KEYS_AUTOCOMPLETE);
     }
 
     public static String dashboardUri() {

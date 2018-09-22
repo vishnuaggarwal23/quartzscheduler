@@ -8,6 +8,7 @@ import lombok.extern.apachecommons.CommonsLog;
 import org.quartz.SchedulerException;
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.beans.TypeMismatchException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -58,6 +59,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     private final BaseMessageResolver baseMessageResolver;
     private final Gson gson;
 
+    @Autowired
     public RestExceptionHandler(
             BaseMessageResolver baseMessageResolver,
             Gson gson) {
@@ -233,7 +235,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         }
 
         HashMap<String, ErrorResponseDTO> response = new HashMap<String, ErrorResponseDTO>();
-        response.put(HASHMAP_ERROR_KEY, new ErrorResponseDTO(customInterceptorId, new Date(), baseMessageResolver.getMessage(exceptionMessage), details));
+        response.put(HASHMAP_ERROR_KEY, new ErrorResponseDTO(customInterceptorId, new Date(), baseMessageResolver.getMessage(exceptionMessage, exceptionMessage), details));
         return new ResponseEntity<Object>(gson.toJson(response, getHashMapOfStringAndErrorResponseDTO()), headers, status);
     }
 }

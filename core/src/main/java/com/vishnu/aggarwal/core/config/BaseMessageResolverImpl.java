@@ -37,7 +37,8 @@ public class BaseMessageResolverImpl implements BaseMessageResolver {
     }
 
     public final String getMessage(final String messageCode, final String defaultMessage, @Nullable Object... args) {
-        return messageSource.getMessage(messageCode, args, defaultMessage, ROOT);
+        String message = messageSource.getMessage(messageCode, args, defaultMessage, ROOT);
+        return isNotBlank(message) ? message : defaultMessage;
     }
 
     @Override

@@ -9,7 +9,13 @@ Created by vishnu on 30/3/18 9:35 AM
  */
 public class UrlMapping {
 
+    /**
+     * The constant ALL_URL_PREFIX.
+     */
     public static final String ALL_URL_PREFIX = "/**";
+    /**
+     * The constant ALL_URL_SUFFIX.
+     */
     public static final String ALL_URL_SUFFIX = "**/";
 
     /**
@@ -43,8 +49,14 @@ public class UrlMapping {
                  */
                 public static final String CREATE_TRIGGER = "/trigger/create";
 
+                /**
+                 * The constant VIEW_JOB.
+                 */
                 public static final String VIEW_JOB = "/job/view";
 
+                /**
+                 * The constant LIST_JOBS.
+                 */
                 public static final String LIST_JOBS = "/job/list";
             }
 
@@ -74,6 +86,9 @@ public class UrlMapping {
                  */
                 public static final String FORGOT_PASSWORD = "/forgotPassword";
 
+                /**
+                 * The constant LOGOUT.
+                 */
                 public static final String LOGOUT = "/logout";
             }
         }
@@ -165,6 +180,9 @@ public class UrlMapping {
                  */
                 public static final String DELETE_TRIGGERS = Rest.Quartz.DELETE_TRIGGERS;
 
+                /**
+                 * The constant JOB_KEYS_AUTOCOMPLETE.
+                 */
                 public static final String JOB_KEYS_AUTOCOMPLETE = Rest.Quartz.JOB_KEYS_AUTOCOMPLETE;
             }
 
@@ -294,6 +312,9 @@ public class UrlMapping {
              * The constant DELETE_TRIGGERS.
              */
             public static final String DELETE_TRIGGERS = "/trigger/delete";
+            /**
+             * The constant JOB_KEYS_AUTOCOMPLETE.
+             */
             public static final String JOB_KEYS_AUTOCOMPLETE = "/autocomplete/job/keys";
         }
 
@@ -341,8 +362,17 @@ public class UrlMapping {
             public static final String UNIQUE_TRIGGER_KEY_PER_GROUP = "/triggerKey/unique";
         }
 
+        /**
+         * The type Dashboard.
+         */
         public static class Dashboard {
+            /**
+             * The constant BASE_URI.
+             */
             public static final String BASE_URI = "/dashboard";
+            /**
+             * The constant COUNTER.
+             */
             public static final String COUNTER = "/counter";
         }
     }
