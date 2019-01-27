@@ -1,8 +1,6 @@
 import static java.lang.System.getProperties
 
-buildscript {
-}
-
+apply plugin: 'war'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
@@ -19,19 +17,11 @@ war {
 }
 
 jar {
-    enabled = true
-    baseName = adminModuleProjectBaseName
-    archivesBaseName = adminModuleProjectBaseName
-    version = adminModuleProjectVersion
-    exclude('application-dev.yml', 'banner.txt')
+    enabled = false
 }
 
 bootJar {
-    enabled = true
-    baseName = adminModuleProjectBaseName
-    archivesBaseName = adminModuleProjectBaseName
-    version = adminModuleProjectVersion
-    exclude('application-dev.yml', 'banner.txt')
+    enabled = false
 }
 
 bootWar {

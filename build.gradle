@@ -1,20 +1,4 @@
-allprojects {
-    ext {
-        springBootVersion = springBootVersion
-        springVersion = springVersion
-        springSecurityVersion = springSecurityVersion
-        jdkSource = javaSourceVersion
-        jdkTarget = javaTargetVersion
-        springLoadedVersion = springLoadedVersion
-        gradleVersion = gradleVersion
-        projectGroup = projectGroup
-        coreModuleProjectBaseName = coreModuleProjectBaseName
-        coreModuleProjectVersion = coreModuleProjectVersion
-        adminModuleProjectBaseName = adminModuleProjectBaseName
-        adminModuleProjectVersion = adminModuleProjectVersion
-        restModuleProjectBaseName = restModuleProjectBaseName
-        restModuleProjectVersion = restModuleProjectVersion
-    }
+allprojects { Project project ->
     buildscript {
         repositories {
             mavenLocal()
@@ -32,11 +16,10 @@ allprojects {
     apply plugin: 'application'
     apply plugin: 'eclipse'
     apply plugin: 'idea'
-    apply plugin: 'war'
     apply plugin: 'project-report'
 
-    sourceCompatibility = jdkSource
-    targetCompatibility = jdkTarget
+    sourceCompatibility = javaSourceVersion
+    targetCompatibility = javaTargetVersion
 
     repositories {
         mavenLocal()

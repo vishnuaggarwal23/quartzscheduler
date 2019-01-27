@@ -1,11 +1,6 @@
 import static java.lang.System.properties
 
-buildscript {
-    /*dependencies {
-        classpath('org.liquibase:liquibase-core:3.5.5')
-    }*/
-}
-
+apply plugin: 'war'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
@@ -22,19 +17,11 @@ war {
 }
 
 jar {
-    enabled = true
-    baseName = restModuleProjectBaseName
-    archivesBaseName = restModuleProjectBaseName
-    version = restModuleProjectVersion
-    exclude('application-dev.yml', 'banner.txt')
+    enabled = false
 }
 
 bootJar {
-    enabled = true
-    baseName = restModuleProjectBaseName
-    archivesBaseName = restModuleProjectBaseName
-    version = restModuleProjectVersion
-    exclude('application-dev.yml', 'banner.txt')
+    enabled = false
 }
 
 bootWar {

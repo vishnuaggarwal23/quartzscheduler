@@ -9,14 +9,6 @@ group = projectGroup
 version = coreModuleProjectVersion
 mainClassName = 'com.vishnu.aggarwal.core.main.Core'
 
-war {
-    enabled = true
-    baseName = coreModuleProjectBaseName
-    archivesBaseName = coreModuleProjectBaseName
-    version = coreModuleProjectVersion
-    exclude('application.yml', 'application-dev.yml', 'banner.txt')
-}
-
 jar {
     enabled = true
     baseName = coreModuleProjectBaseName
@@ -33,12 +25,8 @@ bootJar {
     exclude('application.yml', 'application-dev.yml', 'banner.txt')
 }
 
-bootWar {
-    enabled = true
-    baseName = coreModuleProjectBaseName
-    archivesBaseName = coreModuleProjectBaseName
-    version = coreModuleProjectVersion
-    exclude('application.yml', 'application-dev.yml', 'banner.txt')
+bootRun {
+    enabled = false
 }
 
 dependencies {
@@ -49,7 +37,7 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-mobile', version: '1.5.16.RELEASE'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: "${springBootVersion}"
     compile group: 'org.springframework.boot', name: 'spring-boot-devtools', version: "${springBootVersion}"
-    providedRuntime group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version: "${springBootVersion}"
+    runtime group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version: "${springBootVersion}"
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: "${springBootVersion}"
     compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
     compile group: 'com.google.code.findbugs', name: 'annotations', version: '3.0.1'

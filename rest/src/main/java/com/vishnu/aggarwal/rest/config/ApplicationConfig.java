@@ -7,12 +7,15 @@ import com.vishnu.aggarwal.core.config.WebConfig;
 import com.vishnu.aggarwal.rest.config.security.AccessDeniedHandler;
 import com.vishnu.aggarwal.rest.config.security.LogoutHandler;
 import com.vishnu.aggarwal.rest.config.security.LogoutSuccessHandler;
+import com.vishnu.aggarwal.rest.entity.User;
 import com.vishnu.aggarwal.rest.interceptor.RequestInterceptor;
+import com.vishnu.aggarwal.rest.interfaces.UserService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.AuditorAware;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
@@ -41,25 +44,29 @@ public class ApplicationConfig extends WebConfig {
     private final ObjectMapper objectMapper;
     private final BaseMessageResolver baseMessageResolver;
     private final Gson gson;
+    private final UserService userService;
+
 
     /**
      * Instantiates a new Application config.
-     *
-     * @param requestInterceptor  the request interceptor
+     *  @param requestInterceptor  the request interceptor
      * @param objectMapper        the object mapper
      * @param baseMessageResolver the base message resolver
      * @param gson                the gson
+     * @param userService
      */
     @Autowired
     public ApplicationConfig(
             RequestInterceptor requestInterceptor,
             ObjectMapper objectMapper,
             BaseMessageResolver baseMessageResolver,
-            Gson gson) {
+            Gson gson,
+            UserService userService) {
         this.requestInterceptor = requestInterceptor;
         this.objectMapper = objectMapper;
         this.baseMessageResolver = baseMessageResolver;
         this.gson = gson;
+        this.userService = userService;
     }
 
     @Override
@@ -135,5 +142,10 @@ public class ApplicationConfig extends WebConfig {
         objectMapper.setSerializationInclusion(NON_EMPTY);
         converters.add(mappingJackson2HttpMessageConverter);
         super.configureMessageConverters(converters);
+    }
+
+    @Bean(value = "auditorAware")
+    public AuditorAware<User> auditorAware() {
+        return new AuditorAwareImpl(userService);
     }
 }

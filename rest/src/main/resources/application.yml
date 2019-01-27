@@ -14,9 +14,9 @@ spring:
     properties:
       hibernate:
         generate_statistics: true
-        cache:
-          use_second_level_cache: true
-          use_query_cache: true
+#        cache:
+#          use_second_level_cache: true
+#          use_query_cache: true
         jdbc:
           time_zone: "UTC"
         dialect: com.vishnu.aggarwal.rest.config.MySqlDialect
@@ -169,5 +169,14 @@ javamelody:
   enabled: true
   advisor-auto-proxy-creator-enabled: false
   scheduled-monitoring-enabled: true
+  management-endpoint-monitoring-enabled: true
   init-parameters:
     log: true
+    disabled: false
+    url-exclude-pattern: /static/.*
+    sql-transform-pattern: \\d+
+    http-transform-pattern: \\d+
+    system-actions-enabled: true
+    quartz-default-listener-disabled: true
+    displayed-counters: http,sql,error,log,spring,jsp
+    monitoring-path: /system/monitor

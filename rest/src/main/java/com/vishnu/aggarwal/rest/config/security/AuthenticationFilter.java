@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -56,7 +57,7 @@ public class AuthenticationFilter extends GenericFilterBean {
     private BaseMessageResolver baseMessageResolver;
     private AuthenticationManager authenticationManager;
     private UserService userService;
-    private RequestMatcher ignoredRequestMatcher;
+    private RequestMatcher[] ignoredRequestMatcher;
     private RequestMatcher loginRequestMatcher;
     private RequestMatcher authenticationRequestMatcher;
     private Gson gson;
@@ -80,10 +81,10 @@ public class AuthenticationFilter extends GenericFilterBean {
             BaseMessageResolver baseMessageResolver,
             AuthenticationManager authenticationManager,
             UserService userService,
-            RequestMatcher ignoredRequestMatcher,
             RequestMatcher loginRequestMatcher,
             RequestMatcher authenticationRequestMatcher,
-            Gson gson
+            Gson gson,
+            RequestMatcher... ignoredRequestMatcher
     ) {
         super();
         this.tokenAuthenticationService = tokenAuthenticationService;
@@ -104,7 +105,7 @@ public class AuthenticationFilter extends GenericFilterBean {
             response.setCharacterEncoding("UTF-8");
             response.setContentType(APPLICATION_JSON_UTF8_VALUE);
 
-            if (!ignoredRequestMatcher.matches(httpServletRequest)) {
+            if (Arrays.stream(ignoredRequestMatcher).filter(it -> it.matches(httpServletRequest)).toArray().length <= 0) {
                 if (loginRequestMatcher.matches(httpServletRequest)) {
                     chain.doFilter(httpServletRequest, response);
                 } else {

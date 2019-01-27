@@ -27,7 +27,6 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import static com.vishnu.aggarwal.core.constants.RoleType.ROLE_ADMIN;
 import static com.vishnu.aggarwal.core.constants.RoleType.ROLE_USER;
 import static java.lang.Boolean.TRUE;
 import static org.springframework.http.HttpMethod.OPTIONS;
@@ -106,7 +105,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .anonymous().disable()
                 .addFilter(new LoginFilter(new AntPathRequestMatcher("/**/user/login", POST.name()), tokenAuthenticationService, baseMessageResolver, objectMapper, authenticationManagerBean(), userService, gson))
-                .addFilterBefore(new AuthenticationFilter(tokenAuthenticationService, objectMapper, baseMessageResolver, authenticationManagerBean(), userService, new AntPathRequestMatcher("/**/error"), new AntPathRequestMatcher("/**/user/login"), new AntPathRequestMatcher("/**/user/authenticate"), gson), LogoutFilter.class)
+                .addFilterBefore(new AuthenticationFilter(tokenAuthenticationService, objectMapper, baseMessageResolver, authenticationManagerBean(), userService, new AntPathRequestMatcher("/**/user/login"), new AntPathRequestMatcher("/**/user/authenticate"), gson, new AntPathRequestMatcher("/**/error"), new AntPathRequestMatcher("/**/actuator/**/"), new AntPathRequestMatcher("/**/system/monitor/**/")), LogoutFilter.class)
                 .addFilterAt(new LogoutFilter("/**/user/logout", logoutSuccessHandler, new AntPathRequestMatcher("/**/user/logout", POST.name()), tokenAuthenticationService, logoutHandler, baseMessageResolver), org.springframework.security.web.authentication.logout.LogoutFilter.class)
                 .authorizeRequests()
                 .antMatchers(OPTIONS).permitAll()
@@ -114,15 +113,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/**/quartz/**", "/**/validation/**").hasAuthority(ROLE_USER)
                 .antMatchers("/**/user/authenticate").permitAll()
                 .antMatchers(POST, "/**/user/logout").authenticated()
-                .antMatchers("/**/actuator/**/").hasAuthority(ROLE_ADMIN)
+                .antMatchers("/**/actuator/**/").permitAll()
                 .antMatchers("/**/error").denyAll()
-                .antMatchers("/**/monitoring/**/").hasAuthority(ROLE_ADMIN)
+                .antMatchers("/**/system/monitor/**/").permitAll()
                 .anyRequest().authenticated();
     }
 
     @Override
     public void configure(WebSecurity web) {
-        String[] urlPatterns = {"/**/js/**/", "/**/css/**/", "/**/img/**/", "/**/font/**/", "/**/fonts/**/", "/**/webjars/**/", "/**/webjar/**/"};
+        String[] urlPatterns = {"/**/js/**/", "/**/css/**/", "/**/img/**/", "/**/font/**/", "/**/fonts/**/", "/**/webjars/**/", "/**/webjar/**/", "/**/system/monitor/**/", "/**/actuator/**/"};
         web
                 .ignoring()
                 .antMatchers(urlPatterns)
