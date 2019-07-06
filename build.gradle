@@ -1,3 +1,18 @@
+class BuildInfoTask extends DefaultTask {
+
+    @TaskAction
+    void printMe() {
+        File buildFile = new File("${project.getProjectDir()}/src/main/resources/${project.getName()}_buildInfoFile.properties")
+        if (buildFile.exists()) {
+            buildFile.delete()
+        }
+        buildFile.createNewFile()
+        buildFile << "buildDate=${new Date().toInstant().toString()}" +
+                "\nbuildName=${project.getName()}" +
+                "\nbuildVersion=${project.getVersion()}"
+    }
+}
+
 allprojects { Project project ->
     buildscript {
         repositories {
@@ -27,8 +42,9 @@ allprojects { Project project ->
         jcenter()
     }
 
-    task wrapper(type: Wrapper) {
+    wrapper {
         gradleVersion = gradleVersion
+        distributionType = Wrapper.DistributionType.ALL
     }
 
     configurations.all {
@@ -45,7 +61,19 @@ allprojects { Project project ->
                 if (details.requested.group.equals("org.springframework")) {
                     details.useVersion("$springVersion")
                 }
+//                if (details.requested.group.equals("com.zaxxer") && details.requested.name.startsWith("HikariCP")) {
+//                    details.use
+//                }
             }
         }
+    }
+
+    tasks.register("buildInfoTask", BuildInfoTask)
+
+    group = projectGroup
+
+    dependencies {
+        compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.8'
+        annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.8'
     }
 }

@@ -1,6 +1,5 @@
 package com.vishnu.aggarwal.rest.config.security;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.vishnu.aggarwal.core.config.BaseMessageResolver;
 import com.vishnu.aggarwal.core.dto.ErrorResponseDTO;
@@ -11,7 +10,6 @@ import com.vishnu.aggarwal.rest.entity.User;
 import com.vishnu.aggarwal.rest.interfaces.TokenAuthenticationService;
 import com.vishnu.aggarwal.rest.interfaces.UserService;
 import lombok.extern.apachecommons.CommonsLog;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -53,9 +51,7 @@ Created by vishnu on 19/4/18 4:13 PM
 public class AuthenticationFilter extends GenericFilterBean {
 
     private TokenAuthenticationService tokenAuthenticationService;
-    private ObjectMapper objectMapper;
     private BaseMessageResolver baseMessageResolver;
-    private AuthenticationManager authenticationManager;
     private UserService userService;
     private RequestMatcher[] ignoredRequestMatcher;
     private RequestMatcher loginRequestMatcher;
@@ -66,9 +62,7 @@ public class AuthenticationFilter extends GenericFilterBean {
      * Instantiates a new Authentication filter.
      *
      * @param tokenAuthenticationService   the token authentication service
-     * @param objectMapper                 the object mapper
      * @param baseMessageResolver          the base message resolver
-     * @param authenticationManager        the authentication manager
      * @param userService                  the user service
      * @param ignoredRequestMatcher        the ignored request matcher
      * @param loginRequestMatcher          the login request matcher
@@ -77,9 +71,7 @@ public class AuthenticationFilter extends GenericFilterBean {
      */
     public AuthenticationFilter(
             TokenAuthenticationService tokenAuthenticationService,
-            ObjectMapper objectMapper,
             BaseMessageResolver baseMessageResolver,
-            AuthenticationManager authenticationManager,
             UserService userService,
             RequestMatcher loginRequestMatcher,
             RequestMatcher authenticationRequestMatcher,
@@ -88,9 +80,7 @@ public class AuthenticationFilter extends GenericFilterBean {
     ) {
         super();
         this.tokenAuthenticationService = tokenAuthenticationService;
-        this.objectMapper = objectMapper;
         this.baseMessageResolver = baseMessageResolver;
-        this.authenticationManager = authenticationManager;
         this.userService = userService;
         this.ignoredRequestMatcher = ignoredRequestMatcher;
         this.loginRequestMatcher = loginRequestMatcher;

@@ -1,6 +1,5 @@
 package com.vishnu.aggarwal.rest.config.security;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.vishnu.aggarwal.core.config.BaseMessageResolver;
 import com.vishnu.aggarwal.core.dto.ErrorResponseDTO;
@@ -48,7 +47,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final TokenAuthenticationService tokenAuthenticationService;
     private final BaseMessageResolver baseMessageResolver;
-    private final ObjectMapper objectMapper;
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
     private final Gson gson;
@@ -59,7 +57,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
      * @param requestMatcher             the request matcher
      * @param tokenAuthenticationService the token authentication service
      * @param baseMessageResolver        the base message resolver
-     * @param objectMapper               the object mapper
      * @param authenticationManager      the authentication manager
      * @param userService                the user service
      * @param gson                       the gson
@@ -68,13 +65,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             RequestMatcher requestMatcher,
             TokenAuthenticationService tokenAuthenticationService,
             BaseMessageResolver baseMessageResolver,
-            ObjectMapper objectMapper,
             AuthenticationManager authenticationManager,
             UserService userService,
             Gson gson) {
         this.tokenAuthenticationService = tokenAuthenticationService;
         this.baseMessageResolver = baseMessageResolver;
-        this.objectMapper = objectMapper;
         this.authenticationManager = authenticationManager;
         this.userService = userService;
         this.gson = gson;

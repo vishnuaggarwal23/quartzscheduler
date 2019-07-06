@@ -4,11 +4,12 @@ apply plugin: 'war'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
-group = projectGroup
 version = adminModuleProjectVersion
-mainClassName = 'com.vishnu.aggarwal.admin.main.Admin'
+mainClassName = "${projectGroup}.${adminModuleProjectName}.main.Admin"
 
 war {
+    dependsOn("buildInfoTask")
+    mustRunAfter("buildInfoTask")
     enabled = true
     baseName = adminModuleProjectBaseName
     archivesBaseName = adminModuleProjectBaseName
@@ -25,11 +26,7 @@ bootJar {
 }
 
 bootWar {
-    enabled = true
-    baseName = adminModuleProjectBaseName
-    archivesBaseName = adminModuleProjectBaseName
-    version = adminModuleProjectVersion
-    exclude('application-dev.yml', 'banner.txt')
+    enabled = false
 }
 
 bootRun {

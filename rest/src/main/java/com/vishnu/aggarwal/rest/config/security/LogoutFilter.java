@@ -37,8 +37,6 @@ public class LogoutFilter extends org.springframework.security.web.authenticatio
     private TokenAuthenticationService tokenAuthenticationService;
     private LogoutHandler logoutHandler;
     private LogoutSuccessHandler logoutSuccessHandler;
-    private String logoutUrl;
-    private BaseMessageResolver baseMessageResolver;
 
     /**
      * Instantiates a new Logout filter.
@@ -48,17 +46,19 @@ public class LogoutFilter extends org.springframework.security.web.authenticatio
      * @param requestMatcher             the request matcher
      * @param tokenAuthenticationService the token authentication service
      * @param logoutHandler              the logout handler
-     * @param baseMessageResolver        the base message resolver
      */
-    public LogoutFilter(String logoutUrl, LogoutSuccessHandler logoutSuccessHandler, RequestMatcher requestMatcher, TokenAuthenticationService tokenAuthenticationService, LogoutHandler logoutHandler, BaseMessageResolver baseMessageResolver) {
+    public LogoutFilter(
+            String logoutUrl,
+            LogoutSuccessHandler logoutSuccessHandler,
+            RequestMatcher requestMatcher,
+            TokenAuthenticationService tokenAuthenticationService,
+            LogoutHandler logoutHandler) {
         super(logoutSuccessHandler, logoutHandler);
         this.tokenAuthenticationService = tokenAuthenticationService;
         this.logoutHandler = logoutHandler;
         this.logoutSuccessHandler = logoutSuccessHandler;
-        this.baseMessageResolver = baseMessageResolver;
         super.setFilterProcessesUrl(logoutUrl);
         super.setLogoutRequestMatcher(requestMatcher);
-        this.logoutUrl = logoutUrl;
     }
 
     /**
@@ -71,7 +71,6 @@ public class LogoutFilter extends org.springframework.security.web.authenticatio
     @Deprecated
     public LogoutFilter(String logoutSuccessUrl, BaseMessageResolver baseMessageResolver, LogoutHandler... handlers) {
         super(logoutSuccessUrl, handlers);
-        this.baseMessageResolver = baseMessageResolver;
     }
 
     @Override

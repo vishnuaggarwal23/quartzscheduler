@@ -1,15 +1,16 @@
 server:
-  port: "${REST_MODULE_SERVER_PORT:9090}"
+  port: "${ADMIN_MODULE_SERVER_PORT:9090}"
   servlet:
     context-path: "${ADMIN_MODULE_CONTEXT_PATH:/admin}"
 bootstrap:
-  enabled: "${BOOTSTRAP_ENABLED:true}"
+  enabled: "${ADMIN_MODULE_BOOTSTRAP_ENABLED:true}"
 spring:
   thymeleaf:
     cache: false
   devtools:
     livereload:
       enabled: true
+      port: 35730
     restart:
       enabled: true
       log-condition-evaluation-delta: true
@@ -24,7 +25,7 @@ logging:
     org.quartz: info
     org.springframework.web: info
     com.vishnu.aggarwal: info
-  file: "${LOGGING_FILE_PATH:/home/vishnu/quartzscheduler/logging/admin.log}"
+  file: "${ADMIN_MODULE_LOGGING_FILE_PATH:/home/vishnu/Desktop/quartzscheduler/logs/admin/admin.log}"
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} -- [%thread] -- %-5level -- %logger{36} --- %msg%n"

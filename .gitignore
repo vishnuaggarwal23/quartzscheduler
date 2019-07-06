@@ -12,3 +12,4 @@ bin/
 application-*.yml
 build
 out
+*_buildInfoFile.properties

@@ -4,7 +4,7 @@ logging:
     org.springframework: info
     org.springframework.web: info
     com.vishnu.aggarwal: info
-  file: "${LOGGING_FILE_PATH:/home/vishnu/quartzscheduler/logging/core.log}"
+  file: "${CORE_MODULE_LOGGING_FILE_PATH:/home/vishnu/Desktop/quartzscheduler/logs/core/core.log}"
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
