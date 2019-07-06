@@ -120,6 +120,10 @@ logging:
     org.hibernate.stat: debug
     com.vishnu.aggarwal: info
     org.springframework.cache: trace
+    org.springframework.aop.interceptor.PerformanceMonitorInterceptor: trace
+    org.springframework.aop.interceptor.DebugInterceptor: trace
+    org.springframework.aop.interceptor.SimpleTraceInterceptor: trace
+    com.vishnu.aggarwal.rest.interceptor.MethodLogInterceptor: trace
   file: "${REST_MODULE_LOGGING_FILE_PATH:/home/vishnu/Desktop/quartzscheduler/logs/rest/rest.log}"
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} -- [%thread] -- %-5level -- %logger{36} --- %msg%n"

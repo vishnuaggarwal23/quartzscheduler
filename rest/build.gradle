@@ -60,4 +60,5 @@ dependencies {
     compile group: 'org.apache.commons', name: 'commons-csv', version: '1.7'
     runtime group: 'mysql', name: 'mysql-connector-java', version: '6.0.6'
     testCompile group: 'org.springframework.security', name: 'spring-security-test', version: "${springSecurityVersion}"
+    compile group: 'org.aspectj', name: 'aspectjweaver', version: '1.9.4'
 }
