@@ -216,15 +216,38 @@ public class ApplicationConstants {
      */
     public static final String HASHMAP_ERROR_KEY = "error";
 
+    /**
+     * The constant REDIRECTED.
+     */
     public static final String REDIRECTED = "redirected";
 
+    /**
+     * The constant QUESTION_MARK.
+     */
     public static final String QUESTION_MARK = "?";
 
+    /**
+     * The constant EQUAL_TO.
+     */
     public static final String EQUAL_TO = "=";
 
+    /**
+     * The constant HYPHEN.
+     */
     public static final String HYPHEN = "-";
 
+    /**
+     * The constant JOB_KEY.
+     */
     public static final String JOB_KEY = "jobKey";
 
+    /**
+     * The constant SEARCH_TEXT.
+     */
     public static final String SEARCH_TEXT = "searchText";
+
+    /**
+     * The constant MDC_TOKEN.
+     */
+    public static final String MDC_TOKEN = "mdcToken";
 }

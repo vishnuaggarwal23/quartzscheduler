@@ -50,9 +50,9 @@ public class AopConfiguration {
     /**
      * Filters.
      */
-    @Pointcut("execution(* com.vishnu.aggarwal.*.filters..*.*(..))")
-    public void filters() {
-    }
+//    @Pointcut("execution(* com.vishnu.aggarwal.*.filters..*.*(..))")
+//    public void filters() {
+//    }
 
     /**
      * Util.
@@ -78,7 +78,7 @@ public class AopConfiguration {
     /**
      * Monitor.
      */
-    @Pointcut("service() || controller() || filters() || util() || jobs() || bootstrap()")
+    @Pointcut("service() || controller() || util() || jobs() || bootstrap()")
     public void monitor() {
     }
 
