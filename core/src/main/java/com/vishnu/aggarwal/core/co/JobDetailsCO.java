@@ -28,5 +28,4 @@ public class JobDetailsCO {
     private Boolean recover = FALSE;
     private Boolean concurrentExecutionDisallowed = FALSE;
     private Boolean persistJobDataAfterExecution = FALSE;
-    private Date scheduledDate;
 }

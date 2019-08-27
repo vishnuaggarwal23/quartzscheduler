@@ -87,7 +87,7 @@ spring:
       idle-timeout: 10000
   devtools:
     livereload:
-      enabled: true
+      enabled: false
     restart:
       enabled: true
       log-condition-evaluation-delta: true
@@ -106,7 +106,7 @@ spring:
 #    type: redis
 #    redis:
 #      cache-null-values: false
-#    cache-names: isUniqueTriggerKey,isUniqueJobKey,parseTokenToGetUser,isUsernameUnique,findAuthorityByName,fetchJobTriggerResponseDTOs,findAllExpiredTokens,findTokenByToken,findUserAuthorityByUserAndAuthority,findUserById,findUserByUsername,findAllUserTokens,findUserTokenByToken,findUserTokenByUserAndStatus
+#    cache-names: triggerKeyExists,jobKeyExists,parseTokenToGetUser,isUsernameUnique,findAuthorityByName,fetchJobTriggerResponseDTOs,findAllExpiredTokens,findTokenByToken,findUserAuthorityByUserAndAuthority,findUserById,findUserByUsername,findAllUserTokens,findUserTokenByToken,findUserTokenByUserAndStatus
 logging:
   level:
     root: info

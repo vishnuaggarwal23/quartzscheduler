@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * The type Quartz details co.
@@ -16,5 +16,5 @@ import java.util.List;
 @NoArgsConstructor
 public class QuartzDetailsCO {
     private JobDetailsCO jobDetails;
-    private List<TriggerDetailsCO> triggerDetails;
+    private Collection<TriggerDetailsCO> triggerDetails;
 }

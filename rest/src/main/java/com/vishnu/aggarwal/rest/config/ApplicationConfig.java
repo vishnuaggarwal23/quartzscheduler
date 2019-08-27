@@ -28,18 +28,13 @@ import java.util.List;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.REST_EXCLUDE_REQUEST_INTERCEPTOR_PATTERN;
+import static com.vishnu.aggarwal.core.constants.ApplicationConstants.UTC;
 import static java.time.ZoneId.of;
 import static java.util.TimeZone.getTimeZone;
 
-/**
- * The type Web config.
- */
 @Configuration
 @CommonsLog
 public class ApplicationConfig extends WebConfig {
-    /**
-     * The Request interceptor.
-     */
     private final RequestInterceptor requestInterceptor;
     private final ObjectMapper objectMapper;
     private final BaseMessageResolver baseMessageResolver;
@@ -47,14 +42,6 @@ public class ApplicationConfig extends WebConfig {
     private final UserService userService;
 
 
-    /**
-     * Instantiates a new Application config.
-     *  @param requestInterceptor  the request interceptor
-     * @param objectMapper        the object mapper
-     * @param baseMessageResolver the base message resolver
-     * @param gson                the gson
-     * @param userService
-     */
     @Autowired
     public ApplicationConfig(
             RequestInterceptor requestInterceptor,
@@ -74,55 +61,30 @@ public class ApplicationConfig extends WebConfig {
         registry.addInterceptor(requestInterceptor).excludePathPatterns(REST_EXCLUDE_REQUEST_INTERCEPTOR_PATTERN);
     }
 
-    /**
-     * B crypt password encoder b crypt password encoder.
-     *
-     * @return the b crypt password encoder
-     */
     @Bean
     @Primary
     BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder(5);
     }
 
-    /**
-     * Account status user details check user details checker.
-     *
-     * @return the user details checker
-     */
     @Bean
     @Primary
     UserDetailsChecker accountStatusUserDetailsCheck() {
         return new AccountStatusUserDetailsChecker();
     }
 
-    /**
-     * Logout handler logout handler.
-     *
-     * @return the logout handler
-     */
     @Bean
     @Primary
     LogoutHandler logoutHandler() {
         return new LogoutHandler();
     }
 
-    /**
-     * Logout success handler logout success handler.
-     *
-     * @return the logout success handler
-     */
     @Bean
     @Primary
     LogoutSuccessHandler logoutSuccessHandler() {
         return new LogoutSuccessHandler();
     }
 
-    /**
-     * Access denied handler access denied handler.
-     *
-     * @return the access denied handler
-     */
     @Bean
     @Primary
     AccessDeniedHandler accessDeniedHandler() {
@@ -137,7 +99,7 @@ public class ApplicationConfig extends WebConfig {
                 .orElse(new MappingJackson2HttpMessageConverter());
 
         ObjectMapper objectMapper = mappingJackson2HttpMessageConverter.getObjectMapper();
-        objectMapper.setTimeZone(getTimeZone(of("UTC")));
+        objectMapper.setTimeZone(getTimeZone(of(UTC)));
         objectMapper.setSerializationInclusion(NON_NULL);
         objectMapper.setSerializationInclusion(NON_EMPTY);
         converters.add(mappingJackson2HttpMessageConverter);

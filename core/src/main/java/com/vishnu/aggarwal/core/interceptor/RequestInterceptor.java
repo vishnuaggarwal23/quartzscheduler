@@ -1,5 +1,6 @@
 package com.vishnu.aggarwal.core.interceptor;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +73,7 @@ public abstract class RequestInterceptor implements HandlerInterceptor {
         return header;
     }
 
-    private String convertMapToJsonString(Map data) throws Exception {
+    private String convertMapToJsonString(Map data) throws JsonProcessingException {
         return objectMapper.writeValueAsString(data);
     }
 

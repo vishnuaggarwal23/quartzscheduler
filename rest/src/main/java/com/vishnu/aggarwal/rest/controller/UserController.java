@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.HASHMAP_USER_KEY;
+import static com.vishnu.aggarwal.core.constants.RoleType.ROLE_USER;
 import static com.vishnu.aggarwal.core.constants.UrlMapping.Rest.User.BASE_URI;
 import static com.vishnu.aggarwal.core.constants.UrlMapping.Rest.User.CURRENT_LOGGED_IN_USER;
 import static com.vishnu.aggarwal.core.util.TypeTokenUtils.getHashMapOfStringAndUserDTO;
@@ -32,7 +33,7 @@ Created by vishnu on 30/3/18 10:46 AM
 @RestController
 @CommonsLog
 @RequestMapping(value = BASE_URI, produces = APPLICATION_JSON_UTF8_VALUE)
-@Secured("ROLE_USER")
+@Secured(ROLE_USER)
 public class UserController extends BaseController {
 
     /**

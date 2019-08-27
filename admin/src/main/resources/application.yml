@@ -10,10 +10,11 @@ spring:
   devtools:
     livereload:
       enabled: true
-      port: 35730
     restart:
       enabled: true
       log-condition-evaluation-delta: true
+      additional-paths: classpath:/templates/,classpath:/static/,classpath:/assets/
+      additional-exclude: "**/*.js,**/*.css,**/*.html"
   output:
     ansi:
       enabled: detect
@@ -24,11 +25,22 @@ logging:
     root: info
     org.quartz: info
     org.springframework.web: info
+    org.springframework.security: debug
+    org.hibernate.tool.hbm2ddl: info
+    org.hibernate.sql: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
+    org.hibernate.type: debug
+    org.hibernate.stat: debug
     com.vishnu.aggarwal: info
+    org.springframework.cache: trace
+    org.springframework.aop.interceptor.PerformanceMonitorInterceptor: trace
+    org.springframework.aop.interceptor.DebugInterceptor: trace
+    org.springframework.aop.interceptor.SimpleTraceInterceptor: trace
+    com.vishnu.aggarwal.rest.interceptor.MethodLogInterceptor: trace
   file: "${ADMIN_MODULE_LOGGING_FILE_PATH:/home/vishnu/Desktop/quartzscheduler/logs/admin/admin.log}"
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss} -- [%X{mdcToken}] -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} -- [%X{mdcToken}] -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
     dateformat: "yyyy-MMM-dd HH:mm:ss"
     level: "%5p"
 rest:

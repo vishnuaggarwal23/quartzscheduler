@@ -10,16 +10,18 @@ public enum ScheduleType {
     /**
      * Simple schedule type.
      */
-    SIMPLE("SIMPLE"),
+    SIMPLE(com.vishnu.aggarwal.core.constants.ScheduleType.SIMPLE, com.vishnu.aggarwal.core.constants.ScheduleType.simple),
     /**
      * Cron schedule type.
      */
-    CRON("CRON");
+    CRON(com.vishnu.aggarwal.core.constants.ScheduleType.CRON, com.vishnu.aggarwal.core.constants.ScheduleType.cron);
 
     private String key;
+    private String urlKey;
 
-    ScheduleType(String key) {
+    ScheduleType(String key, String urlKey) {
         this.key = key;
+        this.urlKey = urlKey;
     }
 
     public static ScheduleType getScheduleType(String nameOrKey) {

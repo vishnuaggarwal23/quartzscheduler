@@ -1,12 +1,8 @@
 package com.vishnu.aggarwal.admin.controller.api;
 
 
-/*
-Created by vishnu on 13/3/18 10:56 AM
-*/
-
-
 import com.vishnu.aggarwal.admin.service.QuartzService;
+import com.vishnu.aggarwal.core.constants.UrlMapping;
 import com.vishnu.aggarwal.core.constants.UrlMapping.Admin.Api.Quartz;
 import com.vishnu.aggarwal.core.controller.BaseController;
 import com.vishnu.aggarwal.core.dto.KeyGroupDescriptionDTO;
@@ -16,31 +12,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
-import static com.vishnu.aggarwal.core.constants.ApplicationConstants.SEARCH_TEXT;
-import static com.vishnu.aggarwal.core.constants.ApplicationConstants.X_AUTH_TOKEN;
-import static com.vishnu.aggarwal.core.constants.UrlMapping.Admin.Api.BASE_URI;
+import static com.vishnu.aggarwal.core.constants.ApplicationConstants.*;
 import static com.vishnu.aggarwal.core.constants.UrlMapping.Admin.Api.Quartz.*;
 import static org.springframework.http.HttpStatus.ACCEPTED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.*;
-import static org.springframework.web.util.WebUtils.getCookie;
-
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
  * The type Quartz controller.
  */
 @RestController(value = "apiQuartzController")
-@RequestMapping(value = BASE_URI + Quartz.BASE_URI, produces = {APPLICATION_JSON_UTF8_VALUE})
+@RequestMapping(value = UrlMapping.Admin.Api.BASE_URI + Quartz.BASE_URI, produces = {APPLICATION_JSON_UTF8_VALUE, APPLICATION_JSON_VALUE}, consumes = {APPLICATION_JSON_UTF8_VALUE, APPLICATION_JSON_VALUE})
 @CommonsLog
 public class QuartzController extends BaseController {
-
-
-    /**
-     * The Quartz service.
-     */
 
     private final QuartzService quartzService;
 
@@ -54,271 +42,303 @@ public class QuartzController extends BaseController {
         this.quartzService = quartzService;
     }
 
-
     /**
-     * Create new job response entity.
+     * Create job response entity.
      *
-     * @param quartzDTO           the quartz dto
-     * @param httpServletRequest  the http servlet request
-     * @param httpServletResponse the http servlet response
+     * @param quartzDTO  the quartz dto
+     * @param xAuthToken the x auth token
      * @return the response entity
      */
-    @RequestMapping(value = CREATE_API_JOB, method = POST)
+    @PostMapping(CREATE_UPDATE_JOB)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
-    public ResponseEntity<String> createUnscheduledApiJob(@RequestBody final QuartzDTO quartzDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        return quartzService.createUnscheduledApiJob(quartzDTO, getCookie(httpServletRequest, X_AUTH_TOKEN));
+    public ResponseEntity<String> createJob(@RequestBody @NotNull @NotEmpty @NotBlank final QuartzDTO quartzDTO, @CookieValue(X_AUTH_TOKEN) final String xAuthToken) {
+        return quartzService.createJob(quartzDTO, xAuthToken);
     }
 
     /**
-     * Create scheduled api simple triggered job response entity.
+     * Update job response entity.
      *
-     * @param quartzDTO           the quartz dto
-     * @param httpServletRequest  the http servlet request
-     * @param httpServletResponse the http servlet response
+     * @param quartzDTO  the quartz dto
+     * @param xAuthToken the x auth token
      * @return the response entity
      */
-    @RequestMapping(value = CREATE_API_JOB_SCHEDULED_SIMPLE, method = POST)
+    @PutMapping(CREATE_UPDATE_JOB)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
-    public ResponseEntity<String> createScheduledApiSimpleTriggeredJob(@RequestBody final QuartzDTO quartzDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        return quartzService.createScheduledApiSimpleTriggeredJob(quartzDTO, getCookie(httpServletRequest, X_AUTH_TOKEN));
+    public ResponseEntity<String> updateJob(@RequestBody @NotNull @NotEmpty @NotBlank final QuartzDTO quartzDTO, @CookieValue(X_AUTH_TOKEN) final String xAuthToken) {
+        return quartzService.updateJob(quartzDTO, xAuthToken);
     }
 
     /**
-     * Create scheduled api cron triggered job response entity.
+     * Delete job response entity.
      *
-     * @param quartzDTO           the quartz dto
-     * @param httpServletRequest  the http servlet request
-     * @param httpServletResponse the http servlet response
+     * @param keyGroupDescriptionDTO the key group description dto
+     * @param xAuthToken             the x auth token
      * @return the response entity
      */
-    @RequestMapping(value = CREATE_API_JOB_SCHEDULED_CRON, method = POST)
+    @DeleteMapping(DELETE_JOB)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
-    public ResponseEntity<String> createScheduledApiCronTriggeredJob(@RequestBody final QuartzDTO quartzDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        return quartzService.createScheduledApiCronTriggeredJob(quartzDTO, getCookie(httpServletRequest, X_AUTH_TOKEN));
+    public ResponseEntity<String> deleteJob(@RequestBody @NotNull @NotBlank @NotEmpty final KeyGroupDescriptionDTO keyGroupDescriptionDTO, @CookieValue(X_AUTH_TOKEN) final String xAuthToken) {
+        return quartzService.deleteJob(keyGroupDescriptionDTO, xAuthToken);
     }
-
-
-    /**
-     * Update existing job response entity.
-     *
-     * @param quartzDTO           the quartz dto
-     * @param httpServletRequest  the http servlet request
-     * @param httpServletResponse the http servlet response
-     * @return the response entity
-     */
-    @RequestMapping(value = UPDATE_API_JOB, method = PUT)
-    @ResponseBody
-    @ResponseStatus(ACCEPTED)
-    public ResponseEntity<String> updateExistingJob(@RequestBody final QuartzDTO quartzDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        return quartzService.updateExistingJob(quartzDTO, getCookie(httpServletRequest, X_AUTH_TOKEN));
-    }
-
-    /**
-     * Create new trigger response entity.
-     *
-     * @param quartzDTO           the quartz dto
-     * @param httpServletRequest  the http servlet request
-     * @param httpServletResponse the http servlet response
-     * @return the response entity
-     */
-    @RequestMapping(value = CREATE_SIMPLE_TRIGGER, method = POST)
-    @ResponseBody
-    @ResponseStatus(ACCEPTED)
-    public ResponseEntity<String> createNewSimpleTriggerForJob(@RequestBody final QuartzDTO quartzDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        return quartzService.createNewSimpleTriggerForJob(quartzDTO, getCookie(httpServletRequest, X_AUTH_TOKEN));
-    }
-
-    /**
-     * Create new cron trigger for job response entity.
-     *
-     * @param quartzDTO           the quartz dto
-     * @param httpServletRequest  the http servlet request
-     * @param httpServletResponse the http servlet response
-     * @return the response entity
-     */
-    @RequestMapping(value = CREATE_CRON_TRIGGER, method = POST)
-    @ResponseBody
-    @ResponseStatus(ACCEPTED)
-    public ResponseEntity<String> createNewCronTriggerForJob(@RequestBody final QuartzDTO quartzDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        return quartzService.createNewCronTriggerForJob(quartzDTO, getCookie(httpServletRequest, X_AUTH_TOKEN));
-    }
-
-    /**
-     * Update existing trigger response entity.
-     *
-     * @param quartzDTO           the quartz dto
-     * @param httpServletRequest  the http servlet request
-     * @param httpServletResponse the http servlet response
-     * @return the response entity
-     */
-    @RequestMapping(value = UPDATE_SIMPLE_TRIGGER, method = PUT)
-    @ResponseBody
-    @ResponseStatus(ACCEPTED)
-    public ResponseEntity<String> updateExistingSimpleTrigger(@RequestBody final QuartzDTO quartzDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        return quartzService.updateExistingSimpleTrigger(quartzDTO, getCookie(httpServletRequest, X_AUTH_TOKEN));
-    }
-
-    /**
-     * Update existing cron trigger response entity.
-     *
-     * @param quartzDTO           the quartz dto
-     * @param httpServletRequest  the http servlet request
-     * @param httpServletResponse the http servlet response
-     * @return the response entity
-     */
-    @RequestMapping(value = UPDATE_CRON_TRIGGER, method = PUT)
-    @ResponseBody
-    @ResponseStatus(ACCEPTED)
-    public ResponseEntity<String> updateExistingCronTrigger(@RequestBody final QuartzDTO quartzDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        return quartzService.updateExistingCronTrigger(quartzDTO, getCookie(httpServletRequest, X_AUTH_TOKEN));
-    }
-
-
-    /**
-     * Fetch jobs by group name response entity.
-     *
-     * @param httpServletRequest     the http servlet request
-     * @return the response entity
-     */
-    @RequestMapping(value = FETCH_JOBS_OF_CURRENT_USER_GROUP, method = GET)
-    @ResponseBody
-    @ResponseStatus(ACCEPTED)
-    public ResponseEntity<String> fetchJobsByJobGroupName(HttpServletRequest httpServletRequest) {
-        return quartzService.fetchJobsByJobGroupName(getCookie(httpServletRequest, X_AUTH_TOKEN));
-    }
-
-
-    /**
-     * Fetch triggers by job key name and group name response entity.
-     *
-     * @param httpServletRequest     the http servlet request
-     * @param httpServletResponse    the http servlet response
-     * @return the response entity
-     */
-    @RequestMapping(value = FETCH_TRIGGERS_BY_JOB_KEY_AND_CURRENT_USER_GROUP, method = GET)
-    @ResponseBody
-    @ResponseStatus(ACCEPTED)
-    public ResponseEntity<String> fetchTriggersByJobKeyNameAndJobGroupName(@RequestParam("jobKey") final String jobKeyName, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        return quartzService.fetchTriggersByJobKeyNameAndJobGroupName(jobKeyName, getCookie(httpServletRequest, X_AUTH_TOKEN));
-    }
-
-
-    /**
-     * Fetch quartz details for group name response entity.
-     *
-     * @param httpServletRequest     the http servlet request
-     * @return the response entity
-     */
-    @RequestMapping(value = FETCH_QUARTZ_DETAILS_BY_CURRENT_USER_GROUP, method = GET)
-    @ResponseBody
-    @ResponseStatus(ACCEPTED)
-    public ResponseEntity<String> fetchQuartzDetailsForJobGroupName(HttpServletRequest httpServletRequest) {
-        return quartzService.fetchQuartzDetailsForJobGroupName(getCookie(httpServletRequest, X_AUTH_TOKEN));
-    }
-
-
-    /**
-     * Resume jobs response entity.
-     *
-     * @param keyGroupDescriptionDTO the job key group name dto
-     * @param httpServletRequest     the http servlet request
-     * @param httpServletResponse    the http servlet response
-     * @return the response entity
-     */
-    @RequestMapping(value = RESUME_JOBS, method = PUT)
-    @ResponseBody
-    @ResponseStatus(ACCEPTED)
-    public ResponseEntity<String> resumeJobs(@RequestBody KeyGroupDescriptionDTO keyGroupDescriptionDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        return quartzService.resumeJobs(keyGroupDescriptionDTO, getCookie(httpServletRequest, X_AUTH_TOKEN));
-    }
-
-
-    /**
-     * Pause jobs response entity.
-     *
-     * @param keyGroupDescriptionDTO the job key group name dto
-     * @param httpServletRequest     the http servlet request
-     * @param httpServletResponse    the http servlet response
-     * @return the response entity
-     */
-    @RequestMapping(value = PAUSE_JOBS, method = PUT)
-    @ResponseBody
-    @ResponseStatus(ACCEPTED)
-    public ResponseEntity<String> pauseJobs(@RequestBody KeyGroupDescriptionDTO keyGroupDescriptionDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        return quartzService.pauseJobs(keyGroupDescriptionDTO, getCookie(httpServletRequest, X_AUTH_TOKEN));
-    }
-
-
-    /**
-     * Resume triggers response entity.
-     *
-     * @param keyGroupDescriptionDTO the trigger key group name dto
-     * @param httpServletRequest     the http servlet request
-     * @param httpServletResponse    the http servlet response
-     * @return the response entity
-     */
-    @RequestMapping(value = RESUME_TRIGGERS, method = PUT)
-    @ResponseBody
-    @ResponseStatus(ACCEPTED)
-    public ResponseEntity<String> resumeTriggers(@RequestBody KeyGroupDescriptionDTO keyGroupDescriptionDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        return quartzService.resumeTriggers(keyGroupDescriptionDTO, getCookie(httpServletRequest, X_AUTH_TOKEN));
-    }
-
-
-    /**
-     * Pause triggers response entity.
-     *
-     * @param keyGroupDescriptionDTO the trigger key group name dto
-     * @param httpServletRequest     the http servlet request
-     * @param httpServletResponse    the http servlet response
-     * @return the response entity
-     */
-    @RequestMapping(value = PAUSE_TRIGGERS, method = PUT)
-    @ResponseBody
-    @ResponseStatus(ACCEPTED)
-    public ResponseEntity<String> pauseTriggers(@RequestBody KeyGroupDescriptionDTO keyGroupDescriptionDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        return quartzService.pauseTriggers(keyGroupDescriptionDTO, getCookie(httpServletRequest, X_AUTH_TOKEN));
-    }
-
 
     /**
      * Delete jobs response entity.
      *
-     * @param keyGroupDescriptionDTO the job key group name dto
-     * @param httpServletRequest     the http servlet request
-     * @param httpServletResponse    the http servlet response
+     * @param xAuthToken the x auth token
      * @return the response entity
      */
-    @RequestMapping(value = DELETE_JOBS, method = DELETE)
+    @DeleteMapping(DELETE_JOBS)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
-    public ResponseEntity<String> deleteJobs(@RequestBody KeyGroupDescriptionDTO keyGroupDescriptionDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        return quartzService.deleteJobs(keyGroupDescriptionDTO, getCookie(httpServletRequest, X_AUTH_TOKEN));
+    public ResponseEntity<String> deleteJobs(@CookieValue(X_AUTH_TOKEN) final String xAuthToken) {
+        return quartzService.deleteJobs(xAuthToken);
     }
 
+    /**
+     * Resume job response entity.
+     *
+     * @param keyGroupDescriptionDTO the key group description dto
+     * @param xAuthToken             the x auth token
+     * @return the response entity
+     */
+    @PutMapping(RESUME_JOB)
+    @ResponseBody
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> resumeJob(@RequestBody @NotNull @NotBlank @NotEmpty final KeyGroupDescriptionDTO keyGroupDescriptionDTO, @CookieValue(X_AUTH_TOKEN) final String xAuthToken) {
+        return quartzService.resumeJob(keyGroupDescriptionDTO, xAuthToken);
+    }
+
+    /**
+     * Resume jobs response entity.
+     *
+     * @param xAuthToken the x auth token
+     * @return the response entity
+     */
+    @PutMapping(RESUME_JOBS)
+    @ResponseBody
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> resumeJobs(@CookieValue(X_AUTH_TOKEN) final String xAuthToken) {
+        return quartzService.resumeJobs(xAuthToken);
+    }
+
+    /**
+     * Pause job response entity.
+     *
+     * @param keyGroupDescriptionDTO the key group description dto
+     * @param xAuthToken             the x auth token
+     * @return the response entity
+     */
+    @PutMapping(PAUSE_JOB)
+    @ResponseBody
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> pauseJob(@RequestBody @NotNull @NotBlank @NotEmpty final KeyGroupDescriptionDTO keyGroupDescriptionDTO, @CookieValue(X_AUTH_TOKEN) final String xAuthToken) {
+        return quartzService.pauseJob(keyGroupDescriptionDTO, xAuthToken);
+    }
+
+    /**
+     * Pause jobs response entity.
+     *
+     * @param xAuthToken the x auth token
+     * @return the response entity
+     */
+    @PutMapping(PAUSE_JOBS)
+    @ResponseBody
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> pauseJobs(@CookieValue(X_AUTH_TOKEN) final String xAuthToken) {
+        return quartzService.pauseJobs(xAuthToken);
+    }
+
+    /**
+     * Show job response entity.
+     *
+     * @param jobKey     the job key
+     * @param xAuthToken the x auth token
+     * @return the response entity
+     */
+    @GetMapping(SHOW_JOB)
+    @ResponseBody
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> showJob(@RequestParam(JOB_KEY) @NotNull @NotBlank @NotNull final String jobKey, @CookieValue(X_AUTH_TOKEN) final String xAuthToken) {
+        return quartzService.showJob(jobKey, xAuthToken);
+    }
+
+    /**
+     * List jobs response entity.
+     *
+     * @param xAuthToken the x auth token
+     * @return the response entity
+     */
+    @GetMapping(LIST_JOBS)
+    @ResponseBody
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> listJobs(@CookieValue(X_AUTH_TOKEN) final String xAuthToken) {
+        return quartzService.listJobs(xAuthToken);
+    }
+
+    /**
+     * Create trigger response entity.
+     *
+     * @param quartzDTO  the quartz dto
+     * @param xAuthToken the x auth token
+     * @return the response entity
+     */
+    @PostMapping(CREATE_UPDATE_TRIGGER)
+    @ResponseBody
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> createTrigger(@RequestBody @NotNull @NotEmpty @NotBlank final QuartzDTO quartzDTO, @CookieValue(X_AUTH_TOKEN) final String xAuthToken) {
+        return quartzService.createTrigger(quartzDTO, xAuthToken);
+    }
+
+    /**
+     * Update trigger response entity.
+     *
+     * @param quartzDTO  the quartz dto
+     * @param xAuthToken the x auth token
+     * @return the response entity
+     */
+    @PutMapping(CREATE_UPDATE_TRIGGER)
+    @ResponseBody
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> updateTrigger(@RequestBody @NotNull @NotEmpty @NotBlank final QuartzDTO quartzDTO, @CookieValue(X_AUTH_TOKEN) final String xAuthToken) {
+        return quartzService.updateTrigger(quartzDTO, xAuthToken);
+    }
+
+    /**
+     * Delete trigger response entity.
+     *
+     * @param keyGroupDescriptionDTO the key group description dto
+     * @param xAuthToken             the x auth token
+     * @return the response entity
+     */
+    @DeleteMapping(DELETE_TRIGGER)
+    @ResponseBody
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> deleteTrigger(@RequestBody @NotNull @NotBlank @NotEmpty final KeyGroupDescriptionDTO keyGroupDescriptionDTO, @CookieValue(X_AUTH_TOKEN) final String xAuthToken) {
+        return quartzService.deleteTrigger(keyGroupDescriptionDTO, xAuthToken);
+    }
 
     /**
      * Delete triggers response entity.
      *
-     * @param keyGroupDescriptionDTO the trigger key group name dto
-     * @param httpServletRequest     the http servlet request
+     * @param xAuthToken the x auth token
      * @return the response entity
      */
-    @RequestMapping(value = DELETE_TRIGGERS, method = DELETE)
+    @DeleteMapping(DELETE_TRIGGERS)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
-    public ResponseEntity<String> deleteTriggers(@RequestBody KeyGroupDescriptionDTO keyGroupDescriptionDTO, HttpServletRequest httpServletRequest) {
-        return quartzService.deleteTriggers(keyGroupDescriptionDTO, getCookie(httpServletRequest, X_AUTH_TOKEN));
+    public ResponseEntity<String> deleteTriggers(@CookieValue(X_AUTH_TOKEN) final String xAuthToken) {
+        return quartzService.deleteTriggers(xAuthToken);
     }
 
-    @RequestMapping(value = JOB_KEYS_AUTOCOMPLETE, method = GET)
+    /**
+     * Resume trigger response entity.
+     *
+     * @param keyGroupDescriptionDTO the key group description dto
+     * @param xAuthToken             the x auth token
+     * @return the response entity
+     */
+    @PutMapping(RESUME_TRIGGER)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
-    public ResponseEntity<String> jobKeysAutocomplete(@RequestParam(SEARCH_TEXT) final String searchText, HttpServletRequest httpServletRequest) {
-        return quartzService.jobKeysAutocomplete(searchText, getCookie(httpServletRequest, X_AUTH_TOKEN));
+    public ResponseEntity<String> resumeTrigger(@RequestBody @NotNull @NotBlank @NotEmpty final KeyGroupDescriptionDTO keyGroupDescriptionDTO, @CookieValue(X_AUTH_TOKEN) final String xAuthToken) {
+        return quartzService.resumeTrigger(keyGroupDescriptionDTO, xAuthToken);
     }
 
+    /**
+     * Resume triggers response entity.
+     *
+     * @param xAuthToken the x auth token
+     * @return the response entity
+     */
+    @PutMapping(RESUME_TRIGGERS)
+    @ResponseBody
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> resumeTriggers(@CookieValue(X_AUTH_TOKEN) final String xAuthToken) {
+        return quartzService.resumeTriggers(xAuthToken);
+    }
+
+    /**
+     * Pause trigger response entity.
+     *
+     * @param keyGroupDescriptionDTO the key group description dto
+     * @param xAuthToken             the x auth token
+     * @return the response entity
+     */
+    @PutMapping(PAUSE_TRIGGER)
+    @ResponseBody
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> pauseTrigger(@RequestBody @NotNull @NotBlank @NotEmpty final KeyGroupDescriptionDTO keyGroupDescriptionDTO, @CookieValue(X_AUTH_TOKEN) final String xAuthToken) {
+        return quartzService.pauseTrigger(keyGroupDescriptionDTO, xAuthToken);
+    }
+
+    /**
+     * Pause triggers response entity.
+     *
+     * @param xAuthToken the x auth token
+     * @return the response entity
+     */
+    @PutMapping(PAUSE_TRIGGERS)
+    @ResponseBody
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> pauseTriggers(@CookieValue(X_AUTH_TOKEN) final String xAuthToken) {
+        return quartzService.pauseTriggers(xAuthToken);
+    }
+
+    /**
+     * Show trigger response entity.
+     *
+     * @param triggerKey the trigger key
+     * @param xAuthToken the x auth token
+     * @return the response entity
+     */
+    @GetMapping(SHOW_TRIGGER)
+    @ResponseBody
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> showTrigger(@RequestParam(TRIGGER_KEY) @NotNull @NotBlank @NotNull final String triggerKey, @CookieValue(X_AUTH_TOKEN) final String xAuthToken) {
+        return quartzService.showTrigger(triggerKey, xAuthToken);
+    }
+
+    /**
+     * List triggers response entity.
+     *
+     * @param jobKey     the job key
+     * @param xAuthToken the x auth token
+     * @return the response entity
+     */
+    @GetMapping(LIST_TRIGGERS)
+    @ResponseBody
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> listTriggers(@RequestParam(JOB_KEY) @NotNull @NotBlank @NotNull final String jobKey, @CookieValue(X_AUTH_TOKEN) final String xAuthToken) {
+        return quartzService.listTriggers(jobKey, xAuthToken);
+    }
+
+    /**
+     * List quartz details response entity.
+     *
+     * @param xAuthToken the x auth token
+     * @return the response entity
+     */
+    @GetMapping(LIST_QUARTZ_DETAILS)
+    @ResponseBody
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> listQuartzDetails(@CookieValue(X_AUTH_TOKEN) final String xAuthToken) {
+        return quartzService.listQuartzDetails(xAuthToken);
+    }
+
+    /**
+     * Job keys autocomplete response entity.
+     *
+     * @param searchText the search text
+     * @param xAuthToken the x auth token
+     * @return the response entity
+     */
+    @GetMapping(JOB_KEYS_AUTOCOMPLETE)
+    @ResponseBody
+    @ResponseStatus(ACCEPTED)
+    public ResponseEntity<String> jobKeysAutocomplete(@RequestParam(SEARCH_TEXT) @NotNull @NotBlank @NotNull final String searchText, @CookieValue(X_AUTH_TOKEN) final String xAuthToken) {
+        return quartzService.jobKeysAutocomplete(searchText, xAuthToken);
+    }
 }

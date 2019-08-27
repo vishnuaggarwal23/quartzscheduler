@@ -32,6 +32,7 @@ import static com.vishnu.aggarwal.core.util.TypeTokenUtils.getHashMapOfStringAnd
 import static com.vishnu.aggarwal.core.util.TypeTokenUtils.getHashMapOfStringAndUserAuthenticationDTO;
 import static com.vishnu.aggarwal.rest.util.DTOConversion.convertFromUser;
 import static java.lang.Boolean.FALSE;
+import static java.util.Arrays.stream;
 import static java.util.Objects.nonNull;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
@@ -92,10 +93,10 @@ public class AuthenticationFilter extends GenericFilterBean {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         try {
-            response.setCharacterEncoding("UTF-8");
+            response.setCharacterEncoding(UTF8);
             response.setContentType(APPLICATION_JSON_UTF8_VALUE);
 
-            if (Arrays.stream(ignoredRequestMatcher).filter(it -> it.matches(httpServletRequest)).toArray().length <= 0) {
+            if (stream(ignoredRequestMatcher).noneMatch(it -> it.matches(httpServletRequest))) {
                 if (loginRequestMatcher.matches(httpServletRequest)) {
                     chain.doFilter(httpServletRequest, response);
                 } else {
@@ -151,7 +152,7 @@ public class AuthenticationFilter extends GenericFilterBean {
                 null
         ));
         response.getWriter().write(gson.toJson(responseMap, getHashMapOfStringAndErrorResponseDTO()));
-        response.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding(UTF8);
         response.setContentType(APPLICATION_JSON_UTF8_VALUE);
         response.setStatus(SC_UNAUTHORIZED);
 //        response.sendError(SC_UNAUTHORIZED, baseMessageResolver.getMessage(e.getMessage(), e.getMessage()));

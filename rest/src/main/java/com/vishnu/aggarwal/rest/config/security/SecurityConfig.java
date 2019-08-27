@@ -27,6 +27,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import static com.vishnu.aggarwal.core.constants.ApplicationConstants.*;
 import static com.vishnu.aggarwal.core.constants.RoleType.ROLE_USER;
 import static java.lang.Boolean.TRUE;
 import static org.springframework.http.HttpMethod.OPTIONS;
@@ -104,28 +105,41 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .headers().xssProtection().xssProtectionEnabled(TRUE).and().cacheControl().and().contentTypeOptions().and().frameOptions().and().httpStrictTransportSecurity().disable()
                 .and()
                 .anonymous().disable()
-                .addFilter(new LoginFilter(new AntPathRequestMatcher("/**/user/login", POST.name()), tokenAuthenticationService, baseMessageResolver, authenticationManagerBean(), userService, gson))
-                .addFilterBefore(new AuthenticationFilter(tokenAuthenticationService, baseMessageResolver, userService, new AntPathRequestMatcher("/**/user/login"), new AntPathRequestMatcher("/**/user/authenticate"), gson, new AntPathRequestMatcher("/**/error"), new AntPathRequestMatcher("/**/actuator/**/"), new AntPathRequestMatcher("/**/system/monitor/**/")), LogoutFilter.class)
-                .addFilterAt(new LogoutFilter("/**/user/logout", logoutSuccessHandler, new AntPathRequestMatcher("/**/user/logout", POST.name()), tokenAuthenticationService, logoutHandler), org.springframework.security.web.authentication.logout.LogoutFilter.class)
+                .addFilter(new LoginFilter(new AntPathRequestMatcher(USER_LOGIN_REGEX, POST.name()), tokenAuthenticationService, baseMessageResolver, authenticationManagerBean(), userService, gson))
+                .addFilterBefore(new AuthenticationFilter(
+                        tokenAuthenticationService,
+                        baseMessageResolver,
+                        userService,
+                        new AntPathRequestMatcher(USER_LOGIN_REGEX), new AntPathRequestMatcher(USER_AUTHENTICATE_REGEX),
+                        gson,
+                        new AntPathRequestMatcher(ERROR_REGEX),
+                        new AntPathRequestMatcher(ACTUATOR_REGEX),
+                        new AntPathRequestMatcher(SYSTEM_MONITOR_REGEX)), LogoutFilter.class)
+                .addFilterAt(new LogoutFilter(
+                                USER_LOGOUT_REGEX,
+                                logoutSuccessHandler,
+                                new AntPathRequestMatcher(USER_LOGOUT_REGEX, POST.name()),
+                                tokenAuthenticationService,
+                                logoutHandler),
+                        org.springframework.security.web.authentication.logout.LogoutFilter.class)
                 .authorizeRequests()
                 .antMatchers(OPTIONS).permitAll()
-                .antMatchers(POST, "/**/user/login").permitAll()
-                .antMatchers("/**/quartz/**", "/**/validation/**").hasAuthority(ROLE_USER)
-                .antMatchers("/**/user/authenticate").permitAll()
-                .antMatchers(POST, "/**/user/logout").authenticated()
-                .antMatchers("/**/actuator/**/").permitAll()
-                .antMatchers("/**/error").denyAll()
-                .antMatchers("/**/system/monitor/**/").permitAll()
+                .antMatchers(POST, USER_LOGIN_REGEX).permitAll()
+                .antMatchers(QUARTZ_REGEX, VALIDATION_REGEX).hasAuthority(ROLE_USER)
+                .antMatchers(USER_AUTHENTICATE_REGEX).permitAll()
+                .antMatchers(POST, USER_LOGOUT_REGEX).authenticated()
+                .antMatchers(ACTUATOR_REGEX).permitAll()
+                .antMatchers(ERROR_REGEX).denyAll()
+                .antMatchers(SYSTEM_MONITOR_REGEX).permitAll()
                 .anyRequest().authenticated();
     }
 
     @Override
     public void configure(WebSecurity web) {
-        String[] urlPatterns = {"/**/js/**/", "/**/css/**/", "/**/img/**/", "/**/font/**/", "/**/fonts/**/", "/**/webjars/**/", "/**/webjar/**/", "/**/system/monitor/**/", "/**/actuator/**/"};
         web
                 .ignoring()
-                .antMatchers(urlPatterns)
-                .mvcMatchers(urlPatterns);
+                .antMatchers(SPRING_SECURITY_EXCLUDED_PATHS)
+                .mvcMatchers(SPRING_SECURITY_EXCLUDED_PATHS);
     }
 
     @Override

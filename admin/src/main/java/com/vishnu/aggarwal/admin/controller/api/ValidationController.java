@@ -55,11 +55,11 @@ public class ValidationController extends BaseController {
      * @param response the response
      * @return the response entity
      */
-    @RequestMapping(value = UNIQUE_JOB_KEY_PER_GROUP, method = GET)
+    @GetMapping(value = UNIQUE_JOB_KEY_PER_GROUP)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
-    public ResponseEntity<String> isJobKeyUnique(@RequestParam("keyName") final String keyName, HttpServletRequest request, HttpServletResponse response) {
-        return validationService.isJobKeyUnique(keyName, WebUtils.getCookie(request, X_AUTH_TOKEN));
+    public ResponseEntity<String> isJobKeyUnique(@RequestParam("keyName") final String keyName, @CookieValue(X_AUTH_TOKEN) String xAuthToken, HttpServletRequest request, HttpServletResponse response) {
+        return validationService.isJobKeyUnique(keyName, xAuthToken);
     }
 
     /**

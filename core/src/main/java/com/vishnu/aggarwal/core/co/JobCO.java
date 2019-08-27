@@ -1,6 +1,7 @@
 package com.vishnu.aggarwal.core.co;
 
 import com.vishnu.aggarwal.core.dto.KeyGroupDescriptionDTO;
+import com.vishnu.aggarwal.core.enums.JobExecutorClass;
 import com.vishnu.aggarwal.core.enums.JobType;
 import com.vishnu.aggarwal.core.validation.interfaces.*;
 import lombok.*;
@@ -18,23 +19,30 @@ import static java.lang.Boolean.FALSE;
 @NoArgsConstructor
 @ToString
 public class JobCO {
-    @NotNull(
-            message = "job details is required",
-            groups = {
-                    CreateNewUnscheduledJob.class,
-                    CreateNewScheduledSimpleTriggeredJob.class,
-                    CreateNewScheduledCronTriggeredJob.class,
-                    UpdateExistingJob.class,
-                    CreateNewSimpleTriggerForJob.class,
-                    CreateNewCronTriggerForJob.class,
-                    UpdateExistingSimpleTriggerForJob.class,
-                    UpdateExistingCronTriggerForJob.class
-            }
-    )
     private KeyGroupDescriptionDTO details;
-
-    private Boolean durability = FALSE;
-    private Boolean recover = FALSE;
+    private boolean durability = FALSE;
+    private boolean recover = FALSE;
+    private boolean replace = FALSE;
     private JobType type;
-    private Boolean scheduled = FALSE;
+    private boolean scheduled = FALSE;
+    private JobExecutorClass executorClass;
+
+    private APIJobDataCO apiJobData;
+    private ShellScriptJobDataCO shellScriptJobData;
+
+    public boolean getDurability() {
+        return durability;
+    }
+
+    public boolean getRecover() {
+        return recover;
+    }
+
+    public boolean getReplace() {
+        return replace;
+    }
+
+    public boolean getScheduled() {
+        return scheduled;
+    }
 }

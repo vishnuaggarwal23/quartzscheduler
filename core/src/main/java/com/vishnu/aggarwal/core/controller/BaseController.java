@@ -11,7 +11,11 @@ import com.vishnu.aggarwal.core.vo.RestResponseVO;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 import static java.text.MessageFormat.format;
@@ -19,50 +23,24 @@ import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.allNotNull;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.springframework.http.HttpStatus.ACCEPTED;
 
-/**
- * The type Base controller.
- */
 @CommonsLog
 public class BaseController {
 
-    /**
-     * The Base message resolver.
-     */
     @Autowired
     BaseMessageResolver baseMessageResolver;
 
     @Autowired
     Gson gson;
 
-    /**
-     * Set rest response vo.
-     *
-     * @param restResponseVO the rest response vo
-     * @param data           the data
-     * @param httpStatus     the http status
-     * @param message        the message
-     */
     @SuppressWarnings("unchecked")
     protected static void setRestResponseVO(RestResponseVO restResponseVO, Object data, HttpStatus httpStatus, String message) {
         restResponseVO.setData(data);
-        if (nonNull(httpStatus)) {
-            restResponseVO.setCode(httpStatus.value());
-        } else {
-            restResponseVO.setCode(null);
-        }
+        restResponseVO.setCode(nonNull(httpStatus) ? httpStatus.value() : null);
         restResponseVO.setMessage(message);
     }
 
-    /**
-     * Set data table vo.
-     *
-     * @param dataTableVO     the data table vo
-     * @param count           the count
-     * @param recordsTotal    the records total
-     * @param recordsFiltered the records filtered
-     * @param data            the data
-     */
     @SuppressWarnings("unchecked")
     protected static void setDataTableVO(DataTableVO dataTableVO, Integer count, Integer recordsTotal, Integer recordsFiltered, List data) {
         dataTableVO.setCount(count);
@@ -75,23 +53,10 @@ public class BaseController {
         return gson;
     }
 
-    /**
-     * Gets message.
-     *
-     * @param messageCode the message code
-     * @return the message
-     */
     public String getMessage(String messageCode) {
         return isNotBlank(messageCode) ? baseMessageResolver.getMessage(messageCode) : EMPTY;
     }
 
-    /**
-     * Gets message.
-     *
-     * @param messageCode the message code
-     * @param messageArgs the message args
-     * @return the message
-     */
     public String getMessage(String messageCode, Object... messageArgs) {
         if (isNotBlank(messageCode)) {
             if (allNotNull(messageArgs)) {
@@ -102,13 +67,6 @@ public class BaseController {
         return EMPTY;
     }
 
-    /**
-     * Format message string.
-     *
-     * @param messagePattern   the message pattern
-     * @param messageArguments the message arguments
-     * @return the string
-     */
     public String formatMessage(String messagePattern, Object... messageArguments) {
         if (isNotBlank(messagePattern)) {
             if (allNotNull(messageArguments)) {
@@ -117,5 +75,15 @@ public class BaseController {
             return format(messagePattern);
         }
         return EMPTY;
+    }
+
+    protected void checkBindingException(BindingResult bindingResult) throws BindException {
+        if (bindingResult.hasErrors()) {
+            throw new BindException(bindingResult);
+        }
+    }
+
+    protected ResponseEntity<String> createResponseEntity(Object response, Type typeSrc) {
+        return new ResponseEntity<String>(gson().toJson(response, typeSrc), ACCEPTED);
     }
 }

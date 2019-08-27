@@ -5,5 +5,10 @@ Created by vishnu on 19/8/18 4:02 PM
 */
 
 public class JobType {
-    public static final String API = com.vishnu.aggarwal.core.enums.JobType.API.getKey();
+    public static final String api = "api";
+    public static final String API = "API";
+    public static final String FRAGMENT_API = "JOB_TYPE_API";
+    public static final String shell_script = "shell_script";
+    public static final String SHELL_SCRIPT = "SHELL_SCRIPT";
+    public static final String FRAGMENT_SCRIPT = "JOB_TYPE_SHELL_SCRIPT";
 }

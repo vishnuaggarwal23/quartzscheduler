@@ -96,7 +96,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                 xAuthToken
         ));
         response.getWriter().write(gson.toJson(responseMap, getHashMapOfStringAndUserAuthenticationDTO()));
-        response.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding(UTF8);
         response.setContentType(APPLICATION_JSON_UTF8_VALUE);
         response.setStatus(SC_OK);
         response.addHeader(X_AUTH_TOKEN, xAuthToken);
@@ -112,7 +112,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         getContext().setAuthentication(null);
         clearContext();
         response.setStatus(SC_UNAUTHORIZED);
-        response.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding(UTF8);
         response.setContentType(APPLICATION_JSON_UTF8_VALUE);
         HashMap<String, ErrorResponseDTO> responseMap = new HashMap<String, ErrorResponseDTO>();
         responseMap.put(HASHMAP_ERROR_KEY, new ErrorResponseDTO(

@@ -33,4 +33,6 @@ public interface UserService extends UserDetailsService {
     User findById(final Long id);
 
     User findById(final String id);
+
+    Long getCurrentLoggedInUserId();
 }

@@ -4,376 +4,132 @@ package com.vishnu.aggarwal.core.constants;
 Created by vishnu on 30/3/18 9:35 AM
 */
 
-/**
- * The type Url config.
- */
+import static com.vishnu.aggarwal.core.constants.Action.*;
+import static com.vishnu.aggarwal.core.constants.ApplicationConstants.*;
+
 public class UrlMapping {
 
-    /**
-     * The constant ALL_URL_PREFIX.
-     */
-    public static final String ALL_URL_PREFIX = "/**";
-    /**
-     * The constant ALL_URL_SUFFIX.
-     */
-    public static final String ALL_URL_SUFFIX = "**/";
-
-    /**
-     * The type Admin.
-     */
     public static class Admin {
-        /**
-         * The type Web.
-         */
         public static class Web {
+            public static final String BASE_URI = BACKSLASH + WEB;
 
-            /**
-             * The constant BASE_URI.
-             */
-            public static final String BASE_URI = "/web";
-
-            /**
-             * The type Quartz.
-             */
             public static class Quartz {
-                /**
-                 * The constant BASE_URI.
-                 */
-                public static final String BASE_URI = "/quartz";
-                /**
-                 * The constant CREATE_JOB.
-                 */
-                public static final String CREATE_JOB = "/job/create";
-                /**
-                 * The constant CREATE_TRIGGER.
-                 */
-                public static final String CREATE_TRIGGER = "/trigger/create";
-
-                /**
-                 * The constant VIEW_JOB.
-                 */
-                public static final String VIEW_JOB = "/job/view";
-
-                /**
-                 * The constant LIST_JOBS.
-                 */
-                public static final String LIST_JOBS = "/job/list";
+                public static final String BASE_URI = BACKSLASH + QUARTZ;
+                public static final String CREATE_JOB = BACKSLASH + JOB + BACKSLASH + CREATE;
+                public static final String CREATE_JOB_FRAGMENT = BACKSLASH + FRAGMENT + BACKSLASH + JOB + BACKSLASH + CREATE;
+                public static final String CREATE_TRIGGER = BACKSLASH + TRIGGER + BACKSLASH + CREATE;
+                public static final String CREATE_TRIGGER_FRAGMENT = BACKSLASH + FRAGMENT + BACKSLASH + TRIGGER + BACKSLASH + CREATE;
+                public static final String VIEW_JOB = BACKSLASH + JOB + BACKSLASH + VIEW;
+                public static final String LIST_JOBS = BACKSLASH + JOB + BACKSLASH + LIST;
             }
 
-            /**
-             * The type User.
-             */
             public static class User {
-                /**
-                 * The constant BASE_URI.
-                 */
-                public static final String BASE_URI = "/user";
-                /**
-                 * The constant USER_DASHBOARD.
-                 */
-                public static final String USER_DASHBOARD = "/dashboard";
-                /**
-                 * The constant USER_LOGIN_1.
-                 */
-                public static final String USER_LOGIN_1 = "/login";
-                /**
-                 * The constant USER_LOGIN_2.
-                 */
-                public static final String USER_LOGIN_2 = "/";
-
-                /**
-                 * The constant FORGOT_PASSWORD.
-                 */
-                public static final String FORGOT_PASSWORD = "/forgotPassword";
-
-                /**
-                 * The constant LOGOUT.
-                 */
-                public static final String LOGOUT = "/logout";
+                public static final String BASE_URI = BACKSLASH + USER;
+                public static final String USER_DASHBOARD = BACKSLASH + DASHBOARD;
+                public static final String USER_LOGIN_1 = BACKSLASH + LOGIN;
+                public static final String USER_LOGIN_2 = BACKSLASH;
+                public static final String FORGOT_PASSWORD = BACKSLASH + ApplicationConstants.FORGOT_PASSWORD;
+                public static final String LOGOUT = BACKSLASH + ApplicationConstants.LOGOUT;
             }
         }
 
-        /**
-         * The type Api.
-         */
         public static class Api {
-            /**
-             * The type Quartz.
-             */
+            public static final String BASE_URI = BACKSLASH + API;
 
-            public static final String BASE_URI = "/api";
-
-            /**
-             * The type Quartz.
-             */
             public static class Quartz {
-                /**
-                 * The constant BASE_URI.
-                 */
                 public static final String BASE_URI = Rest.Quartz.BASE_URI;
-                /**
-                 * The constant CREATE_JOB.
-                 */
-                public static final String CREATE_API_JOB = Rest.Quartz.CREATE_API_JOB;
-                /**
-                 * The constant CREATE_JOB_SCHEDULED_SIMPLE.
-                 */
-                public static final String CREATE_API_JOB_SCHEDULED_SIMPLE = Rest.Quartz.CREATE_API_JOB_SCHEDULED_SIMPLE;
-                /**
-                 * The constant CREATE_JOB_SCHEDULED_CRON.
-                 */
-                public static final String CREATE_API_JOB_SCHEDULED_CRON = Rest.Quartz.CREATE_API_JOB_SCHEDULED_CRON;
-                /**
-                 * The constant UPDATE_JOB.
-                 */
-                public static final String UPDATE_API_JOB = Rest.Quartz.UPDATE_API_JOB;
-                /**
-                 * The constant CREATE_TRIGGER.
-                 */
-                public static final String CREATE_SIMPLE_TRIGGER = Rest.Quartz.CREATE_SIMPLE_TRIGGER;
-                /**
-                 * The constant CREATE_CRON_TRIGGER.
-                 */
-                public static final String CREATE_CRON_TRIGGER = Rest.Quartz.CREATE_CRON_TRIGGER;
-                /**
-                 * The constant UPDATE_TRIGGER.
-                 */
-                public static final String UPDATE_SIMPLE_TRIGGER = Rest.Quartz.UPDATE_SIMPLE_TRIGGER;
-                /**
-                 * The constant UPDATE_CRON_TRIGGER.
-                 */
-                public static final String UPDATE_CRON_TRIGGER = Rest.Quartz.UPDATE_CRON_TRIGGER;
-                /**
-                 * The constant FETCH_JOB_BY_GROUP_NAME.
-                 */
-                public static final String FETCH_JOBS_OF_CURRENT_USER_GROUP = Rest.Quartz.FETCH_JOBS_OF_CURRENT_USER_GROUP;
-                /**
-                 * The constant FETCH_TRIGGER_BY_JOB_KEY_GROUP_NAME.
-                 */
-                public static final String FETCH_TRIGGERS_BY_JOB_KEY_AND_CURRENT_USER_GROUP = Rest.Quartz.FETCH_TRIGGERS_BY_JOB_KEY_AND_CURRENT_USER_GROUP;
-                /**
-                 * The constant FETCH_QUARTZ_DETAILS_GROUP_NAME.
-                 */
-                public static final String FETCH_QUARTZ_DETAILS_BY_CURRENT_USER_GROUP = Rest.Quartz.FETCH_QUARTZ_DETAILS_BY_CURRENT_USER_GROUP;
-                /**
-                 * The constant RESUME_JOBS.
-                 */
-                public static final String RESUME_JOBS = Rest.Quartz.RESUME_JOBS;
-                /**
-                 * The constant RESUME_TRIGGERS.
-                 */
-                public static final String RESUME_TRIGGERS = Rest.Quartz.RESUME_TRIGGERS;
-                /**
-                 * The constant PAUSE_JOBS.
-                 */
-                public static final String PAUSE_JOBS = Rest.Quartz.PAUSE_JOBS;
-                /**
-                 * The constant PAUSE_TRIGGERS.
-                 */
-                public static final String PAUSE_TRIGGERS = Rest.Quartz.PAUSE_TRIGGERS;
-                /**
-                 * The constant DELETE_JOBS.
-                 */
-                public static final String DELETE_JOBS = Rest.Quartz.DELETE_JOBS;
-                /**
-                 * The constant DELETE_TRIGGERS.
-                 */
-                public static final String DELETE_TRIGGERS = Rest.Quartz.DELETE_TRIGGERS;
 
-                /**
-                 * The constant JOB_KEYS_AUTOCOMPLETE.
-                 */
+                public static final String CREATE_UPDATE_JOB = Rest.Quartz.CREATE_UPDATE_JOB;
+                public static final String SHOW_JOB = Rest.Quartz.SHOW_JOB;
+                public static final String DELETE_JOB = Rest.Quartz.DELETE_JOB;
+                public static final String DELETE_JOBS = Rest.Quartz.DELETE_JOBS;
+                public static final String RESUME_JOB = Rest.Quartz.RESUME_JOB;
+                public static final String RESUME_JOBS = Rest.Quartz.RESUME_JOBS;
+                public static final String PAUSE_JOB = Rest.Quartz.PAUSE_JOB;
+                public static final String PAUSE_JOBS = Rest.Quartz.PAUSE_JOBS;
+                public static final String LIST_JOBS = Rest.Quartz.LIST_JOBS;
+
+                public static final String CREATE_UPDATE_TRIGGER = Rest.Quartz.CREATE_UPDATE_TRIGGER;
+                public static final String SHOW_TRIGGER = Rest.Quartz.SHOW_TRIGGER;
+                public static final String DELETE_TRIGGER = Rest.Quartz.DELETE_TRIGGER;
+                public static final String DELETE_TRIGGERS = Rest.Quartz.DELETE_TRIGGERS;
+                public static final String RESUME_TRIGGER = Rest.Quartz.RESUME_TRIGGER;
+                public static final String RESUME_TRIGGERS = Rest.Quartz.RESUME_TRIGGERS;
+                public static final String PAUSE_TRIGGER = Rest.Quartz.PAUSE_TRIGGER;
+                public static final String PAUSE_TRIGGERS = Rest.Quartz.PAUSE_TRIGGERS;
+                public static final String LIST_TRIGGERS = Rest.Quartz.LIST_TRIGGERS;
+
+                public static final String LIST_QUARTZ_DETAILS = Rest.Quartz.LIST_QUARTZ_DETAILS;
                 public static final String JOB_KEYS_AUTOCOMPLETE = Rest.Quartz.JOB_KEYS_AUTOCOMPLETE;
             }
 
-            /**
-             * The type User.
-             */
             public static class User {
-                /**
-                 * The constant BASE_URI.
-                 */
                 public static final String BASE_URI = Rest.User.BASE_URI;
-                /**
-                 * The constant AUTHENTICATE.
-                 */
                 public static final String AUTHENTICATE = Rest.User.AUTHENTICATE;
-                /**
-                 * The constant LOGIN.
-                 */
                 public static final String LOGIN = Rest.User.LOGIN;
-                /**
-                 * The constant LOGOUT.
-                 */
                 public static final String LOGOUT = Rest.User.LOGOUT;
-                /**
-                 * The constant CURRENT_LOGGED_IN_USER.
-                 */
                 public static final String CURRENT_LOGGED_IN_USER = Rest.User.CURRENT_LOGGED_IN_USER;
             }
 
-            /**
-             * The type Validation.
-             */
             public static class Validation {
-                /**
-                 * The constant BASE_URI.
-                 */
                 public static final String BASE_URI = Rest.Validation.BASE_URI;
-                /**
-                 * The constant UNIQUE_JOB_KEY_PER_GROUP.
-                 */
                 public static final String UNIQUE_JOB_KEY_PER_GROUP = Rest.Validation.UNIQUE_JOB_KEY_PER_GROUP;
-                /**
-                 * The constant UNIQUE_TRIGGER_KEY_PER_GROUP.
-                 */
                 public static final String UNIQUE_TRIGGER_KEY_PER_GROUP = Rest.Validation.UNIQUE_TRIGGER_KEY_PER_GROUP;
+            }
+
+            public static class Dashboard {
+                public static final String BASE_URI = Rest.Dashboard.BASE_URI;
+                public static final String COUNTER = Rest.Dashboard.COUNTER;
             }
         }
     }
 
-    /**
-     * The type Rest.
-     */
     public static class Rest {
-        /**
-         * The type Quartz.
-         */
         public static class Quartz {
-            /**
-             * The constant BASE_URI.
-             */
-            public static final String BASE_URI = "/quartz";
-            /**
-             * The constant CREATE_JOB.
-             */
-            public static final String CREATE_API_JOB = "/api/job/create";
-            /**
-             * The constant CREATE_JOB_SCHEDULED_SIMPLE.
-             */
-            public static final String CREATE_API_JOB_SCHEDULED_SIMPLE = "/api/simple/job/create";
-            /**
-             * The constant CREATE_JOB_SCHEDULED_CRON.
-             */
-            public static final String CREATE_API_JOB_SCHEDULED_CRON = "/api/cron/job/create";
-            /**
-             * The constant UPDATE_JOB.
-             */
-            public static final String UPDATE_API_JOB = "/api/job/update";
-            /**
-             * The constant CREATE_TRIGGER.
-             */
-            public static final String CREATE_SIMPLE_TRIGGER = "/simple/trigger/create";
-            /**
-             * The constant CREATE_CRON_TRIGGER.
-             */
-            public static final String CREATE_CRON_TRIGGER = "/cron/trigger/create";
-            /**
-             * The constant UPDATE_TRIGGER.
-             */
-            public static final String UPDATE_SIMPLE_TRIGGER = "/simple/trigger/update";
-            /**
-             * The constant UPDATE_CRON_TRIGGER.
-             */
-            public static final String UPDATE_CRON_TRIGGER = "/cron/trigger/update";
-            /**
-             * The constant FETCH_JOB_BY_GROUP_NAME.
-             */
-            public static final String FETCH_JOBS_OF_CURRENT_USER_GROUP = "/job/list";
-            /**
-             * The constant FETCH_TRIGGER_BY_JOB_KEY_GROUP_NAME.
-             */
-            public static final String FETCH_TRIGGERS_BY_JOB_KEY_AND_CURRENT_USER_GROUP = "/trigger/list";
-            /**
-             * The constant FETCH_QUARTZ_DETAILS_GROUP_NAME.
-             */
-            public static final String FETCH_QUARTZ_DETAILS_BY_CURRENT_USER_GROUP = "/details/list";
-            /**
-             * The constant RESUME_JOBS.
-             */
-            public static final String RESUME_JOBS = "/job/resume";
-            /**
-             * The constant RESUME_TRIGGERS.
-             */
-            public static final String RESUME_TRIGGERS = "/trigger/resume";
-            /**
-             * The constant PAUSE_JOBS.
-             */
-            public static final String PAUSE_JOBS = "/job/pause";
-            /**
-             * The constant PAUSE_TRIGGERS.
-             */
-            public static final String PAUSE_TRIGGERS = "/trigger/pause";
-            /**
-             * The constant DELETE_JOBS.
-             */
-            public static final String DELETE_JOBS = "/job/delete";
-            /**
-             * The constant DELETE_TRIGGERS.
-             */
-            public static final String DELETE_TRIGGERS = "/trigger/delete";
-            /**
-             * The constant JOB_KEYS_AUTOCOMPLETE.
-             */
-            public static final String JOB_KEYS_AUTOCOMPLETE = "/autocomplete/job/keys";
+            public static final String BASE_URI = BACKSLASH + QUARTZ;
+
+            public static final String CREATE_UPDATE_JOB = BACKSLASH + JOB;
+            public static final String SHOW_JOB = BACKSLASH + JOB;
+            public static final String DELETE_JOB = BACKSLASH + JOB;
+            public static final String DELETE_JOBS = BACKSLASH + JOB + BACKSLASH + ALL;
+            public static final String RESUME_JOB = BACKSLASH + JOB + BACKSLASH + resume;
+            public static final String RESUME_JOBS = BACKSLASH + JOB + BACKSLASH + ALL + BACKSLASH + resume;
+            public static final String PAUSE_JOB = BACKSLASH + JOB + BACKSLASH + pause;
+            public static final String PAUSE_JOBS = BACKSLASH + JOB + BACKSLASH + ALL + BACKSLASH + pause;
+            public static final String LIST_JOBS = BACKSLASH + JOB + BACKSLASH + ALL + BACKSLASH + list;
+
+            public static final String CREATE_UPDATE_TRIGGER = BACKSLASH + TRIGGER;
+            public static final String SHOW_TRIGGER = BACKSLASH + TRIGGER;
+            public static final String DELETE_TRIGGER = BACKSLASH + TRIGGER;
+            public static final String DELETE_TRIGGERS = BACKSLASH + TRIGGER + BACKSLASH + ALL;
+            public static final String RESUME_TRIGGER = BACKSLASH + TRIGGER + BACKSLASH + resume;
+            public static final String RESUME_TRIGGERS = BACKSLASH + TRIGGER + BACKSLASH + ALL + BACKSLASH + resume;
+            public static final String PAUSE_TRIGGER = BACKSLASH + TRIGGER + BACKSLASH + pause;
+            public static final String PAUSE_TRIGGERS = BACKSLASH + TRIGGER + BACKSLASH + ALL + BACKSLASH + pause;
+            public static final String LIST_TRIGGERS = BACKSLASH + TRIGGER + BACKSLASH + ALL + BACKSLASH + list;
+
+            public static final String LIST_QUARTZ_DETAILS = BACKSLASH + DETAILS + BACKSLASH + ALL;
+            public static final String JOB_KEYS_AUTOCOMPLETE = BACKSLASH + AUTO_COMPLETE + JOB_KEY;
+
         }
 
-        /**
-         * The type User.
-         */
         public static class User {
-            /**
-             * The constant BASE_URI.
-             */
-            public static final String BASE_URI = "/user";
-            /**
-             * The constant AUTHENTICATE.
-             */
-            public static final String AUTHENTICATE = "/authenticate";
-            /**
-             * The constant LOGIN.
-             */
-            public static final String LOGIN = "/login";
-            /**
-             * The constant LOGOUT.
-             */
-            public static final String LOGOUT = "/logout";
-            /**
-             * The constant CURRENT_LOGGED_IN_USER.
-             */
-            public static final String CURRENT_LOGGED_IN_USER = "/current";
+            public static final String BASE_URI = BACKSLASH + USER;
+            public static final String AUTHENTICATE = BACKSLASH + ApplicationConstants.AUTHENTICATE;
+            public static final String LOGIN = BACKSLASH + ApplicationConstants.LOGIN;
+            public static final String LOGOUT = BACKSLASH + ApplicationConstants.LOGOUT;
+            public static final String CURRENT_LOGGED_IN_USER = BACKSLASH + CURRENT;
         }
 
-        /**
-         * The type Validation.
-         */
         public static class Validation {
-            /**
-             * The constant BASE_URI.
-             */
-            public static final String BASE_URI = "/validation";
-            /**
-             * The constant UNIQUE_JOB_KEY_PER_GROUP.
-             */
-            public static final String UNIQUE_JOB_KEY_PER_GROUP = "/jobKey/unique";
-            /**
-             * The constant UNIQUE_TRIGGER_KEY_PER_GROUP.
-             */
-            public static final String UNIQUE_TRIGGER_KEY_PER_GROUP = "/triggerKey/unique";
+            public static final String BASE_URI = BACKSLASH + VALIDATION;
+            public static final String UNIQUE_JOB_KEY_PER_GROUP = BACKSLASH + JOB_KEY + UNIQUE;
+            public static final String UNIQUE_TRIGGER_KEY_PER_GROUP = BACKSLASH + TRIGGER_KEY + UNIQUE;
         }
 
-        /**
-         * The type Dashboard.
-         */
         public static class Dashboard {
-            /**
-             * The constant BASE_URI.
-             */
-            public static final String BASE_URI = "/dashboard";
-            /**
-             * The constant COUNTER.
-             */
-            public static final String COUNTER = "/counter";
+            public static final String BASE_URI = BACKSLASH + DASHBOARD;
+            public static final String COUNTER = BACKSLASH + ApplicationConstants.COUNTER;
         }
     }
 }

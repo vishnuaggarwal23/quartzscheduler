@@ -6,8 +6,10 @@ Created by vishnu on 18/4/18 10:33 AM
 
 import com.vishnu.aggarwal.core.controller.BaseController;
 import com.vishnu.aggarwal.core.exceptions.InvalidRequestException;
+import com.vishnu.aggarwal.rest.service.QuartzService;
 import com.vishnu.aggarwal.rest.service.ValidationService;
 import lombok.extern.apachecommons.CommonsLog;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.KEY_NAME;
+import static com.vishnu.aggarwal.core.constants.RoleType.ROLE_USER;
 import static com.vishnu.aggarwal.core.constants.UrlMapping.Rest.Validation.*;
 import static com.vishnu.aggarwal.core.util.TypeTokenUtils.getHashMapOfStringAndBoolean;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -32,50 +35,52 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @RestController
 @RequestMapping(value = BASE_URI, produces = {APPLICATION_JSON_UTF8_VALUE})
 @CommonsLog
-@Secured({"ROLE_USER"})
+@Secured({ROLE_USER})
 public class ValidationController extends BaseController {
 
     /**
      * The Validation service.
      */
     private final ValidationService validationService;
+    private final QuartzService quartzService;
 
     @Autowired
-    public ValidationController(ValidationService validationService) {
+    public ValidationController(ValidationService validationService, QuartzService quartzService) {
         this.validationService = validationService;
+        this.quartzService = quartzService;
     }
 
     /**
      * Is job key unique response entity.
      *
-     * @param keyName  the key name
+     * @param keyName the key name
      * @return the response entity
      */
     @RequestMapping(value = UNIQUE_JOB_KEY_PER_GROUP, method = GET)
     @ResponseBody
-    public ResponseEntity<String> isJobKeyUnique(@RequestParam(KEY_NAME) final String keyName) throws InvalidRequestException {
+    public ResponseEntity<String> isJobKeyUnique(@RequestParam(KEY_NAME) final String keyName) throws InvalidRequestException, SchedulerException {
         if (isBlank(keyName)) {
             throw new InvalidRequestException();
         }
         HashMap<String, Boolean> responseMap = new HashMap<String, Boolean>();
-        responseMap.put("valid", validationService.isJobKeyUnique(keyName));
+        responseMap.put("valid", quartzService.jobKeyExists(keyName));
         return new ResponseEntity<String>(gson().toJson(responseMap, getHashMapOfStringAndBoolean()), ACCEPTED);
     }
 
     /**
      * Is trigger key unique response entity.
      *
-     * @param keyName  the key name
+     * @param keyName the key name
      * @return the response entity
      */
     @RequestMapping(value = UNIQUE_TRIGGER_KEY_PER_GROUP, method = GET)
     @ResponseBody
-    public ResponseEntity<String> isTriggerKeyUnique(@RequestParam(KEY_NAME) final String keyName) throws InvalidRequestException {
+    public ResponseEntity<String> isTriggerKeyUnique(@RequestParam(KEY_NAME) final String keyName) throws InvalidRequestException, SchedulerException {
         if (isBlank(keyName)) {
             throw new InvalidRequestException();
         }
         HashMap<String, Boolean> responseMap = new HashMap<String, Boolean>();
-        responseMap.put("valid", validationService.isTriggerKeyUnique(keyName));
+        responseMap.put("valid", quartzService.triggerKeyExists(keyName));
         return new ResponseEntity<String>(gson().toJson(responseMap, getHashMapOfStringAndBoolean()), ACCEPTED);
     }
 }

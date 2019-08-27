@@ -12,34 +12,15 @@ import static org.apache.commons.lang3.ObjectUtils.allNotNull;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
-/**
- * The type Base service.
- */
 public abstract class BaseService {
 
-    /**
-     * The Base message resolver.
-     */
     @Autowired
     BaseMessageResolver baseMessageResolver;
 
-    /**
-     * Gets message.
-     *
-     * @param messageCode the message code
-     * @return the message
-     */
     protected String getMessage(String messageCode) {
         return isNotBlank(messageCode) ? baseMessageResolver.getMessage(messageCode) : EMPTY;
     }
 
-    /**
-     * Gets message.
-     *
-     * @param messageCode the message code
-     * @param messageArgs the message args
-     * @return the message
-     */
     protected String getMessage(String messageCode, Object... messageArgs) {
         if (isNotBlank(messageCode)) {
             if (allNotNull(messageArgs)) {
@@ -50,13 +31,6 @@ public abstract class BaseService {
         return EMPTY;
     }
 
-    /**
-     * Format message string.
-     *
-     * @param messagePattern   the message pattern
-     * @param messageArguments the message arguments
-     * @return the string
-     */
     protected String formatMessage(String messagePattern, Object... messageArguments) {
         if (isNotBlank(messagePattern)) {
             if (allNotNull(messageArguments)) {

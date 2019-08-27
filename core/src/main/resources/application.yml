@@ -16,3 +16,9 @@ spring:
   output:
     ansi:
       enabled: detect
+  devtools:
+    restart:
+      enabled: true
+      log-condition-evaluation-delta: true
+    livereload:
+      enabled: false

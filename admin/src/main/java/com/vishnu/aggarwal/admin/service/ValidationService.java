@@ -18,48 +18,34 @@ import static com.vishnu.aggarwal.core.constants.ApplicationConstants.KEY_NAME;
 import static com.vishnu.aggarwal.core.enums.RestApiEndPoint.UNIQUE_JOB_KEY_PER_GROUP;
 import static com.vishnu.aggarwal.core.enums.RestApiEndPoint.UNIQUE_TRIGGER_KEY_PER_GROUP;
 
-/**
- * The type Validation service.
- */
 @Service
 @CommonsLog
 public class ValidationService extends BaseService {
 
     private final RestService restService;
 
-    /**
-     * Instantiates a new Validation service.
-     *
-     * @param restService the rest service
-     */
     @Autowired
     public ValidationService(RestService restService) {
         this.restService = restService;
     }
 
-    /**
-     * Is job key unique rest response vo.
-     *
-     * @param keyName    the key name
-     * @param xAuthToken the x auth token
-     * @return the rest response vo
-     */
-    public ResponseEntity<String> isJobKeyUnique(String keyName, Cookie xAuthToken) {
-        Map<String, Object> urlQueryParams = new HashMap<String, Object>();
-        urlQueryParams.put(KEY_NAME, keyName);
-        return restService.getResponseFromBackendService(null, xAuthToken.getValue(), UNIQUE_JOB_KEY_PER_GROUP.getApiEndPoint(), UNIQUE_JOB_KEY_PER_GROUP.getHttpMethod(), urlQueryParams, null);
+    public ResponseEntity<String> isJobKeyUnique(final String keyName, final Cookie xAuthToken) {
+        return isJobKeyUnique(keyName, xAuthToken.getValue());
     }
 
-    /**
-     * Is trigger key unique rest response vo.
-     *
-     * @param keyName    the key name
-     * @param xAuthToken the x auth token
-     * @return the rest response vo
-     */
-    public ResponseEntity<String> isTriggerKeyUnique(String keyName, Cookie xAuthToken) {
+    public ResponseEntity<String> isTriggerKeyUnique(final String keyName, final Cookie xAuthToken) {
+        return isTriggerKeyUnique(keyName, xAuthToken.getValue());
+    }
+
+    public ResponseEntity<String> isJobKeyUnique(String keyName, String xAuthToken) {
         Map<String, Object> urlQueryParams = new HashMap<String, Object>();
         urlQueryParams.put(KEY_NAME, keyName);
-        return restService.getResponseFromBackendService(null, xAuthToken.getValue(), UNIQUE_TRIGGER_KEY_PER_GROUP.getApiEndPoint(), UNIQUE_TRIGGER_KEY_PER_GROUP.getHttpMethod(), urlQueryParams, null);
+        return restService.getResponseFromBackendService(null, xAuthToken, UNIQUE_JOB_KEY_PER_GROUP.getApiEndPoint(), UNIQUE_JOB_KEY_PER_GROUP.getHttpMethod(), urlQueryParams, null);
+    }
+
+    public ResponseEntity<String> isTriggerKeyUnique(String keyName, String xAuthToken) {
+        Map<String, Object> urlQueryParams = new HashMap<String, Object>();
+        urlQueryParams.put(KEY_NAME, keyName);
+        return restService.getResponseFromBackendService(null, xAuthToken, UNIQUE_TRIGGER_KEY_PER_GROUP.getApiEndPoint(), UNIQUE_TRIGGER_KEY_PER_GROUP.getHttpMethod(), urlQueryParams, null);
     }
 }

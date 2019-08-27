@@ -17,8 +17,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 
-import static com.vishnu.aggarwal.core.constants.ApplicationConstants.CUSTOM_REQUEST_ID;
-import static com.vishnu.aggarwal.core.constants.ApplicationConstants.HASHMAP_ERROR_KEY;
+import static com.vishnu.aggarwal.core.constants.ApplicationConstants.*;
 import static com.vishnu.aggarwal.core.util.TypeTokenUtils.getHashMapOfStringAndErrorResponseDTO;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
@@ -48,7 +47,7 @@ public class AccessDeniedHandler implements org.springframework.security.web.acc
         HashMap<String, ErrorResponseDTO> responseMap = new HashMap<String, ErrorResponseDTO>();
         responseMap.put(HASHMAP_ERROR_KEY, new ErrorResponseDTO(request.getAttribute(CUSTOM_REQUEST_ID), new Date(), baseMessageResolver.getMessage(accessDeniedException.getMessage()), null));
         response.getWriter().write(gson.toJson(responseMap, getHashMapOfStringAndErrorResponseDTO()));
-        response.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding(UTF8);
         response.setContentType(APPLICATION_JSON_UTF8_VALUE);
         response.setStatus(FORBIDDEN.value());
         log.error("[Request Interceptor Id : " + request.getAttribute(CUSTOM_REQUEST_ID) + "] " + accessDeniedException.getMessage());

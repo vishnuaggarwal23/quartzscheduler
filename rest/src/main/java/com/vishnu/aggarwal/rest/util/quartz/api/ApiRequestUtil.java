@@ -1,4 +1,4 @@
-package com.vishnu.aggarwal.rest.util.quartz;
+package com.vishnu.aggarwal.rest.util.quartz.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

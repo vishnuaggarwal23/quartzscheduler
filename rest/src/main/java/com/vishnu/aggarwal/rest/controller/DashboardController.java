@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 
+import static com.vishnu.aggarwal.core.constants.RoleType.ROLE_USER;
 import static com.vishnu.aggarwal.core.constants.UrlMapping.Rest.Dashboard.BASE_URI;
 import static com.vishnu.aggarwal.core.util.TypeTokenUtils.getHashMapOfStringAndDashboardDTO;
 import static org.springframework.http.HttpStatus.ACCEPTED;
@@ -22,7 +23,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 @RestController
 @CommonsLog
 @RequestMapping(value = BASE_URI, produces = APPLICATION_JSON_UTF8_VALUE)
-@Secured({"ROLE_USER"})
+@Secured(ROLE_USER)
 public class DashboardController extends BaseController {
 
     public ResponseEntity<String> getCounters() {

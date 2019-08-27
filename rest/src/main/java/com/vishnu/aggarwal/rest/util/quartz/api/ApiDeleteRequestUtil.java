@@ -1,4 +1,4 @@
-package com.vishnu.aggarwal.rest.util.quartz;
+package com.vishnu.aggarwal.rest.util.quartz.api;
 
 import lombok.extern.apachecommons.CommonsLog;
 import org.quartz.JobDataMap;
@@ -8,18 +8,18 @@ import org.quartz.JobExecutionException;
 import java.util.Map;
 
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.*;
-import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.MediaType.parseMediaType;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 /**
- * The type Api post request util.
+ * The type Api delete request util.
  */
 @CommonsLog
-public class ApiPostRequestUtil extends ApiRequestUtil {
+public class ApiDeleteRequestUtil extends ApiRequestUtil {
 
-    public ApiPostRequestUtil() {
-        super(POST);
+    public ApiDeleteRequestUtil() {
+        super(DELETE);
     }
 
     @Override
@@ -44,6 +44,6 @@ public class ApiPostRequestUtil extends ApiRequestUtil {
             }
         }
 
-        constructAndSaveJobTriggerResponse(this.jobTriggerResponseRepoService, this.restTemplate, this.url, POST, this.httpHeaders, context);
+        constructAndSaveJobTriggerResponse(this.jobTriggerResponseRepoService, this.restTemplate, this.url, DELETE, this.httpHeaders, context);
     }
 }

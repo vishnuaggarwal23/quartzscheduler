@@ -14,11 +14,11 @@ public class RoleType {
     /**
      * The constant ROLE_USER.
      */
-    public static final String ROLE_USER = com.vishnu.aggarwal.core.enums.RoleType.ROLE_USER.toString();
+    public static final String ROLE_USER = "ROLE_USER";
     /**
      * The constant ROLE_ADMIN.
      */
-    public static final String ROLE_ADMIN = com.vishnu.aggarwal.core.enums.RoleType.ROLE_ADMIN.toString();
+    public static final String ROLE_ADMIN = "ROLE_ADMIN";
 
     /**
      * Gets values.

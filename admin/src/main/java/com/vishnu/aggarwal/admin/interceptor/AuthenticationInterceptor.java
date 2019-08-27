@@ -34,7 +34,6 @@ import static java.util.Objects.nonNull;
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 import static org.springframework.web.util.WebUtils.getCookie;
 
@@ -80,23 +79,19 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
         try {
             final Cookie cookie = getCookie(request, X_AUTH_TOKEN);
-            if (isNull(cookie)) {
-                throw new CookieNotFoundException("");
-            }
-            if (isBlank(cookie.getValue())) {
+            if (isNull(cookie) || isBlank(cookie.getValue())) {
                 throw new CookieNotFoundException("");
             }
 
             final ResponseEntity<String> responseEntity = authenticationService.isAuthenticatedUser(cookie);
             final String responseEntityBody = responseEntity.getBody();
-            final HashMap<String, Object> responseEntityObject;
-//            responseEntity.getHeaders().toSingleValueMap().forEach(response::addHeader);
-
-            if (isNotBlank(responseEntityBody)) {
-                responseEntityObject = responseEntity.getStatusCode().is2xxSuccessful() ? gson.fromJson(responseEntityBody, getHashMapOfStringAndUserAuthenticationDTO()) : gson.fromJson(responseEntityBody, getHashMapOfStringAndErrorResponseDTO());
-            } else {
+            if (isBlank(responseEntityBody)) {
                 throw new RestClientException("");
             }
+
+//            responseEntity.getHeaders().toSingleValueMap().forEach(response::addHeader);
+
+            final HashMap<String, Object> responseEntityObject = responseEntity.getStatusCode().is2xxSuccessful() ? gson.fromJson(responseEntityBody, getHashMapOfStringAndUserAuthenticationDTO()) : gson.fromJson(responseEntityBody, getHashMapOfStringAndErrorResponseDTO());
 
             final List<String> loginPageUris = asList(format("%s%s%s%s", request.getContextPath(), BASE_URI, User.BASE_URI, User.USER_LOGIN_1), format("%s%s%s%s", request.getContextPath(), BASE_URI, User.BASE_URI, User.USER_LOGIN_2));
             if (responseEntityObject.containsKey(HASHMAP_USER_KEY) && responseEntityObject.get(HASHMAP_USER_KEY) instanceof UserAuthenticationDTO) {

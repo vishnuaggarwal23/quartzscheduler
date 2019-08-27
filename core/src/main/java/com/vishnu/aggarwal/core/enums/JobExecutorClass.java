@@ -3,6 +3,9 @@ package com.vishnu.aggarwal.core.enums;
 import lombok.Getter;
 import org.springframework.http.HttpMethod;
 
+import java.util.Collection;
+
+import static org.apache.commons.lang3.EnumUtils.getEnumList;
 import static org.springframework.http.HttpMethod.*;
 
 /**
@@ -13,16 +16,18 @@ public enum JobExecutorClass {
     /**
      * Get api executor job executor class.
      */
-    GET_API_EXECUTOR("com.vishnu.aggarwal.rest.util.quartz.ApiGetRequestUtil", "ApiGetRequestUtil", GET),
+    GET_API_EXECUTOR("com.vishnu.aggarwal.rest.util.quartz.api.ApiGetRequestUtil", "ApiGetRequestUtil", GET),
     /**
      * Post api executor job executor class.
      */
-    POST_API_EXECUTOR("com.vishnu.aggarwal.rest.util.quartz.ApiPostRequestUtil", "ApiPostRequestUtil", POST),
+    POST_API_EXECUTOR("com.vishnu.aggarwal.rest.util.quartz.api.ApiPostRequestUtil", "ApiPostRequestUtil", POST),
 
     /**
      * Delete api executor job executor class.
      */
-    DELETE_API_EXECUTOR("com.vishnu.aggarwal.rest.util.quartz.ApiDeleteRequestUtil", "ApiDeleteRequestUtil", DELETE);
+    DELETE_API_EXECUTOR("com.vishnu.aggarwal.rest.util.quartz.api.ApiDeleteRequestUtil", "ApiDeleteRequestUtil", DELETE),
+
+    SHELL_SCRIPT_EXECUTOR("com.vishnu.aggarwal.rest.util.quartz.shell.ShellScriptRequestUtil", "ShellScriptRequestUtil", null);
 
     private String packageName;
     private String className;
@@ -47,5 +52,9 @@ public enum JobExecutorClass {
             }
         }
         return null;
+    }
+
+    public static Collection<JobExecutorClass> getAll() {
+        return getEnumList(JobExecutorClass.class);
     }
 }

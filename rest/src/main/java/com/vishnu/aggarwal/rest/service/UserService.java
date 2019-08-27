@@ -84,4 +84,9 @@ public class UserService extends BaseService implements com.vishnu.aggarwal.rest
     public User findById(final String id) {
         return userRepoService.findById(valueOf(id));
     }
+
+    @Override
+    public Long getCurrentLoggedInUserId() {
+        return getCurrentLoggedInUser().getId();
+    }
 }

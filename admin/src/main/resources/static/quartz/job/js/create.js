@@ -90,7 +90,7 @@ $.validator.addMethod('customRequestHeadersRequired', function (value, element, 
 $.validator.addMethod('customUniqueKey', function (value, element, options) {
     let isValid = false;
     $.ajax({
-        url: $(element).data('customUniqueKeyValidation'),
+        url: $(element).data('customUniqueKeyValidationUri'),
         type: HTTP_GET,
         async: false,
         data: {
@@ -99,9 +99,7 @@ $.validator.addMethod('customUniqueKey', function (value, element, options) {
         contentType: APPLICATION_JSON,
         dataType: JSON_DATA_TYPE,
         complete: function (response) {
-            if (response && is2xxResponseCode(response.status) && response.responseJSON) {
-                isValid = response.responseJSON.valid;
-            }
+            isValid = response && is2xxResponseCode(response.status) && response.responseJSON ? !response.responseJSON.valid : false;
         }
     });
     return isValid;
@@ -110,7 +108,7 @@ $.validator.addMethod('customUniqueKey', function (value, element, options) {
 let formSubmitHandler = function (form) {
     trimText();
 
-    let createJobUri = $(form).data('createNewUnscheduledApiJobUri');
+    let createJobUri = $(form).data('createJobUri');
     let requestHeaders = [];
     $.each($('tr.request-header-row'), function (index, value) {
         let $headerKey = $(value).find('input.request-header-key');
@@ -222,30 +220,23 @@ let formSubmitHandler = function (form) {
         }
     });
 };
-const handleCreateJob = function () {
-    $('form#createApiJobForm').validate({
-        submitHandler: function (form) {
-            formSubmitHandler(form);
-        }
-    });
-};
+
 $(document).ready(function () {
     let userJson = JSON.parse($('input#currentLoggedInUserJson').val()).user;
 
-    $('input#jobGroupName').val(userJson.firstName.trim().toString() + " " + userJson.lastName.trim().toString() + " : " + userJson.id);
+    $('input#jobGroupName.job-group-name').val(userJson.firstName.trim().toString() + " " + userJson.lastName.trim().toString() + " : " + userJson.id);
     $('input#triggerGroupName').val(userJson.firstName.trim().toString() + " " + userJson.lastName.trim().toString() + " : " + userJson.id);
 
-    $('form#createApiJobForm input').keypress(function (e) {
-        if (e.which === 13) {
-            if ($('form#createApiJobForm').validate().form()) {
-                $('.form#createApiJobForm').submit();
-            }
-            return false;
-        }
+    $(document).on('change', 'select#jobType.job-type', function () {
+        $(this).closest('body').find('div#job-type-fragment').load($(this).find(":selected").data('getFragmentUri'));
     });
 
-    $(document).on('click', 'button[name=addRequestHeaderRow]', function () {
-        let $parentRow = $('button[name=addRequestHeaderRow]').closest('tr.request-header-row');
+    $(document).on('click', 'input#jobScheduled.job-scheduled', function () {
+        $(this).closest('body').find('div#trigger-form-fragment').load($(this).data(this.checked ? 'triggerNewFormFragmentUri' : 'triggerNoneFormFragmentUri'));
+    });
+
+    $(document).on('click', 'button[name=addRequestHeaderRow].api-job-type', function () {
+        let $parentRow = $(this).closest('tr.request-header-row.api-job-type');
         let currentRowNumber = $parentRow.data('rowNumber');
         let nextRowNumber = currentRowNumber + 1;
         let nextHeaderKeyRowId = "requestHeaderKey_" + nextRowNumber;
@@ -253,11 +244,11 @@ $(document).ready(function () {
         let nextHeaderKeyRowReference = "input#" + nextHeaderKeyRowId;
         let nextHeaderValueRowReference = "input#" + nextHeaderValueRowId;
         let nextRemoveHeaderKeyValueRowId = "removeRequestHeaderRow_" + nextRowNumber;
-        let newRowHtml = "<tr data-row-number='" + nextRowNumber + "' class=\"request-header-row\">\n" +
+        let newRowHtml = "<tr data-row-number='" + nextRowNumber + "' class=\"request-header-row api-job-type\">\n" +
             "            <td>\n" +
             "                <input type=\"text\" id='" + nextHeaderKeyRowId + "'\n" +
             "                       name=\"requestHeaderKey\"\n" +
-            "                       class=\"form-control request-header-key\"\n" +
+            "                       class=\"form-control request-header-key api-job-type\"\n" +
             "                       data-rule-customRequestHeadersRequired=\"true\"\n" +
             "                       data-msg-customRequestHeadersRequired=\"Request Header Key is missing.\"\n" +
             "                       data-associated-header-value-id='" + nextHeaderValueRowReference + "'\n" +
@@ -266,7 +257,7 @@ $(document).ready(function () {
             "            <td>\n" +
             "                <input type=\"text\" id='" + nextHeaderValueRowId + "'\n" +
             "                       name=\"requestHeaderValue\"\n" +
-            "                       class=\"form-control request-header-value\"\n" +
+            "                       class=\"form-control request-header-value api-job-type\"\n" +
             "                       data-rule-customRequestHeadersRequired=\"true\"\n" +
             "                       data-msg-customRequestHeadersRequired=\"Request Header Value is missing.\"\n" +
             "                       data-associated-header-key-id='" + nextHeaderKeyRowReference + "'\n" +
@@ -277,22 +268,22 @@ $(document).ready(function () {
             "                    <button type=\"button\" id=\"addRequestHeaderRow\" " +
             "                           data-previous-row-number='" + currentRowNumber + "'" +
             "                           name=\"addRequestHeaderRow\" " +
-            "                           class=\"btn btn-sm green default\">Add</button>\n" +
+            "                           class=\"btn btn-sm green default api-job-type\">Add</button>\n" +
             "                </span>\n" +
             "                <span>\n" +
             "                    <button type=\"button\" id='" + nextRemoveHeaderKeyValueRowId + "' " +
             "                           data-previous-row-number='" + currentRowNumber + "'" +
             "                           name=\"removeRequestHeaderRow\" " +
-            "                           class=\"btn btn-sm red default\">Remove</button>\n" +
+            "                           class=\"btn btn-sm red default api-job-type\">Remove</button>\n" +
             "                </span>\n" +
             "            </td>\n" +
             "        </tr>";
-        $('button[name=addRequestHeaderRow]').closest('tbody').append(newRowHtml);
+        $(this).closest('tbody').append(newRowHtml);
         $(this).remove();
     });
 
-    $(document).on('click', 'button[name=removeRequestHeaderRow]', function () {
-        let $currentRow = $(this).closest('tr.request-header-row');
+    $(document).on('click', 'button[name=removeRequestHeaderRow].api-job-type', function () {
+        let $currentRow = $(this).closest('tr.request-header-row.api-job-type');
         let $previousRow = $currentRow.prev()[0];
         let $nextRow = $currentRow.next()[0];
         let deleteRow = false;
@@ -311,7 +302,7 @@ $(document).ready(function () {
                     "                   <button type=\"button\" id=\"addRequestHeaderRow\"" +
                     "                       data-previous-row-number=\"\"" +
                     "                       name=\"addRequestHeaderRow\"" +
-                    "                       class=\"btn btn-sm green default\">Add" +
+                    "                       class=\"btn btn-sm green default api-job-type\">Add" +
                     "                   </button>" +
                     "               </span>";
                 if (isPreviousRowFirst === true) {
@@ -335,7 +326,59 @@ $(document).ready(function () {
         }
     });
 
-    handleCreateJob();
+    $(document).on('keypress', 'form#create-job-form', function (e) {
+        if (e.which === 13) {
+            if ($(this).validate().form()) {
+                $(this).submit();
+            }
+            return false;
+        }
+    });
+
+    $('form#create-job-form').validate({
+        submitHandler: function (form) {
+            // formSubmitHandler(form);
+            let createJobUri = $(form).data('createJobUri');
+            let details = {
+                key: $(form).find('input[type=text]#jobKeyName.job-key-name').val().toString(),
+                description: $(form).find('textarea#jobDescription.job-description').val().toString()
+            };
+            let durability = $(form).find('input[type=checkbox]#jobDurability.job-durability').is(':checked');
+            let recover = $(form).find('input[type=checkbox]#jobRecovery.job-recovery').is(':checked');
+            let replace = false;
+            let type = $(form).find('select#jobType.job-type').find(":selected").val().toString();
+            let scheduled = $(form).find('input[type=checkbox]#jobScheduled.job-scheduled').is(':checked');
+            let executorClass = $(form).find('select#jobExecutorClass.job-executor-class').find(':selected').val().toString();
+
+            $.ajax({
+                url: createJobUri,
+                type: HTTP_POST,
+                contentType: APPLICATION_JSON,
+                dataType: JSON_DATA_TYPE,
+                data: JSON.stringify({
+                    job: {
+                        details: details,
+                        durability: durability,
+                        recover: recover,
+                        replace: replace,
+                        type: type,
+                        scheduled: scheduled,
+                        executorClass: executorClass
+                    }
+                }),
+                complete: function (response) {
+                    let goForError = true;
+                    if (response && is2xxResponseCode(response.status) && response.responseJSON) {
+                        showSuccessMessage(scheduled ? "Job is successfully created and scheduled at " + response.responseJSON.jobDetails.jobScheduledDate : "Job is successfully created");
+                        goForError = false;
+                    }
+                    if (goForError) {
+                        showErrorMessage("Unable to create the job" + response.responseJSON.error.message);
+                    }
+                }
+            });
+        }
+    });
 });
 
 const toggleTriggerStartTimeBasedOnTriggerStartNow = function (triggerStartNowElement, triggerStartTimeRowElement) {
@@ -383,5 +426,4 @@ const toggleSchedulerTypeVisibilityBasedOnType = function (schedulerTypeElement,
 
 const changeRequestTypeBasedOnExecutorClass = function (executorClassElement, requestTypeElement) {
     $(requestTypeElement).val($($(executorClassElement).find(':selected')).data('associatedHttpMethod'));
-
 };

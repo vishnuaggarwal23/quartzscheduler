@@ -1,14 +1,7 @@
 package com.vishnu.aggarwal.core.co;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.vishnu.aggarwal.core.validation.interfaces.CreateNewCronTriggerForJob;
-import com.vishnu.aggarwal.core.validation.interfaces.CreateNewScheduledCronTriggeredJob;
-import com.vishnu.aggarwal.core.validation.interfaces.UpdateExistingCronTriggerForJob;
 import lombok.*;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.beans.Transient;
 
 import static java.lang.String.format;
 
@@ -21,15 +14,6 @@ import static java.lang.String.format;
 @NoArgsConstructor
 @ToString
 public class CronJobSchedulerDataCO {
-    @NotNull(
-            message = "trigger is required",
-            groups = {
-                    CreateNewScheduledCronTriggeredJob.class,
-                    CreateNewCronTriggerForJob.class,
-                    UpdateExistingCronTriggerForJob.class
-            }
-    )
-    private TriggerCO trigger;
     private String second;
     private String minute;
     private String hour;
@@ -43,9 +27,7 @@ public class CronJobSchedulerDataCO {
      *
      * @return the cron expression
      */
-    @NotNull
-    @NotBlank
-    @Transient
+
     @JsonIgnore
     public String getCronExpression() {
         return format("%s %s %s %s %s %s %s", second, minute, hour, dayOfMonth, month, dayOfWeek, year);

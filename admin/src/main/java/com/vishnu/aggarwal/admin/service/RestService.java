@@ -30,25 +30,13 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 
-/**
- * The type Rest service.
- */
 @CommonsLog
 @Component
 public class RestService extends BaseService {
 
-    /**
-     * The Rest application config.
-     */
     private final RestApplicationConfig restApplicationConfig;
     private final Gson gson;
 
-    /**
-     * Instantiates a new Rest service.
-     *
-     * @param restApplicationConfig the rest application config
-     * @param gson                  the gson
-     */
     @Autowired
     public RestService(
             RestApplicationConfig restApplicationConfig,
@@ -57,24 +45,10 @@ public class RestService extends BaseService {
         this.gson = gson;
     }
 
-
     private RestTemplate restTemplate() {
         return new RestTemplate();
     }
 
-
-    /**
-     * Gets response from backend service.
-     *
-     * @param requestObject  the request object
-     * @param xAuthToken     the x auth token
-     * @param apiEndPoint    the api end point
-     * @param httpMethod     the http method
-     * @param urlQueryParams the url query params
-     * @param urlParams      the url params
-     * @return the response from backend service
-     * @throws RestClientException the rest client exception
-     */
     public ResponseEntity<String> getResponseFromBackendService(@Nullable final Object requestObject, @Nullable final String xAuthToken, final String apiEndPoint, final HttpMethod httpMethod, @Nullable final Map<String, Object> urlQueryParams, @Nullable final Map<String, Object> urlParams) throws RestClientException {
         HttpHeaders httpHeaders = new HttpHeaders();
         if (isNotEmpty(xAuthToken)) {
@@ -88,22 +62,11 @@ public class RestService extends BaseService {
             urlQueryParams.forEach(uriComponentsBuilder::queryParam);
         }
 
-        URI requestUrl;
-        if (!isEmpty(urlParams)) {
-            requestUrl = uriComponentsBuilder.buildAndExpand(urlParams).toUri();
-        } else {
-            requestUrl = uriComponentsBuilder.build().toUri();
-        }
-        ResponseEntity<String> responseEntity = restTemplate().exchange(
-                requestUrl,
+        return restTemplate().exchange(
+                (isEmpty(urlParams) ? uriComponentsBuilder.build() : uriComponentsBuilder.buildAndExpand(urlParams)).toUri(),
                 httpMethod,
                 new HttpEntity<Object>(isNull(requestObject) ? null : gson.toJson(requestObject), httpHeaders),
                 String.class);
-        if (isNull(responseEntity)) {
-            throw new RestClientException("");
-        } else {
-            return responseEntity;
-        }
     }
 }
 
