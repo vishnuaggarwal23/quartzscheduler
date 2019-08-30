@@ -14,11 +14,6 @@ public class ApplicationBeanUtil implements ApplicationContextAware {
 
     private static ApplicationContext context;
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        context = applicationContext;
-    }
-
     public static <T> T getBean(Class<T> clazz) {
         return context.getBean(clazz);
     }
@@ -29,5 +24,10 @@ public class ApplicationBeanUtil implements ApplicationContextAware {
 
     public static Object getBean(String name) {
         return context.getBean(name);
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        context = applicationContext;
     }
 }

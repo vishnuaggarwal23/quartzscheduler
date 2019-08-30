@@ -5,9 +5,6 @@ import lombok.*;
 
 import static java.lang.String.format;
 
-/**
- * The type Cron job scheduler data co.
- */
 @Getter
 @Setter
 @AllArgsConstructor
@@ -21,12 +18,6 @@ public class CronJobSchedulerDataCO {
     private String month;
     private String dayOfWeek;
     private String year;
-
-    /**
-     * Gets cron expression.
-     *
-     * @return the cron expression
-     */
 
     @JsonIgnore
     public String getCronExpression() {

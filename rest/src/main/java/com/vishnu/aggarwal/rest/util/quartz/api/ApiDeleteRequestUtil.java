@@ -12,9 +12,6 @@ import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.MediaType.parseMediaType;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
-/**
- * The type Api delete request util.
- */
 @CommonsLog
 public class ApiDeleteRequestUtil extends ApiRequestUtil {
 

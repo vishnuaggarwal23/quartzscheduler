@@ -26,24 +26,13 @@ import static java.util.Arrays.asList;
 Created by vishnu on 20/4/18 12:20 PM
 */
 
-/**
- * The type User token repo service.
- */
 @Service
 @CommonsLog
 @Transactional
 public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
 
-    /**
-     * The User token repository.
-     */
     private final UserTokenRepository userTokenRepository;
 
-    /**
-     * Instantiates a new User token repo service.
-     *
-     * @param userTokenRepository the user token repository
-     */
     @Autowired
     public UserTokenRepoService(UserTokenRepository userTokenRepository) {
         this.userTokenRepository = userTokenRepository;
@@ -65,12 +54,6 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
         return super.save(userToken);
     }
 
-    /**
-     * Find by token user token.
-     *
-     * @param xAuthToken the x auth token
-     * @return the user token
-     */
     @Cacheable(value = "findUserTokenByToken", key = "#xAuthToken", unless = "#result == null")
     @SuppressWarnings("unchecked")
     public UserToken findByToken(String xAuthToken) {
@@ -89,12 +72,6 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
         return (UserToken) selectQuery(criteriaQuery, TRUE, TRUE, null);
     }
 
-    /**
-     * Inactivate previous user tokens boolean.
-     *
-     * @param user the user
-     * @return the boolean
-     */
     @CacheEvict(value = {"findUserTokenByToken", "findAllUserTokens", "findUserTokenByUserAndStatus"}, allEntries = true, beforeInvocation = true)
     public Boolean inactivatePreviousUserTokens(User user) {
         CriteriaUpdate<UserToken> criteriaUpdate = getBaseCriteriaUpdateImpl();
@@ -108,12 +85,6 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
         return updateQuery(criteriaUpdate) > 0;
     }
 
-    /**
-     * Inactivate expired user tokens boolean.
-     *
-     * @param tokens the tokens
-     * @return the boolean
-     */
     @CacheEvict(value = {"findUserTokenByToken", "findAllUserTokens", "findUserTokenByUserAndStatus"}, allEntries = true, beforeInvocation = true)
     public Boolean inactivateExpiredUserTokens(List<Token> tokens) {
         CriteriaUpdate<UserToken> criteriaUpdate = getBaseCriteriaUpdateImpl();
@@ -124,12 +95,6 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
         return updateQuery(criteriaUpdate) > 0;
     }
 
-    /**
-     * Find all user tokens list.
-     *
-     * @param user the user
-     * @return the list
-     */
     @Cacheable(value = "findAllUserTokens", key = "#user.toString()", unless = "#result == null")
     @SuppressWarnings("unchecked")
     public List<UserToken> findAllUserTokens(User user) throws NoResultException {
@@ -145,13 +110,6 @@ public class UserTokenRepoService extends BaseRepoService<UserToken, Long> {
         return (List<UserToken>) selectQuery(criteriaQuery, TRUE, FALSE, null);
     }
 
-    /**
-     * Find by user and status user token.
-     *
-     * @param user   the user
-     * @param status the status
-     * @return the user token
-     */
     @Cacheable(value = "findUserTokenByUserAndStatus", key = "#user.toString() + #status.toString()", unless = "#result == null")
     @SuppressWarnings("unchecked")
     public UserToken findByUserAndStatus(User user, Status status) throws NoResultException {

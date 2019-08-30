@@ -7,9 +7,6 @@ import lombok.Setter;
 
 import java.util.Collection;
 
-/**
- * The type Quartz details co.
- */
 @Getter
 @Setter
 @AllArgsConstructor

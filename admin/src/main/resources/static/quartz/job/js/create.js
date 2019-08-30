@@ -70,7 +70,7 @@ $.validator.addMethod('customRequestHeadersRequired', function (value, element, 
             return $($(element).data('associatedHeaderValueId')).val().trim().length === 0;
         } else {
             if ($($(element).data('associatedHeaderValueId')).val().trim().length === 0) {
-                $('form#createApiJobForm').validate().element($(element).data('associatedHeaderValueId'));
+                $('form#create-job-form').validate().element($(element).data('associatedHeaderValueId'));
             }
             return true;
         }
@@ -80,7 +80,7 @@ $.validator.addMethod('customRequestHeadersRequired', function (value, element, 
             return $($(element).data('associatedHeaderKeyId')).val().trim().length === 0;
         } else {
             if ($($(element).data('associatedHeaderKeyId')).val().trim().length === 0) {
-                $('form#createApiJobForm').validate().element($(element).data('associatedHeaderKeyId'));
+                $('form#create-job-form').validate().element($(element).data('associatedHeaderKeyId'));
             }
             return true;
         }
@@ -224,11 +224,26 @@ let formSubmitHandler = function (form) {
 $(document).ready(function () {
     let userJson = JSON.parse($('input#currentLoggedInUserJson').val()).user;
 
-    $('input#jobGroupName.job-group-name').val(userJson.firstName.trim().toString() + " " + userJson.lastName.trim().toString() + " : " + userJson.id);
+    $('input#jobGroupName.job-group-name').val(createGroupNameFieldText(userJson));
     $('input#triggerGroupName').val(userJson.firstName.trim().toString() + " " + userJson.lastName.trim().toString() + " : " + userJson.id);
 
     $(document).on('change', 'select#jobType.job-type', function () {
-        $(this).closest('body').find('div#job-type-fragment').load($(this).find(":selected").data('getFragmentUri'));
+        let $body = $(this).closest("body");
+        let $selectedJobType = $(this).find(":selected");
+        $body.find('select#jobExecutorClass.job-executor-class').find("option").each(function (idx, option) {
+            if ($(option).data("associatedJobType") !== "" && $(option).val() !== "") {
+                if ($(option).data("associatedJobType") === $selectedJobType.val()) {
+                    $(option).removeClass('hidden');
+                    $(option).addClass('visible');
+                } else {
+                    $(option).addClass('hidden');
+                    $(option).removeClass('visible');
+                }
+            } else {
+                $(option).prop("selected", true);
+            }
+        });
+        $body.find('div#job-type-fragment').load($selectedJobType.data('getFragmentUri'));
     });
 
     $(document).on('click', 'input#jobScheduled.job-scheduled', function () {
@@ -336,19 +351,51 @@ $(document).ready(function () {
     });
 
     $('form#create-job-form').validate({
+        debug: true,
         submitHandler: function (form) {
-            // formSubmitHandler(form);
-            let createJobUri = $(form).data('createJobUri');
-            let details = {
-                key: $(form).find('input[type=text]#jobKeyName.job-key-name').val().toString(),
-                description: $(form).find('textarea#jobDescription.job-description').val().toString()
+            let $form = $(form);
+            let createJobUri = $form.data('createJobUri');
+
+            let job = {
+                details: {
+                    key: $form.find('input[type=text]#jobKeyName.job-key-name').val().toString(),
+                    description: $form.find('textarea#jobDescription.job-description').val().toString()
+                },
+                durability: $form.find('input[type=checkbox]#jobDurability.job-durability').is(':checked'),
+                recover: $form.find('input[type=checkbox]#jobRecovery.job-recovery').is(':checked'),
+                replace: false,
+                type: $form.find('select#jobType.job-type').find(":selected").val().toString(),
+                scheduled: $form.find('input[type=checkbox]#jobScheduled.job-scheduled').is(':checked'),
+                executorClass: $form.find('select#jobExecutorClass.job-executor-class').find(':selected').val().toString()
             };
-            let durability = $(form).find('input[type=checkbox]#jobDurability.job-durability').is(':checked');
-            let recover = $(form).find('input[type=checkbox]#jobRecovery.job-recovery').is(':checked');
-            let replace = false;
-            let type = $(form).find('select#jobType.job-type').find(":selected").val().toString();
-            let scheduled = $(form).find('input[type=checkbox]#jobScheduled.job-scheduled').is(':checked');
-            let executorClass = $(form).find('select#jobExecutorClass.job-executor-class').find(':selected').val().toString();
+
+            if ($form.find('select#jobType.job-type').find(":selected").val() === trimValue($form.closest('body').find('input[type=hidden]#API_jobType').val())) {
+                let requestHeaders = [];
+                $form.find('div.api-job-type').find('table#requestHeaderTable.api-job-type').find('tr.request-header-row.api-job-type').each(function (idx, trRow) {
+                    let $headerKey = $(trRow).find('input.request-header-key.api-job-type');
+                    let $headerValue = $(trRow).find('input.request-header-value.api-job-type');
+                    if ($headerKey.length > 0 && $headerValue.length > 0 && trimValue($($headerKey).val()).length > 0 && trimValue($($headerValue).val()).length > 0) {
+                        requestHeaders.push({
+                            key: $($headerKey).val().trim(),
+                            value: $($headerValue).val().trim()
+                        })
+                    }
+                });
+                let apiJobData = {
+                    requestType: trimValue($form.find('select#jobExecutorClass.job-executor-class').find(':selected').data('associatedHttpMethod')),
+                    requestUrl: trimValue($form.find('div.api-job-type').find('input#requestUrl.api-job-type').val())
+                };
+                if (requestHeaders.length > 0) {
+                    apiJobData["requestHeaders"] = requestHeaders;
+                }
+
+                job["apiJobData"] = apiJobData;
+
+            } else if ($form.find('select#jobType.job-type').find(":selected").val() === trimValue($form.closest('body').find('input[type=hidden]#SHELL_SCRIPT_jobType').val())) {
+                let shellScriptJobData = {};
+                job["shellScriptJobData"] = shellScriptJobData;
+            }
+
 
             $.ajax({
                 url: createJobUri,
@@ -356,20 +403,12 @@ $(document).ready(function () {
                 contentType: APPLICATION_JSON,
                 dataType: JSON_DATA_TYPE,
                 data: JSON.stringify({
-                    job: {
-                        details: details,
-                        durability: durability,
-                        recover: recover,
-                        replace: replace,
-                        type: type,
-                        scheduled: scheduled,
-                        executorClass: executorClass
-                    }
+                    job: job
                 }),
                 complete: function (response) {
                     let goForError = true;
                     if (response && is2xxResponseCode(response.status) && response.responseJSON) {
-                        showSuccessMessage(scheduled ? "Job is successfully created and scheduled at " + response.responseJSON.jobDetails.jobScheduledDate : "Job is successfully created");
+                        showSuccessMessage(response.responseJSON.scheduled ? "Job is successfully created and scheduled at " + response.responseJSON.jobDetails.jobScheduledDate : "Job is successfully created");
                         goForError = false;
                     }
                     if (goForError) {

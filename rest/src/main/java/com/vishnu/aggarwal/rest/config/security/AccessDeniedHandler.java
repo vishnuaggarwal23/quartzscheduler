@@ -23,9 +23,6 @@ import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
-/**
- * The type Access denied handler.
- */
 @CommonsLog
 public class AccessDeniedHandler implements org.springframework.security.web.access.AccessDeniedHandler {
 

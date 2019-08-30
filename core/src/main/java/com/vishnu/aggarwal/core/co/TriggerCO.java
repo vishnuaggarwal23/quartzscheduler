@@ -8,9 +8,6 @@ import java.util.Date;
 
 import static java.lang.Boolean.FALSE;
 
-/**
- * The type Trigger co.
- */
 @Getter
 @Setter
 @AllArgsConstructor

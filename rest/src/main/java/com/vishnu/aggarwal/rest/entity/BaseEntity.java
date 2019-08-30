@@ -23,11 +23,6 @@ import java.util.Date;
 import static java.lang.Boolean.FALSE;
 import static javax.persistence.TemporalType.TIMESTAMP;
 
-/**
- * The type Base entity.
- *
- * @param <ID> the type parameter
- */
 @Getter
 @Setter
 @MappedSuperclass
@@ -50,11 +45,6 @@ public abstract class BaseEntity<ID> implements Serializable {
     @LastModifiedBy
     private User lastModifiedBy;
 
-    /**
-     * Gets id.
-     *
-     * @return the id
-     */
     protected abstract ID getId();
 
 }

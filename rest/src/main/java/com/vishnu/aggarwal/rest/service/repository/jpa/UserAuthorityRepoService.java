@@ -20,16 +20,10 @@ import static java.lang.Boolean.FALSE;
 Created by vishnu on 20/4/18 2:55 PM
 */
 
-/**
- * The type User authority repo service.
- */
 @Service
 @CommonsLog
 @Transactional
 public class UserAuthorityRepoService extends BaseRepoService<UserAuthority, Long> {
-    /**
-     * The User authority repository.
-     */
     private final UserAuthorityRepository userAuthorityRepository;
 
     @Autowired
@@ -60,13 +54,6 @@ public class UserAuthorityRepoService extends BaseRepoService<UserAuthority, Lon
         return userAuthorityRepository.save(userAuthority);
     }
 
-    /**
-     * Find by user and authority and is deleted user authority.
-     *
-     * @param user      the user
-     * @param authority the authority
-     * @return the user authority
-     */
     @Cacheable(value = "findUserAuthorityByUserAndAuthority", key = "#user.toString() + #authority.toString()", unless = "#result == null")
     public UserAuthority findByUserAndAuthority(User user, Authority authority) {
         return userAuthorityRepository.findByUserAndAuthorityAndIsDeleted(user, authority, FALSE);

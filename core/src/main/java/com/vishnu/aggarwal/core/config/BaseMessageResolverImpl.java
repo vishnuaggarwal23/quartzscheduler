@@ -14,19 +14,11 @@ import static org.apache.commons.lang3.ObjectUtils.allNotNull;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
-/**
- * The type Base message resolver.
- */
 @Configuration
 public class BaseMessageResolverImpl implements BaseMessageResolver {
 
     private final MessageSource messageSource;
 
-    /**
-     * Instantiates a new Base message resolver.
-     *
-     * @param messageSource the message source
-     */
     @Autowired
     public BaseMessageResolverImpl(MessageSource messageSource) {
         this.messageSource = messageSource;

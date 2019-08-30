@@ -5,9 +5,6 @@ import lombok.*;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
-/**
- * The type Key group name dto.
- */
 @Getter
 @Setter
 @ToString

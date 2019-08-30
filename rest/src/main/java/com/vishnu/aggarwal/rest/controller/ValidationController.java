@@ -29,18 +29,12 @@ import static org.springframework.http.HttpStatus.ACCEPTED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
-/**
- * The type Validation controller.
- */
 @RestController
 @RequestMapping(value = BASE_URI, produces = {APPLICATION_JSON_UTF8_VALUE})
 @CommonsLog
 @Secured({ROLE_USER})
 public class ValidationController extends BaseController {
 
-    /**
-     * The Validation service.
-     */
     private final ValidationService validationService;
     private final QuartzService quartzService;
 
@@ -50,12 +44,6 @@ public class ValidationController extends BaseController {
         this.quartzService = quartzService;
     }
 
-    /**
-     * Is job key unique response entity.
-     *
-     * @param keyName the key name
-     * @return the response entity
-     */
     @RequestMapping(value = UNIQUE_JOB_KEY_PER_GROUP, method = GET)
     @ResponseBody
     public ResponseEntity<String> isJobKeyUnique(@RequestParam(KEY_NAME) final String keyName) throws InvalidRequestException, SchedulerException {
@@ -67,12 +55,6 @@ public class ValidationController extends BaseController {
         return new ResponseEntity<String>(gson().toJson(responseMap, getHashMapOfStringAndBoolean()), ACCEPTED);
     }
 
-    /**
-     * Is trigger key unique response entity.
-     *
-     * @param keyName the key name
-     * @return the response entity
-     */
     @RequestMapping(value = UNIQUE_TRIGGER_KEY_PER_GROUP, method = GET)
     @ResponseBody
     public ResponseEntity<String> isTriggerKeyUnique(@RequestParam(KEY_NAME) final String keyName) throws InvalidRequestException, SchedulerException {

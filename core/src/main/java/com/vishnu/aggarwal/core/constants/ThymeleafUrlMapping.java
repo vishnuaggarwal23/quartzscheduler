@@ -5,14 +5,18 @@ Created by vishnu on 2/9/18 12:16 AM
 */
 
 import com.vishnu.aggarwal.core.constants.UrlMapping.Admin;
+import com.vishnu.aggarwal.core.constants.UrlMapping.Admin.Web;
 import com.vishnu.aggarwal.core.constants.UrlMapping.Admin.Web.Quartz;
+import lombok.NoArgsConstructor;
 
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.*;
 import static com.vishnu.aggarwal.core.enums.ScheduleType.CRON;
 import static com.vishnu.aggarwal.core.enums.ScheduleType.SIMPLE;
 import static java.lang.String.format;
+import static lombok.AccessLevel.PRIVATE;
 
-public class ThymeleafUrlMapping extends Admin {
+@NoArgsConstructor(access = PRIVATE)
+public class ThymeleafUrlMapping {
 
     private static String getValidationApiUrl(String uriSuffix) {
         return format("%s%s%s", Admin.Api.BASE_URI, Admin.Api.Validation.BASE_URI, uriSuffix);

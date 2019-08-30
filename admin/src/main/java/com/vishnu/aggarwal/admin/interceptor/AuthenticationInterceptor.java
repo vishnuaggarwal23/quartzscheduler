@@ -41,21 +41,12 @@ import static org.springframework.web.util.WebUtils.getCookie;
 Created by vishnu on 28/3/18 11:10 AM
 */
 
-/**
- * The type Authentication interceptor.
- */
 @Component
 @CommonsLog
 public class AuthenticationInterceptor implements HandlerInterceptor {
 
-    /**
-     * The Authentication service.
-     */
     private final AuthenticationService authenticationService;
 
-    /**
-     * The Base message resolver.
-     */
     private final BaseMessageResolver baseMessageResolver;
 
     private final Gson gson;

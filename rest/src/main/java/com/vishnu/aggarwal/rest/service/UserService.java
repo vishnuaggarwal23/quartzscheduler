@@ -21,45 +21,22 @@ import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
-/**
- * The type User service.
- */
 @Service
 @CommonsLog
 @Transactional
 public class UserService extends BaseService implements com.vishnu.aggarwal.rest.interfaces.UserService {
 
-    /**
-     * The User repo service.
-     */
     private final UserRepoService userRepoService;
 
-    /**
-     * Instantiates a new User service.
-     *
-     * @param userRepoService the user repo service
-     */
     @Autowired
     public UserService(UserRepoService userRepoService) {
         this.userRepoService = userRepoService;
     }
 
-    /**
-     * Gets current logged in user.
-     *
-     * @return the current logged in user
-     */
     public User getCurrentLoggedInUser() throws HibernateException {
         return findByUsername(((String) getContext().getAuthentication().getPrincipal()).trim());
     }
 
-    /**
-     * Find by username user.
-     *
-     * @param username the username
-     * @return the user
-     * @throws HibernateException the hibernate exception
-     */
     public User findByUsername(final String username) throws HibernateException {
         return userRepoService.findByUsername(username);
     }

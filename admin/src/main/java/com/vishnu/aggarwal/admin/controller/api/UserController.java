@@ -21,7 +21,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
-import java.util.Map;
 
 import static com.vishnu.aggarwal.admin.utils.CookieUtils.create;
 import static com.vishnu.aggarwal.admin.utils.CookieUtils.remove;
@@ -63,6 +62,7 @@ public class UserController extends BaseController {
 
         if (nonNull(userAuthenticationDTO) && userAuthenticationDTO.getIsAuthenticated()) {
             response.addCookie(create(X_AUTH_TOKEN, userAuthenticationDTO.getXAuthToken(), null, true, MAX_COOKIE_AGE, null));
+            response.addCookie(create(LOGGED_IN_USER_ID, userAuthenticationDTO.getUser().getId().toString(), null, false, MAX_COOKIE_AGE, null));
         }
 
         HashMap<String, String> responseMap = new HashMap<String, String>();
@@ -79,6 +79,7 @@ public class UserController extends BaseController {
         responseMap.put("path", format("%s%s%s%s", request.getContextPath(), Web.BASE_URI, Web.User.BASE_URI, Web.User.USER_LOGIN_1));
         responseMap.put("logout", TRUE);
         response.addCookie(remove(request, X_AUTH_TOKEN, null, null, true));
+        response.addCookie(remove(request, LOGGED_IN_USER_ID, null, null, false));
         return createResponseEntity(responseMap, getHashMapOfStringAndObject());
     }
 

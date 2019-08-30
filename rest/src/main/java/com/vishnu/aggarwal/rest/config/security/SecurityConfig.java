@@ -34,9 +34,6 @@ import static org.springframework.http.HttpMethod.OPTIONS;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
-/**
- * The type Security config.
- */
 @Configuration
 @EnableWebSecurity(debug = true)
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
@@ -53,19 +50,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final AccessDeniedHandler accessDeniedHandler;
     private final Gson gson;
 
-    /**
-     * Instantiates a new Security config.
-     *
-     * @param objectMapper               the object mapper
-     * @param tokenAuthenticationService the token authentication service
-     * @param baseMessageResolver        the base message resolver
-     * @param bCryptPasswordEncoder      the b crypt password encoder
-     * @param userService                the user service
-     * @param logoutSuccessHandler       the logout success handler
-     * @param logoutHandler              the logout handler
-     * @param accessDeniedHandler        the access denied handler
-     * @param gson                       the gson
-     */
     @Autowired
     public SecurityConfig(
             ObjectMapper objectMapper,

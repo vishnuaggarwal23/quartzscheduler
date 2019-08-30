@@ -19,7 +19,6 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
 import java.util.Map;
 
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.X_AUTH_TOKEN;

@@ -24,37 +24,18 @@ import static org.springframework.http.HttpStatus.ACCEPTED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
-/**
- * The type Validation controller.
- */
 @RestController(value = "apiValidationController")
 @RequestMapping(value = BASE_URI + Validation.BASE_URI, produces = {APPLICATION_JSON_UTF8_VALUE})
 @CommonsLog
 public class ValidationController extends BaseController {
 
-    /**
-     * The Validation service.
-     */
     private final ValidationService validationService;
 
-    /**
-     * Instantiates a new Validation controller.
-     *
-     * @param validationService the validation service
-     */
     @Autowired
     public ValidationController(ValidationService validationService) {
         this.validationService = validationService;
     }
 
-    /**
-     * Is job key unique response entity.
-     *
-     * @param keyName  the key name
-     * @param request  the request
-     * @param response the response
-     * @return the response entity
-     */
     @GetMapping(value = UNIQUE_JOB_KEY_PER_GROUP)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
@@ -62,14 +43,6 @@ public class ValidationController extends BaseController {
         return validationService.isJobKeyUnique(keyName, xAuthToken);
     }
 
-    /**
-     * Is trigger key unique response entity.
-     *
-     * @param keyName  the key name
-     * @param request  the request
-     * @param response the response
-     * @return the response entity
-     */
     @RequestMapping(value = UNIQUE_TRIGGER_KEY_PER_GROUP, method = GET)
     @ResponseBody
     @ResponseStatus(ACCEPTED)

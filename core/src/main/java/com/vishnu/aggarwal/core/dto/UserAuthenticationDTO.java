@@ -10,9 +10,6 @@ import lombok.ToString;
 
 import static java.lang.Boolean.FALSE;
 
-/**
- * The type User authentication dto.
- */
 @Getter
 @Setter
 @ToString

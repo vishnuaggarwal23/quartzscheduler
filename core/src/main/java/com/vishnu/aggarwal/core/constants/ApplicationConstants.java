@@ -2,7 +2,6 @@ package com.vishnu.aggarwal.core.constants;
 
 import com.vishnu.aggarwal.core.constants.UrlMapping.Admin;
 
-import java.util.Collection;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -16,6 +15,8 @@ public class ApplicationConstants {
     public static final String URL_SUFFIX = "**/";
     public static final String BACKSLASH = "/";
     public static final String X_AUTH_TOKEN = "X-AUTH-TOKEN";
+    public static final String LOGGED_IN_USER_ID = "CURRENT_LOGGED_IN_USER_ID";
+    public static final String LOGGED_IN_USER = "CURRENT_LOGGED_IN_USER";
     public static final String INFO = "info";
     public static final String ERROR = "error";
     public static final String SUCCESS = "success";
@@ -60,7 +61,7 @@ public class ApplicationConstants {
     public static final String JOB_TYPE = "jobType";
     public static final String INVALID_JOB_TYPE = "invalidJobType";
     public static final String INVALID_TRIGGER_TYPE = "invalidTriggerType";
-    public static final String INVALID_FRAGMENT= "invalidFragment";
+    public static final String INVALID_FRAGMENT = "invalidFragment";
     public static final String EMPTY_FRAGMENT = "emptyFragment";
     public static final String INVALID_NEW_FORM = "invalidNewFormRequest";
     public static final String TRIGGER_KEY = "triggerKey";
@@ -195,5 +196,11 @@ public class ApplicationConstants {
             "TRIGGER_TYPE_NONE",
             "TRIGGER_FORM_NEW",
             "TRIGGER_FORM_NONE"
+    );
+    public static final List<String> LOG_TYPES = asList(
+            INFO,
+            WARNING,
+            ERROR,
+            SUCCESS
     );
 }

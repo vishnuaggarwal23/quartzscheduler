@@ -38,9 +38,6 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.hibernate.annotations.FetchMode.SUBSELECT;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
-/**
- * The type User.
- */
 @Entity
 @Table(name = "USER")
 @Getter
@@ -90,11 +87,6 @@ public class User extends BaseEntity<Long> implements UserDetails, Serializable 
     @Fetch(value = SUBSELECT)
     private List<UserAuthority> userAuthorities;
 
-    /**
-     * Gets authority names.
-     *
-     * @return the authority names
-     */
     @Transient
     public List<String> getAuthorityNames() {
         Set<Authority> authorities = getAuthorityObjects();
@@ -104,11 +96,6 @@ public class User extends BaseEntity<Long> implements UserDetails, Serializable 
         return authorities.stream().filter(Objects::nonNull).map(Authority::getName).collect(Collectors.toList());
     }
 
-    /**
-     * Gets authority objects.
-     *
-     * @return the authority objects
-     */
     @Transient
     public Set<Authority> getAuthorityObjects() {
         return this.userAuthorities.stream().filter(Objects::nonNull).map(UserAuthority::getAuthority).collect(Collectors.toSet());
@@ -139,11 +126,6 @@ public class User extends BaseEntity<Long> implements UserDetails, Serializable 
         return this.accountEnabled;
     }
 
-    /**
-     * Gets full name.
-     *
-     * @return the full name
-     */
     @Transient
     public String getFullName() {
         String fullName = EMPTY;
@@ -156,12 +138,6 @@ public class User extends BaseEntity<Long> implements UserDetails, Serializable 
         return fullName;
     }
 
-    /**
-     * Has authority boolean.
-     *
-     * @param authority the authority
-     * @return the boolean
-     */
     @Transient
     public Boolean hasAuthority(String authority) {
         List<String> authorities = this.getAuthorityNames();

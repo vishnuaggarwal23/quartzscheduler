@@ -12,9 +12,6 @@ import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.parseMediaType;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
-/**
- * The type Api post request util.
- */
 @CommonsLog
 public class ApiPostRequestUtil extends ApiRequestUtil {
 

@@ -25,27 +25,15 @@ import static javax.persistence.criteria.JoinType.LEFT;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 
-/**
- * The type Job trigger response service.
- */
 @Service
 @Transactional
 @CommonsLog
 public class JobTriggerResponseRepoService extends BaseRepoService<JobTriggerResponse, Long> {
 
-    /**
-     * The Job trigger response repository.
-     */
     private final JobTriggerResponseRepository jobTriggerResponseRepository;
 
     private final UserService userService;
 
-    /**
-     * Instantiates a new Job trigger response repo service.
-     *
-     * @param jobTriggerResponseRepository the job trigger response repository
-     * @param userService                  the user service
-     */
     @Autowired
     public JobTriggerResponseRepoService(
             JobTriggerResponseRepository jobTriggerResponseRepository,
@@ -64,12 +52,6 @@ public class JobTriggerResponseRepoService extends BaseRepoService<JobTriggerRes
         return jobTriggerResponseRepository;
     }
 
-    /**
-     * Save.
-     *
-     * @param jobTriggerResponseDTO the job trigger response dto
-     * @return the job trigger response
-     */
     @CacheEvict(value = "fetchJobTriggerResponseDTOs", allEntries = true, beforeInvocation = true)
     public JobTriggerResponse save(JobTriggerResponseDTO jobTriggerResponseDTO) {
         if (nonNull(jobTriggerResponseDTO)) {
@@ -87,13 +69,6 @@ public class JobTriggerResponseRepoService extends BaseRepoService<JobTriggerRes
         return null;
     }
 
-    /**
-     * Fetch list.
-     *
-     * @param jobTriggerResponseDTO the job trigger response dto
-     * @return the list
-     * @throws NoResultException the no result exception
-     */
     @Cacheable(value = "fetchJobTriggerResponseDTOs", key = "#jobTriggerResponseDTO.toString()", unless = "#result == null")
     @SuppressWarnings("unchecked")
     public List<JobTriggerResponseDTO> fetch(JobTriggerResponseDTO jobTriggerResponseDTO) throws NoResultException {

@@ -23,7 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -45,9 +44,6 @@ import static org.springframework.security.core.context.SecurityContextHolder.ge
 Created by vishnu on 19/4/18 4:13 PM
 */
 
-/**
- * The type Authentication filter.
- */
 @CommonsLog
 public class AuthenticationFilter extends GenericFilterBean {
 
@@ -59,17 +55,6 @@ public class AuthenticationFilter extends GenericFilterBean {
     private RequestMatcher authenticationRequestMatcher;
     private Gson gson;
 
-    /**
-     * Instantiates a new Authentication filter.
-     *
-     * @param tokenAuthenticationService   the token authentication service
-     * @param baseMessageResolver          the base message resolver
-     * @param userService                  the user service
-     * @param ignoredRequestMatcher        the ignored request matcher
-     * @param loginRequestMatcher          the login request matcher
-     * @param authenticationRequestMatcher the authentication request matcher
-     * @param gson                         the gson
-     */
     public AuthenticationFilter(
             TokenAuthenticationService tokenAuthenticationService,
             BaseMessageResolver baseMessageResolver,

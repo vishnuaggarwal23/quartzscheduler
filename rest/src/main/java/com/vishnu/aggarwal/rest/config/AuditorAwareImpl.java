@@ -15,18 +15,10 @@ import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
-/**
- * The type Auditor aware.
- */
 public class AuditorAwareImpl implements AuditorAware<User> {
 
     private UserService userService;
 
-    /**
-     * Instantiates a new Auditor aware.
-     *
-     * @param userService the user service
-     */
     public AuditorAwareImpl(UserService userService) {
         this.userService = userService;
     }

@@ -9,9 +9,6 @@ import lombok.ToString;
 Created by vishnu on 5/3/18 11:11 AM
 */
 
-/**
- * The type Role dto.
- */
 @Getter
 @Setter
 @ToString

@@ -6,9 +6,6 @@ import lombok.*;
 
 import java.util.Collection;
 
-/**
- * The type Quartz dto.
- */
 @Getter
 @Setter
 @AllArgsConstructor

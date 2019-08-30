@@ -14,9 +14,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
-/**
- * The type Aop configuration.
- */
 @Configuration
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @Aspect
@@ -24,25 +21,14 @@ public class AopConfiguration {
 
     private final MethodLogInterceptor methodLogInterceptor;
 
-    /**
-     * Instantiates a new Aop configuration.
-     *
-     * @param methodLogInterceptor the method log interceptor
-     */
     public AopConfiguration(MethodLogInterceptor methodLogInterceptor) {
         this.methodLogInterceptor = methodLogInterceptor;
     }
 
-    /**
-     * Service.
-     */
     @Pointcut("execution(* com.vishnu.aggarwal.*.service..*.*(..))")
     public void service() {
     }
 
-    /**
-     * Controller.
-     */
     @Pointcut("execution(* com.vishnu.aggarwal.*.controller..*.*(..))")
     public void controller() {
     }
@@ -54,39 +40,22 @@ public class AopConfiguration {
 //    public void filters() {
 //    }
 
-    /**
-     * Util.
-     */
     @Pointcut("execution(* com.vishnu.aggarwal.*.util..*.*(..))")
     public void util() {
     }
 
-    /**
-     * Jobs.
-     */
     @Pointcut("execution(* com.vishnu.aggarwal.*.jobs..*.*(..))")
     public void jobs() {
     }
 
-    /**
-     * Bootstrap.
-     */
     @Pointcut("execution(* com.vishnu.aggarwal.*.bootstrap..*.*(..))")
     public void bootstrap() {
     }
 
-    /**
-     * Monitor.
-     */
     @Pointcut("service() || controller() || util() || jobs() || bootstrap()")
     public void monitor() {
     }
 
-    /**
-     * Performance monitor advisor advisor.
-     *
-     * @return the advisor
-     */
     @Bean
     public Advisor performanceMonitorAdvisor() {
         AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();

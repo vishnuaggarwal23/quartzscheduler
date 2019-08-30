@@ -5,9 +5,6 @@ import lombok.*;
 import static java.lang.Boolean.FALSE;
 import static java.util.Objects.isNull;
 
-/**
- * The type Repeat interval co.
- */
 @Getter
 @Setter
 @AllArgsConstructor
@@ -19,20 +16,10 @@ public class RepeatIntervalCO {
     private boolean repeatForever = FALSE;
     private Integer repeatCount;
 
-    /**
-     * Gets repeat forever.
-     *
-     * @return the repeat forever
-     */
     public Boolean getRepeatForever() {
         return this.repeatForever;
     }
 
-    /**
-     * Gets repeat count.
-     *
-     * @return the repeat count
-     */
     public Integer getRepeatCount() {
         return isNull(this.repeatCount) || this.repeatCount < 1 ? 1 : this.repeatCount;
     }

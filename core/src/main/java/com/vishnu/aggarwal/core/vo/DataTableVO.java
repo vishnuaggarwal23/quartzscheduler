@@ -10,11 +10,6 @@ import java.util.List;
 import static java.util.Objects.isNull;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
-/**
- * The type Data table vo.
- *
- * @param <T> the type parameter
- */
 @Getter
 @Setter
 @NoArgsConstructor

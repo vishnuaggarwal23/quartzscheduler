@@ -12,32 +12,17 @@ import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * The type Quartz dao service.
- */
 @Service
 @CommonsLog
 @Transactional
 public class QuartzDAOService extends JdbcDaoSupport {
 
-    /**
-     * Instantiates a new Quartz dao service.
-     *
-     * @param jdbcTemplate the jdbc template
-     */
     @Autowired
     public QuartzDAOService(JdbcTemplate jdbcTemplate) {
         super();
         super.setJdbcTemplate(jdbcTemplate);
     }
 
-    /**
-     * Is unique trigger key boolean.
-     *
-     * @param keyName   the trigger key name
-     * @param groupName the group name
-     * @return the boolean
-     */
     @Cacheable(value = "isUniqueTriggerKey", key = "#keyName + #groupName", unless = "#result == null")
     public Boolean isUniqueTriggerKey(String keyName, String groupName) {
         return getJdbcTemplate().queryForObject(
@@ -46,13 +31,6 @@ public class QuartzDAOService extends JdbcDaoSupport {
                 , Long.class) == 0L;
     }
 
-    /**
-     * Is unique job key boolean.
-     *
-     * @param keyName   the job key name
-     * @param groupName the group name
-     * @return the boolean
-     */
     @Cacheable(value = "isUniqueJobKey", key = "#keyName + #groupName", unless = "#result == null")
     public Boolean isUniqueJobKey(String keyName, String groupName) {
         return getJdbcTemplate().queryForObject(

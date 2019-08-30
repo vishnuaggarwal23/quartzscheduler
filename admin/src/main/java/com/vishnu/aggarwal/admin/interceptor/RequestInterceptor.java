@@ -6,9 +6,6 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * The type Request interceptor.
- */
 @Component
 @CommonsLog
 public class RequestInterceptor extends com.vishnu.aggarwal.core.interceptor.RequestInterceptor {

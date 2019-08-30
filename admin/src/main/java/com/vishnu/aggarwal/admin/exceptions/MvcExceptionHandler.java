@@ -29,9 +29,6 @@ import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
-/**
- * The type Mvc exception handler.
- */
 @ControllerAdvice(basePackages = {"com.vishnu.aggarwal.admin.controller.web"})
 @Controller
 @CommonsLog
@@ -39,12 +36,6 @@ public class MvcExceptionHandler extends DefaultHandlerExceptionResolver {
     private final BaseMessageResolver baseMessageResolver;
     private final Gson gson;
 
-    /**
-     * Instantiates a new Mvc exception handler.
-     *
-     * @param baseMessageResolver the base message resolver
-     * @param gson                the gson
-     */
     @Autowired
     public MvcExceptionHandler(BaseMessageResolver baseMessageResolver, Gson gson) {
         this.baseMessageResolver = baseMessageResolver;
@@ -63,13 +54,6 @@ public class MvcExceptionHandler extends DefaultHandlerExceptionResolver {
         return new ModelAndView("error/404");
     }
 
-    /**
-     * Handle runtime exception model and view.
-     *
-     * @param exception  the exception
-     * @param webRequest the web request
-     * @return the model and view
-     */
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(INTERNAL_SERVER_ERROR)
     public final ModelAndView handleRuntimeException(RuntimeException exception, WebRequest webRequest) {

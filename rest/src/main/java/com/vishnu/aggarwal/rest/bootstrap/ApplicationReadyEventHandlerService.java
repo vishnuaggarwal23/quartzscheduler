@@ -22,31 +22,16 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
 
-/**
- * The type Application ready event handler service.
- */
 @Component
 @CommonsLog
 public class ApplicationReadyEventHandlerService extends com.vishnu.aggarwal.core.bootstrap.ApplicationReadyEventHandlerService {
 
-    /**
-     * The User repo service.
-     */
     private final UserRepoService userRepoService;
 
-    /**
-     * The Authority repo service.
-     */
     private final AuthorityRepoService authorityRepoService;
 
-    /**
-     * The B crypt password encoder.
-     */
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    /**
-     * The User authority repo service.
-     */
     private final UserAuthorityRepoService userAuthorityRepoService;
 
     //    private final CacheManager cacheManager;

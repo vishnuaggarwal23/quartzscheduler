@@ -21,16 +21,10 @@ import static java.time.Duration.between;
 import static java.time.LocalDateTime.now;
 import static java.util.TimeZone.getDefault;
 
-/**
- * The type Request interceptor.
- */
 @CommonsLog
 public abstract class RequestInterceptor implements HandlerInterceptor {
 
     private static String ID;
-    /**
-     * The Object mapper.
-     */
     @Autowired
     ObjectMapper objectMapper;
     private LocalDateTime startTime;

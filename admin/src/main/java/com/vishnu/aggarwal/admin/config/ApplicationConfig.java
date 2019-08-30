@@ -16,9 +16,6 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.*;
 import static org.springframework.http.HttpStatus.*;
 
-/**
- * The type Web config.
- */
 @Configuration
 @CommonsLog
 public class ApplicationConfig extends WebConfig {
@@ -27,14 +24,6 @@ public class ApplicationConfig extends WebConfig {
     private final LoginInterceptor loginInterceptor;
     private final LogoutInterceptor logoutInterceptor;
 
-    /**
-     * Instantiates a new Web config.
-     *
-     * @param requestInterceptor        the request interceptor
-     * @param authenticationInterceptor the authentication interceptor
-     * @param loginInterceptor          the login interceptor
-     * @param logoutInterceptor         the logout interceptor
-     */
     @Autowired
     public ApplicationConfig(
             RequestInterceptor requestInterceptor,
@@ -55,11 +44,6 @@ public class ApplicationConfig extends WebConfig {
         registry.addInterceptor(logoutInterceptor).addPathPatterns(ADMIN_LOGOUT_INTERCEPTOR_INCLUDE_PATTERN).excludePathPatterns(ADMIN_LOGOUT_INTERCEPTOR_EXCLUDE_PATTERN);
     }
 
-    /**
-     * Layout dialect layout dialect.
-     *
-     * @return the layout dialect
-     */
     @Bean
     public LayoutDialect layoutDialect() {
         return new LayoutDialect();

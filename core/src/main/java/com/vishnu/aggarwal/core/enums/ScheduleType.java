@@ -2,18 +2,13 @@ package com.vishnu.aggarwal.core.enums;
 
 import lombok.Getter;
 
-/**
- * The enum Schedule type.
- */
+import java.util.Collection;
+
+import static org.apache.commons.lang3.EnumUtils.getEnumList;
+
 @Getter
 public enum ScheduleType {
-    /**
-     * Simple schedule type.
-     */
     SIMPLE(com.vishnu.aggarwal.core.constants.ScheduleType.SIMPLE, com.vishnu.aggarwal.core.constants.ScheduleType.simple),
-    /**
-     * Cron schedule type.
-     */
     CRON(com.vishnu.aggarwal.core.constants.ScheduleType.CRON, com.vishnu.aggarwal.core.constants.ScheduleType.cron);
 
     private String key;
@@ -32,4 +27,9 @@ public enum ScheduleType {
         }
         return null;
     }
+
+    public static Collection<ScheduleType> getAll() {
+        return getEnumList(ScheduleType.class);
+    }
+
 }

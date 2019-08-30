@@ -27,35 +27,19 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 Created by vishnu on 30/3/18 10:46 AM
 */
 
-/**
- * The type User controller.
- */
 @RestController
 @CommonsLog
 @RequestMapping(value = BASE_URI, produces = APPLICATION_JSON_UTF8_VALUE)
 @Secured(ROLE_USER)
 public class UserController extends BaseController {
 
-    /**
-     * The User service.
-     */
     private final UserService userService;
 
-    /**
-     * Instantiates a new User controller.
-     *
-     * @param userService the user service
-     */
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
-    /**
-     * Gets current logged in user.
-     *
-     * @return the current logged in user
-     */
     @RequestMapping(value = CURRENT_LOGGED_IN_USER, method = GET)
     @ResponseStatus(ACCEPTED)
     public ResponseEntity<String> getCurrentLoggedInUser() {

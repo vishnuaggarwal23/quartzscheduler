@@ -6,9 +6,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-/**
- * The type Jpa configuration.
- */
 @Configuration("jpaConfiguration")
 @EntityScan("com.vishnu.aggarwal.rest.entity")
 @EnableJpaRepositories("com.vishnu.aggarwal.rest.repository.jpa")

@@ -23,15 +23,27 @@
 </head>
 
 <body>
-<input type="hidden"
-       id="isUserLoggedIn"
-       th:value="${#bools.isTrue(userLoggedIn)}"/>
+
+<input th:each="jobType: ${T(com.vishnu.aggarwal.core.enums.JobType).getAll()}" th:id="${jobType} + _jobType"
+       th:name="${jobType} + _jobType"
+       th:value="${jobType}"
+       type="hidden"/>
+
+<input th:each="scheduleType: ${T(com.vishnu.aggarwal.core.enums.ScheduleType).getAll()}"
+       th:id="${scheduleType} + _scheduleType" th:name="${scheduleType} + _scheduleType" th:value="${scheduleType}"
+       type="hidden"/>
+
+<input th:each="logType : ${T(com.vishnu.aggarwal.core.constants.ApplicationConstants).LOG_TYPES}"
+       th:id="${logType} + _logType" th:value="${logType}" type="hidden"/>
+
+<input id="isUserLoggedIn" th:value="${#bools.isTrue(userLoggedIn)}" type="hidden"/>
 
 <div th:if="${#bools.isTrue(userLoggedIn)}">
     <input id="currentLoggedInUserApi" name="currentLoggedInUserApi"
            th:value="@{${T(com.vishnu.aggarwal.core.constants.ThymeleafUrlMapping).currentLoggedInUserUri()}}"
            type="hidden"/>
     <input id="currentLoggedInUserJson" type="hidden"/>
+    <input id="currentLoggedInUserId" type="hidden"/>
     <header class="page-header">
         <nav class="navbar" role="navigation">
             <div class="container-fluid">

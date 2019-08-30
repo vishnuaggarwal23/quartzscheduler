@@ -6,17 +6,9 @@ import org.springframework.core.SpringProperties;
 
 import static org.springframework.boot.SpringApplication.run;
 
-/**
- * The type Admin.
- */
 @SpringBootApplication
 @ComponentScan("com.vishnu.aggarwal")
 public class Admin {
-    /**
-     * The entry point of application.
-     *
-     * @param args the input arguments
-     */
     public static void main(String[] args) {
         SpringProperties.setProperty("spring.devtools.restart.enabled", "true");
         System.setProperty("spring.devtools.restart.enabled", "true");

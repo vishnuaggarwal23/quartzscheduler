@@ -9,17 +9,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
-/**
- * The type Custom object binding.
- */
 @Configuration
 public class CustomObjectBinding {
 
-    /**
-     * Object mapper object mapper.
-     *
-     * @return the object mapper
-     */
     @Bean
     @Primary
     public ObjectMapper objectMapper() {

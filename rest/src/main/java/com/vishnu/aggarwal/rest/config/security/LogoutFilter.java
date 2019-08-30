@@ -28,9 +28,6 @@ import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
-/**
- * The type Logout filter.
- */
 @CommonsLog
 public class LogoutFilter extends org.springframework.security.web.authentication.logout.LogoutFilter {
 
@@ -38,15 +35,6 @@ public class LogoutFilter extends org.springframework.security.web.authenticatio
     private LogoutHandler logoutHandler;
     private LogoutSuccessHandler logoutSuccessHandler;
 
-    /**
-     * Instantiates a new Logout filter.
-     *
-     * @param logoutUrl                  the logout url
-     * @param logoutSuccessHandler       the logout success handler
-     * @param requestMatcher             the request matcher
-     * @param tokenAuthenticationService the token authentication service
-     * @param logoutHandler              the logout handler
-     */
     public LogoutFilter(
             String logoutUrl,
             LogoutSuccessHandler logoutSuccessHandler,
@@ -61,13 +49,6 @@ public class LogoutFilter extends org.springframework.security.web.authenticatio
         super.setLogoutRequestMatcher(requestMatcher);
     }
 
-    /**
-     * Instantiates a new Logout filter.
-     *
-     * @param logoutSuccessUrl    the logout success url
-     * @param baseMessageResolver the base message resolver
-     * @param handlers            the handlers
-     */
     @Deprecated
     public LogoutFilter(String logoutSuccessUrl, BaseMessageResolver baseMessageResolver, LogoutHandler... handlers) {
         super(logoutSuccessUrl, handlers);

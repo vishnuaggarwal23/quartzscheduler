@@ -11,26 +11,21 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
-import static java.lang.Boolean.FALSE;
+import static com.vishnu.aggarwal.core.constants.ApplicationConstants.UTF8;
+import static java.lang.Boolean.TRUE;
 
-/**
- * The type Custom message source.
- */
 @CommonsLog
 @Configuration("customMessageSource")
 public class CustomMessageSource {
 
-    /**
-     * Message source message source.
-     *
-     * @return the message source
-     */
     @Bean
     @Primary
     public MessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
         messageSource.setBasename("classpath:message");
-        messageSource.setFallbackToSystemLocale(FALSE);
+        messageSource.setFallbackToSystemLocale(TRUE);
+        messageSource.setUseCodeAsDefaultMessage(TRUE);
+        messageSource.setDefaultEncoding(UTF8);
         return messageSource;
     }
 }

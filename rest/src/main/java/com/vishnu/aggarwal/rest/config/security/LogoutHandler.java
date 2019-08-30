@@ -22,16 +22,9 @@ import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 import static org.springframework.security.core.context.SecurityContextHolder.clearContext;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
-/**
- * The type Logout handler.
- */
-
 @CommonsLog
 public class LogoutHandler implements org.springframework.security.web.authentication.logout.LogoutHandler {
 
-    /**
-     * The Token authentication service.
-     */
     @Autowired
     TokenAuthenticationService tokenAuthenticationService;
 

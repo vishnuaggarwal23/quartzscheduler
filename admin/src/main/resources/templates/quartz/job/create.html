@@ -33,7 +33,8 @@
                           data-create-new-cron-api-job-uri=@{${T(com.vishnu.aggarwal.core.constants.ThymeleafUrlMapping).createOrUpdateJobUri()}}"
                           th:method="${T(org.springframework.http.HttpMethod).POST}">
                         <div class="form-body" id="jobDetails">
-                            <h3 class="form-section">Job Info</h3>
+<!--                            <h3 class="form-section">Job Info</h3>-->
+                            <h3 class="form-section" th:text="#{job.info}"></h3>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -123,8 +124,8 @@
                                         <label class="control-label col-md-3" for="jobRecovery">Recovery</label>
                                         <div class="col-md-9">
                                             <div class="checkbox-list">
-                                                <label class="checkbox-inline job-recovery">
-                                                    <input class="form-control"
+                                                <label class="checkbox-inline">
+                                                    <input class="form-control job-recovery"
                                                            id="jobRecovery"
                                                            name="jobRecovery"
                                                            type="checkbox"/>
@@ -172,10 +173,13 @@
                                                     name="jobExecutorClass">
                                                 <option th:attr="
                                                         data-enum-name=${null},
+                                                        data-associated-job-type=${null},
                                                         data-associated-http-method=${null}" th:value="${null}">Select
                                                 </option>
-                                                <option th:attr="
+                                                <option class="hidden"
+                                                        th:attr="
                                                         data-enum-name=${jobExecutorClass},
+                                                        data-associated-job-type=${jobExecutorClass.getAssociatedJobType()},
                                                         data-associated-http-method=${jobExecutorClass.getHttpMethod()}"
                                                         th:each="jobExecutorClass : ${T(com.vishnu.aggarwal.core.enums.JobExecutorClass).getAll()}"
                                                         th:text="${jobExecutorClass.getClassName()}"
@@ -198,8 +202,8 @@
                                 <div class="col-md-6">
                                     <div class="row">
                                         <div class="col-md-offset-3 col-md-9">
-                                            <button class="btn green" type="submit">Submit</button>
-                                            <button class="btn default" type="reset">Cancel</button>
+                                            <button class="btn green submit" type="submit">Submit</button>
+                                            <button class="btn default cancel" formnovalidate="formnovalidate" type="reset">Cancel</button>
                                         </div>
                                     </div>
                                 </div>

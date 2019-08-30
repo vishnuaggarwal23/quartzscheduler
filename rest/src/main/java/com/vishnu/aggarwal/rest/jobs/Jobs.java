@@ -16,21 +16,12 @@ import java.util.List;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
 
-/**
- * The type Jobs.
- */
 @Component
 @CommonsLog
 public class Jobs {
 
-    /**
-     * The Token repo service.
-     */
     private final TokenRepoService tokenRepoService;
 
-    /**
-     * The User token repo service.
-     */
     private final UserTokenRepoService userTokenRepoService;
 
     @Autowired
@@ -41,9 +32,6 @@ public class Jobs {
         this.userTokenRepoService = userTokenRepoService;
     }
 
-    /**
-     * Inactivate expired user tokens.
-     */
     @Scheduled(zone = "UTC", cron = "0 0 0 * * ?")
     public void inactivateExpiredUserTokens() {
         List<Token> tokens = tokenRepoService.findAllExpiredTokens();

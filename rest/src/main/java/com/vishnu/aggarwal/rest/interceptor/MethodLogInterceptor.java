@@ -11,15 +11,9 @@ import org.springframework.aop.interceptor.DebugInterceptor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
-/**
- * The type Method log interceptor.
- */
 @Component
 @CommonsLog
 public class MethodLogInterceptor extends DebugInterceptor {
-    /**
-     * Instantiates a new Method log interceptor.
-     */
     public MethodLogInterceptor() {
         super();
     }

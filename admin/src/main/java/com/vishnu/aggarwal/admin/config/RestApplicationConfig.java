@@ -9,9 +9,6 @@ import org.springframework.stereotype.Component;
 
 import static java.lang.String.format;
 
-/**
- * The type Rest application config.
- */
 @Component
 public class RestApplicationConfig {
 
@@ -27,21 +24,10 @@ public class RestApplicationConfig {
     @Value(("${rest.application.port}"))
     private Integer port;
 
-    /**
-     * Rest application url string.
-     *
-     * @return the string
-     */
     public String restApplicationUrl() {
         return format("%s%s", this.baseUrl, this.contextPath).trim();
     }
 
-    /**
-     * Rest application url string.
-     *
-     * @param baseUri the base uri
-     * @return the string
-     */
     public String restApplicationUrl(final String baseUri) {
         return format("%s%s", restApplicationUrl(), baseUri).trim();
     }

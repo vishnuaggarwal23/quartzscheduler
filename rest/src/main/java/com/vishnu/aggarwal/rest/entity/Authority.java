@@ -16,9 +16,6 @@ import static javax.persistence.GenerationType.AUTO;
 Created by vishnu on 20/4/18 10:39 AM
 */
 
-/**
- * The type Authority.
- */
 @Entity
 @Table(name = "AUTHORITY")
 @Getter

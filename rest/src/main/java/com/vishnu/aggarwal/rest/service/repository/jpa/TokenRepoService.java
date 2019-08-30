@@ -28,24 +28,13 @@ import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.lang.System.currentTimeMillis;
 
-/**
- * The type Token repo service.
- */
 @Service
 @CommonsLog
 @Transactional
 public class TokenRepoService extends BaseRepoService<Token, Long> {
 
-    /**
-     * The Token repository.
-     */
     private final TokenRepository tokenRepository;
 
-    /**
-     * Instantiates a new Token repo service.
-     *
-     * @param tokenRepository the token repository
-     */
     @Autowired
     public TokenRepoService(TokenRepository tokenRepository) {
         this.tokenRepository = tokenRepository;
@@ -75,22 +64,11 @@ public class TokenRepoService extends BaseRepoService<Token, Long> {
         return super.save(token);
     }
 
-    /**
-     * Find by token and is deleted token.
-     *
-     * @param token the token
-     * @return the token
-     */
     @Cacheable(value = "findTokenByToken", key = "#token", unless = "#result == null")
     public Token findByToken(String token) {
         return tokenRepository.findByTokenAndIsDeleted(token, FALSE);
     }
 
-    /**
-     * Find all expired tokens list.
-     *
-     * @return the list
-     */
     @Cacheable(value = "findAllExpiredTokens", unless = "#result == null")
     public List<Token> findAllExpiredTokens() {
         CriteriaQuery<Token> criteriaQuery = getBaseCriteriaSelectImpl();

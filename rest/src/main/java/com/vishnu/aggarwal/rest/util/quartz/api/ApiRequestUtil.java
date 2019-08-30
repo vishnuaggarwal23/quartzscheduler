@@ -30,33 +30,15 @@ import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 
-/**
- * The type Api request util.
- */
 @CommonsLog
 abstract class ApiRequestUtil implements Job {
 
-    /**
-     * The Url.
-     */
     String url;
-    /**
-     * The Rest template.
-     */
     RestTemplate restTemplate;
-    /**
-     * The Http headers.
-     */
     HttpHeaders httpHeaders;
 
-    /**
-     * The Job execution exception.
-     */
     JobExecutionException jobExecutionException;
 
-    /**
-     * The Job trigger response service.
-     */
     @Autowired
     JobTriggerResponseRepoService jobTriggerResponseRepoService;
 
@@ -65,11 +47,6 @@ abstract class ApiRequestUtil implements Job {
         this.httpHeaders = new HttpHeaders();
     }
 
-    /**
-     * Instantiates a new Api request util.
-     *
-     * @param httpMethod the http method
-     */
     ApiRequestUtil(HttpMethod httpMethod) {
         this();
         this.httpHeaders.setAccessControlAllowMethods(singletonList(httpMethod));
@@ -85,13 +62,6 @@ abstract class ApiRequestUtil implements Job {
         }
     }
 
-    /**
-     * Construct job trigger response dto job trigger response dto.
-     *
-     * @param responseEntity      the response entity
-     * @param jobExecutionContext the job execution context
-     * @return the job trigger response dto
-     */
     private JobTriggerResponseDTO constructJobTriggerResponseDTO(ResponseEntity<Object> responseEntity, JobExecutionContext jobExecutionContext) {
         JobTriggerResponseDTO jobTriggerResponseDTO = new JobTriggerResponseDTO();
         jobTriggerResponseDTO.setResponseCode(responseEntity.getStatusCode().value());
@@ -105,12 +75,6 @@ abstract class ApiRequestUtil implements Job {
         return jobTriggerResponseDTO;
     }
 
-    /**
-     * Gets headers.
-     *
-     * @param jobDataMap the job data map
-     * @return the headers
-     */
     Map<String, String> getHeaders(final JobDataMap jobDataMap) {
         return jobDataMap
                 .keySet()
@@ -120,26 +84,10 @@ abstract class ApiRequestUtil implements Job {
                 .collect(toMap((String it) -> it.split("_")[1], jobDataMap::getString, (String a, String b) -> b));
     }
 
-    /**
-     * Gets request url.
-     *
-     * @param jobDataMap the job data map
-     * @return the request url
-     */
     String getRequestUrl(final JobDataMap jobDataMap) {
         return jobDataMap.getString(REQUEST_URL);
     }
 
-    /**
-     * Construct and save job trigger response.
-     *
-     * @param jobTriggerResponseRepoService the job trigger response repo service
-     * @param restTemplate                  the rest template
-     * @param url                           the url
-     * @param httpMethod                    the http method
-     * @param httpHeaders                   the http headers
-     * @param jobExecutionContext           the job execution context
-     */
     JobTriggerResponse constructAndSaveJobTriggerResponse(
             final JobTriggerResponseRepoService jobTriggerResponseRepoService,
             final RestTemplate restTemplate,

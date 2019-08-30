@@ -2,9 +2,6 @@ package com.vishnu.aggarwal.rest.config;
 
 import org.hibernate.dialect.MySQL57Dialect;
 
-/**
- * The type My sql dialect.
- */
 /*
 Created by vishnu on 24/4/18 1:04 PM
 */

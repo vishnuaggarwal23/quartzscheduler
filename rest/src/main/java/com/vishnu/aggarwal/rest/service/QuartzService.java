@@ -3,11 +3,9 @@ package com.vishnu.aggarwal.rest.service;
 import com.vishnu.aggarwal.core.co.*;
 import com.vishnu.aggarwal.core.dto.KeyGroupDescriptionDTO;
 import com.vishnu.aggarwal.core.dto.QuartzDTO;
-import com.vishnu.aggarwal.core.dto.UserDTO;
 import com.vishnu.aggarwal.core.exceptions.InvalidRequestException;
 import com.vishnu.aggarwal.core.exceptions.JobDetailNotFoundException;
 import com.vishnu.aggarwal.core.service.BaseService;
-import com.vishnu.aggarwal.rest.entity.User;
 import com.vishnu.aggarwal.rest.interfaces.UserService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.quartz.*;
@@ -21,15 +19,14 @@ import javax.validation.constraints.NotNull;
 import java.util.*;
 
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.*;
-import static com.vishnu.aggarwal.core.enums.JobExecutorClass.findJobExecutorClassByValue;
 import static com.vishnu.aggarwal.core.enums.ScheduleType.CRON;
 import static com.vishnu.aggarwal.core.enums.ScheduleType.SIMPLE;
+import static com.vishnu.aggarwal.rest.util.DTOConversion.convertFromJobDetails;
 import static com.vishnu.aggarwal.rest.util.DTOConversion.convertFromUser;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.lang.Class.forName;
 import static java.lang.String.format;
-import static java.util.Collections.singletonList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.TimeZone.getDefault;
@@ -48,27 +45,15 @@ import static org.quartz.impl.matchers.GroupMatcher.jobGroupEquals;
 import static org.quartz.impl.matchers.GroupMatcher.triggerGroupEquals;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
-/**
- * The type Quartz service.
- */
 @Service
 @CommonsLog
 @Transactional
 public class QuartzService extends BaseService {
 
-    /**
-     * The Quartz scheduler.
-     */
     private final Scheduler quartzScheduler;
 
     private final UserService userService;
 
-    /**
-     * Instantiates a new Quartz service.
-     *
-     * @param quartzScheduler the quartz scheduler
-     * @param userService     the user service
-     */
     @Autowired
     public QuartzService(
             Scheduler quartzScheduler,
@@ -143,22 +128,13 @@ public class QuartzService extends BaseService {
                 .sorted(((JobKey jk1, JobKey jk2) -> jk1.getName().compareToIgnoreCase(jk2.getName())))
                 .collect(toList())) {
             final JobDetail jobDetail = quartzScheduler.getJobDetail(jobKey);
-            jobDetails.add(new JobDetailsCO(
-                    new KeyGroupDescriptionDTO(jobKey.getName(), convertFromUser(userService.findById(jobKey.getGroup())), jobDetail.getDescription()),
-                    findJobExecutorClassByValue(jobDetail.getJobClass()),
-                    jobDetail.getJobDataMap().getWrappedMap(),
-                    jobDetail.isDurable(),
-                    countTriggersOfJob(jobKey) == 0,
-                    jobDetail.requestsRecovery(),
-                    jobDetail.isConcurrentExectionDisallowed(),
-                    jobDetail.isPersistJobDataAfterExecution()
-            ));
+            jobDetails.add(convertFromJobDetails(jobDetail, countTriggersOfJob(jobDetail.getKey()), userService.findById(jobKey.getGroup())));
         }
         return jobDetails;
     }
 
     public List<TriggerDetailsCO> fetchTriggerDetailsByJobKeyGroupName(@NotBlank @NotEmpty @NotNull final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException, IllegalArgumentException, NullPointerException {
-        if(isNull(keyGroupDescriptionDTO.getGroup())) {
+        if (isNull(keyGroupDescriptionDTO.getGroup())) {
             keyGroupDescriptionDTO.setGroup(convertFromUser(userService.getCurrentLoggedInUser()));
         }
 
@@ -354,26 +330,17 @@ public class QuartzService extends BaseService {
     }
 
     public JobDetailsCO fetchJobDetailsByJobKeyName(final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException {
-        if(isNull(keyGroupDescriptionDTO.getGroup())) {
+        if (isNull(keyGroupDescriptionDTO.getGroup())) {
             keyGroupDescriptionDTO.setGroup(convertFromUser(userService.getCurrentLoggedInUser()));
         }
 
         final JobKey jobKey = jobKey(keyGroupDescriptionDTO.getKey(), keyGroupDescriptionDTO.getGroup().getId().toString());
         final JobDetail jobDetail = quartzScheduler.getJobDetail(jobKey);
-        return new JobDetailsCO(
-                new KeyGroupDescriptionDTO(jobDetail.getKey().getName(), convertFromUser(userService.findById(jobDetail.getKey().getGroup())), jobDetail.getDescription()),
-                findJobExecutorClassByValue(jobDetail.getJobClass()),
-                jobDetail.getJobDataMap().getWrappedMap(),
-                jobDetail.isDurable(),
-                countTriggersOfJob(jobKey) == 0,
-                jobDetail.requestsRecovery(),
-                jobDetail.isConcurrentExectionDisallowed(),
-                jobDetail.isConcurrentExectionDisallowed()
-        );
+        return convertFromJobDetails(jobDetail, countTriggersOfJob(jobDetail.getKey()), userService.findById(jobKey.getGroup()));
     }
 
     public TriggerDetailsCO fetchTriggerDetailsByTriggerKeyGroupName(final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException {
-        if(isNull(keyGroupDescriptionDTO.getGroup())) {
+        if (isNull(keyGroupDescriptionDTO.getGroup())) {
             keyGroupDescriptionDTO.setGroup(convertFromUser(userService.getCurrentLoggedInUser()));
         }
 

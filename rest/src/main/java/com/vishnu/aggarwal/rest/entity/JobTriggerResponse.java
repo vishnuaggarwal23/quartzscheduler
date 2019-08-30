@@ -13,9 +13,6 @@ import java.util.Date;
 
 import static javax.persistence.FetchType.EAGER;
 
-/**
- * The type Job trigger response.
- */
 @Entity
 @Table(name = "QRTZ_TRIGGERS_RESPONSE")
 @Getter

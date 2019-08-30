@@ -19,9 +19,6 @@ import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
-/**
- * The type User dto.
- */
 @Getter
 @Setter
 @ToString
@@ -65,41 +62,21 @@ public class UserDTO {
         this.id = valueOf(id);
     }
 
-    /**
-     * Is account non expired boolean.
-     *
-     * @return the boolean
-     */
     @JsonIgnore
     public Boolean isAccountNonExpired() {
         return !this.accountExpired;
     }
 
-    /**
-     * Is account non locked boolean.
-     *
-     * @return the boolean
-     */
     @JsonIgnore
     public Boolean isAccountNonLocked() {
         return !this.accountLocked;
     }
 
-    /**
-     * Is credentials non expired boolean.
-     *
-     * @return the boolean
-     */
     @JsonIgnore
     public Boolean isCredentialsNonExpired() {
         return !this.credentialsExpired;
     }
 
-    /**
-     * Is enabled boolean.
-     *
-     * @return the boolean
-     */
     @JsonIgnore
     public Boolean isEnabled() {
         return this.accountEnabled;

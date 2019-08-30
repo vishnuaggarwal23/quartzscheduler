@@ -18,17 +18,11 @@ import static java.lang.Boolean.FALSE;
 Created by vishnu on 20/4/18 2:55 PM
 */
 
-/**
- * The type Authority repo service.
- */
 @Service
 @CommonsLog
 @Transactional
 public class AuthorityRepoService extends BaseRepoService<Authority, Long> {
 
-    /**
-     * The Authority repository.
-     */
     private final AuthorityRepository authorityRepository;
 
     @Autowired
@@ -46,12 +40,6 @@ public class AuthorityRepoService extends BaseRepoService<Authority, Long> {
         return authorityRepository;
     }
 
-    /**
-     * Find by authority and is deleted authority.
-     *
-     * @param name the name
-     * @return the authority
-     */
     @Cacheable(value = "findAuthorityByName", key = "#name", unless = "#result == null")
     public Authority findByName(String name) {
         return authorityRepository.findByNameAndIsDeleted(name, FALSE);

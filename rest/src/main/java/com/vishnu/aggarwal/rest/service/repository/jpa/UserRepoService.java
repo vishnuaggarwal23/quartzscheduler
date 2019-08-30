@@ -25,17 +25,11 @@ import javax.persistence.criteria.Root;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
-/**
- * The type User repo service.
- */
 @Service
 @CommonsLog
 @Transactional
 public class UserRepoService extends BaseRepoService<User, Long> {
 
-    /**
-     * The User repository.
-     */
     private final UserRepository userRepository;
 
     @Autowired
@@ -53,13 +47,7 @@ public class UserRepoService extends BaseRepoService<User, Long> {
         return userRepository;
     }
 
-    /**
-     * Check if username is unique boolean.
-     *
-     * @param username the username
-     * @return the boolean
-     */
-//    @Cacheable(value = "isUsernameUnique", key = "#username", unless = "#result == null")
+    //    @Cacheable(value = "isUsernameUnique", key = "#username", unless = "#result == null")
     public Boolean checkIfUsernameIsUnique(String username) {
         return userRepository.countByUsernameAndIsDeleted(username, FALSE) == 0;
     }
@@ -80,13 +68,6 @@ public class UserRepoService extends BaseRepoService<User, Long> {
         return super.save(user);
     }
 
-    /**
-     * Find by username user.
-     *
-     * @param username the username
-     * @return the user
-     * @throws HibernateException the hibernate exception
-     */
     @Cacheable(value = "findUserByUsername", key = "#username", unless = "#result == null")
     public User findByUsername(final String username) throws HibernateException, NoResultException {
         CriteriaQuery<User> criteriaQuery = getBaseCriteriaSelectImpl();

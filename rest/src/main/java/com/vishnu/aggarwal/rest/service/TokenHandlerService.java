@@ -33,25 +33,13 @@ import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 
-/**
- * The type Token handler service.
- */
 @Service
 @CommonsLog
 @Transactional
 public class TokenHandlerService extends BaseService implements com.vishnu.aggarwal.rest.interfaces.TokenHandlerService {
 
-    /**
-     * The User service.
-     */
     private final UserService userService;
-    /**
-     * The User token service.
-     */
     private final UserTokenService userTokenService;
-    /**
-     * The Account status user details check.
-     */
     private final UserDetailsChecker accountStatusUserDetailsCheck;
     private final HttpServletRequest httpServletRequest;
     @Value("${jwt.secret}")
@@ -59,14 +47,6 @@ public class TokenHandlerService extends BaseService implements com.vishnu.aggar
     @Value("${jwt.expirationTime:''}")
     private String EXPIRATION_TIME;
 
-    /**
-     * Instantiates a new Token handler service.
-     *
-     * @param userService                   the user service
-     * @param userTokenService              the user token service
-     * @param accountStatusUserDetailsCheck the account status user details check
-     * @param httpServletRequest            the http servlet request
-     */
     @Autowired
     public TokenHandlerService(
             UserService userService,

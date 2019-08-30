@@ -24,6 +24,8 @@ let Login = function () {
                     url: $('form.login-form').data('userLoginUri'),
                     type: HTTP_POST,
                     contentType: APPLICATION_JSON,
+                    async: false,
+                    cache: false,
                     data: JSON.stringify({
                         username: $('input#username').val(),
                         password: $('input#password').val()
@@ -40,7 +42,8 @@ let Login = function () {
                     }
                 })
             }
-        })
+        });
+        deleteFromLocalStorage(CURRENT_LOGGED_IN_USER_STORAGE_KEY + getCookie(CURRENT_LOGGED_IN_USER_ID))
     };
 
     return {

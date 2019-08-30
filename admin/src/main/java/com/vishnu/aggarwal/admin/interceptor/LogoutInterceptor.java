@@ -36,16 +36,10 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 import static org.springframework.web.util.WebUtils.getCookie;
 
-/**
- * The type Logout interceptor.
- */
 @Component
 @CommonsLog
 public class LogoutInterceptor implements HandlerInterceptor {
 
-    /**
-     * The Authentication service.
-     */
     private final AuthenticationService authenticationService;
 
     private final BaseMessageResolver baseMessageResolver;

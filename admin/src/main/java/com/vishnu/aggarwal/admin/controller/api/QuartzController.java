@@ -22,9 +22,6 @@ import static org.springframework.http.HttpStatus.ACCEPTED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-/**
- * The type Quartz controller.
- */
 @RestController(value = "apiQuartzController")
 @RequestMapping(value = UrlMapping.Admin.Api.BASE_URI + Quartz.BASE_URI, produces = {APPLICATION_JSON_UTF8_VALUE, APPLICATION_JSON_VALUE}, consumes = {APPLICATION_JSON_UTF8_VALUE, APPLICATION_JSON_VALUE})
 @CommonsLog
@@ -32,23 +29,11 @@ public class QuartzController extends BaseController {
 
     private final QuartzService quartzService;
 
-    /**
-     * Instantiates a new Quartz controller.
-     *
-     * @param quartzService the quartz service
-     */
     @Autowired
     public QuartzController(QuartzService quartzService) {
         this.quartzService = quartzService;
     }
 
-    /**
-     * Create job response entity.
-     *
-     * @param quartzDTO  the quartz dto
-     * @param xAuthToken the x auth token
-     * @return the response entity
-     */
     @PostMapping(CREATE_UPDATE_JOB)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
@@ -56,13 +41,6 @@ public class QuartzController extends BaseController {
         return quartzService.createJob(quartzDTO, xAuthToken);
     }
 
-    /**
-     * Update job response entity.
-     *
-     * @param quartzDTO  the quartz dto
-     * @param xAuthToken the x auth token
-     * @return the response entity
-     */
     @PutMapping(CREATE_UPDATE_JOB)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
@@ -70,13 +48,6 @@ public class QuartzController extends BaseController {
         return quartzService.updateJob(quartzDTO, xAuthToken);
     }
 
-    /**
-     * Delete job response entity.
-     *
-     * @param keyGroupDescriptionDTO the key group description dto
-     * @param xAuthToken             the x auth token
-     * @return the response entity
-     */
     @DeleteMapping(DELETE_JOB)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
@@ -84,12 +55,6 @@ public class QuartzController extends BaseController {
         return quartzService.deleteJob(keyGroupDescriptionDTO, xAuthToken);
     }
 
-    /**
-     * Delete jobs response entity.
-     *
-     * @param xAuthToken the x auth token
-     * @return the response entity
-     */
     @DeleteMapping(DELETE_JOBS)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
@@ -97,13 +62,6 @@ public class QuartzController extends BaseController {
         return quartzService.deleteJobs(xAuthToken);
     }
 
-    /**
-     * Resume job response entity.
-     *
-     * @param keyGroupDescriptionDTO the key group description dto
-     * @param xAuthToken             the x auth token
-     * @return the response entity
-     */
     @PutMapping(RESUME_JOB)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
@@ -111,12 +69,6 @@ public class QuartzController extends BaseController {
         return quartzService.resumeJob(keyGroupDescriptionDTO, xAuthToken);
     }
 
-    /**
-     * Resume jobs response entity.
-     *
-     * @param xAuthToken the x auth token
-     * @return the response entity
-     */
     @PutMapping(RESUME_JOBS)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
@@ -124,13 +76,6 @@ public class QuartzController extends BaseController {
         return quartzService.resumeJobs(xAuthToken);
     }
 
-    /**
-     * Pause job response entity.
-     *
-     * @param keyGroupDescriptionDTO the key group description dto
-     * @param xAuthToken             the x auth token
-     * @return the response entity
-     */
     @PutMapping(PAUSE_JOB)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
@@ -138,12 +83,6 @@ public class QuartzController extends BaseController {
         return quartzService.pauseJob(keyGroupDescriptionDTO, xAuthToken);
     }
 
-    /**
-     * Pause jobs response entity.
-     *
-     * @param xAuthToken the x auth token
-     * @return the response entity
-     */
     @PutMapping(PAUSE_JOBS)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
@@ -151,13 +90,6 @@ public class QuartzController extends BaseController {
         return quartzService.pauseJobs(xAuthToken);
     }
 
-    /**
-     * Show job response entity.
-     *
-     * @param jobKey     the job key
-     * @param xAuthToken the x auth token
-     * @return the response entity
-     */
     @GetMapping(SHOW_JOB)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
@@ -165,12 +97,6 @@ public class QuartzController extends BaseController {
         return quartzService.showJob(jobKey, xAuthToken);
     }
 
-    /**
-     * List jobs response entity.
-     *
-     * @param xAuthToken the x auth token
-     * @return the response entity
-     */
     @GetMapping(LIST_JOBS)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
@@ -178,13 +104,6 @@ public class QuartzController extends BaseController {
         return quartzService.listJobs(xAuthToken);
     }
 
-    /**
-     * Create trigger response entity.
-     *
-     * @param quartzDTO  the quartz dto
-     * @param xAuthToken the x auth token
-     * @return the response entity
-     */
     @PostMapping(CREATE_UPDATE_TRIGGER)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
@@ -192,13 +111,6 @@ public class QuartzController extends BaseController {
         return quartzService.createTrigger(quartzDTO, xAuthToken);
     }
 
-    /**
-     * Update trigger response entity.
-     *
-     * @param quartzDTO  the quartz dto
-     * @param xAuthToken the x auth token
-     * @return the response entity
-     */
     @PutMapping(CREATE_UPDATE_TRIGGER)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
@@ -206,13 +118,6 @@ public class QuartzController extends BaseController {
         return quartzService.updateTrigger(quartzDTO, xAuthToken);
     }
 
-    /**
-     * Delete trigger response entity.
-     *
-     * @param keyGroupDescriptionDTO the key group description dto
-     * @param xAuthToken             the x auth token
-     * @return the response entity
-     */
     @DeleteMapping(DELETE_TRIGGER)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
@@ -220,12 +125,6 @@ public class QuartzController extends BaseController {
         return quartzService.deleteTrigger(keyGroupDescriptionDTO, xAuthToken);
     }
 
-    /**
-     * Delete triggers response entity.
-     *
-     * @param xAuthToken the x auth token
-     * @return the response entity
-     */
     @DeleteMapping(DELETE_TRIGGERS)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
@@ -233,13 +132,6 @@ public class QuartzController extends BaseController {
         return quartzService.deleteTriggers(xAuthToken);
     }
 
-    /**
-     * Resume trigger response entity.
-     *
-     * @param keyGroupDescriptionDTO the key group description dto
-     * @param xAuthToken             the x auth token
-     * @return the response entity
-     */
     @PutMapping(RESUME_TRIGGER)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
@@ -247,12 +139,6 @@ public class QuartzController extends BaseController {
         return quartzService.resumeTrigger(keyGroupDescriptionDTO, xAuthToken);
     }
 
-    /**
-     * Resume triggers response entity.
-     *
-     * @param xAuthToken the x auth token
-     * @return the response entity
-     */
     @PutMapping(RESUME_TRIGGERS)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
@@ -260,13 +146,6 @@ public class QuartzController extends BaseController {
         return quartzService.resumeTriggers(xAuthToken);
     }
 
-    /**
-     * Pause trigger response entity.
-     *
-     * @param keyGroupDescriptionDTO the key group description dto
-     * @param xAuthToken             the x auth token
-     * @return the response entity
-     */
     @PutMapping(PAUSE_TRIGGER)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
@@ -274,12 +153,6 @@ public class QuartzController extends BaseController {
         return quartzService.pauseTrigger(keyGroupDescriptionDTO, xAuthToken);
     }
 
-    /**
-     * Pause triggers response entity.
-     *
-     * @param xAuthToken the x auth token
-     * @return the response entity
-     */
     @PutMapping(PAUSE_TRIGGERS)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
@@ -287,13 +160,6 @@ public class QuartzController extends BaseController {
         return quartzService.pauseTriggers(xAuthToken);
     }
 
-    /**
-     * Show trigger response entity.
-     *
-     * @param triggerKey the trigger key
-     * @param xAuthToken the x auth token
-     * @return the response entity
-     */
     @GetMapping(SHOW_TRIGGER)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
@@ -301,13 +167,6 @@ public class QuartzController extends BaseController {
         return quartzService.showTrigger(triggerKey, xAuthToken);
     }
 
-    /**
-     * List triggers response entity.
-     *
-     * @param jobKey     the job key
-     * @param xAuthToken the x auth token
-     * @return the response entity
-     */
     @GetMapping(LIST_TRIGGERS)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
@@ -315,12 +174,6 @@ public class QuartzController extends BaseController {
         return quartzService.listTriggers(jobKey, xAuthToken);
     }
 
-    /**
-     * List quartz details response entity.
-     *
-     * @param xAuthToken the x auth token
-     * @return the response entity
-     */
     @GetMapping(LIST_QUARTZ_DETAILS)
     @ResponseBody
     @ResponseStatus(ACCEPTED)
@@ -328,13 +181,6 @@ public class QuartzController extends BaseController {
         return quartzService.listQuartzDetails(xAuthToken);
     }
 
-    /**
-     * Job keys autocomplete response entity.
-     *
-     * @param searchText the search text
-     * @param xAuthToken the x auth token
-     * @return the response entity
-     */
     @GetMapping(JOB_KEYS_AUTOCOMPLETE)
     @ResponseBody
     @ResponseStatus(ACCEPTED)

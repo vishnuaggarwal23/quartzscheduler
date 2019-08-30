@@ -43,54 +43,23 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
-/**
- * The type Token authentication service.
- */
 @Service
 @Transactional
 @CommonsLog
 public class TokenAuthenticationService extends BaseService implements com.vishnu.aggarwal.rest.interfaces.TokenAuthenticationService {
 
-    /**
-     * The User service.
-     */
     private final UserService userService;
 
-    /**
-     * The Token handler service.
-     */
     private final TokenHandlerService tokenHandlerService;
 
-    /**
-     * The User token service.
-     */
     private final UserTokenService userTokenService;
 
-    /**
-     * The Token service.
-     */
     private final TokenService tokenService;
 
-    /**
-     * The Object mapper.
-     */
     private final ObjectMapper objectMapper;
 
-    /**
-     * The Account status user details check.
-     */
     private final UserDetailsChecker accountStatusUserDetailsCheck;
 
-    /**
-     * Instantiates a new Token authentication service.
-     *
-     * @param userService                   the user service
-     * @param tokenHandlerService           the token handler service
-     * @param userTokenService              the user token service
-     * @param tokenService                  the token service
-     * @param objectMapper                  the object mapper
-     * @param accountStatusUserDetailsCheck the account status user details check
-     */
     @Autowired
     public TokenAuthenticationService(UserService userService,
                                       TokenHandlerService tokenHandlerService,

@@ -7,9 +7,6 @@ import lombok.ToString;
 
 import java.util.Date;
 
-/**
- * The type Job trigger response dto.
- */
 @Getter
 @Setter
 @ToString

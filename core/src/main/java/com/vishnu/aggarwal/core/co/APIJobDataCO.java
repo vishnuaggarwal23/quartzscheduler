@@ -5,9 +5,6 @@ import org.springframework.http.HttpMethod;
 
 import java.util.Collection;
 
-/**
- * The type Api job data co.
- */
 @Getter
 @Setter
 @AllArgsConstructor

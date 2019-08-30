@@ -7,14 +7,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
 import java.util.Map;
 
 import static java.lang.Boolean.FALSE;
 
-/**
- * The type Job details co.
- */
 @Getter
 @Setter
 @NoArgsConstructor

@@ -12,9 +12,6 @@ import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.MediaType.parseMediaType;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
-/**
- * The type Api get request util.
- */
 @CommonsLog
 public class ApiGetRequestUtil extends ApiRequestUtil {
 
