@@ -5,6 +5,8 @@ import com.vishnu.aggarwal.core.enums.JobExecutorClass;
 import com.vishnu.aggarwal.core.enums.JobType;
 import lombok.*;
 
+import java.util.Date;
+
 import static java.lang.Boolean.FALSE;
 
 @Getter
@@ -20,6 +22,14 @@ public class JobCO {
     private JobType type;
     private boolean scheduled = FALSE;
     private JobExecutorClass executorClass;
+
+    public Date getCreatedDate() {
+        return this.replace ? null : new Date();
+    }
+
+    public Date getUpdatedDate() {
+        return this.replace ? new Date() : this.getCreatedDate();
+    }
 
     private APIJobDataCO apiJobData;
     private ShellScriptJobDataCO shellScriptJobData;

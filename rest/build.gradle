@@ -43,7 +43,7 @@ dependencies {
         exclude module: "HikariCP-java7"
     }
     compile group: 'com.cronutils', name: 'cron-utils', version: '7.0.1'
-//    compile group: 'org.liquibase', name: 'liquibase-core', version: '3.5.5'
+    compile group: 'org.liquibase', name: 'liquibase-core', version: '3.8.0'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: "${springBootVersion}"
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: "${springBootVersion}"
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: "${springBootVersion}"

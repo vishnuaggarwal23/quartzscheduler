@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:appdba="http://www.datical.net/xml/ns/appdba" xmlns:datical="http://www.datical.net/xml/ns/datical" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+    
+    <changeSet author="vishnu_aggarwal" id="hibernate_schema_1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="AUTHORITY"/>
+            </not>
+        </preConditions>
+        <createTable tableName="AUTHORITY">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="createdBy" type="TINYBLOB"/>
+            <column name="createdDate" type="datetime"/>
+            <column name="isDeleted" type="BIT(1)"/>
+            <column name="lastModifiedBy" type="TINYBLOB"/>
+            <column name="lastModifiedDate" type="datetime"/>
+            <column name="version" type="BIGINT"/>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    
+    <changeSet author="vishnu_aggarwal" id="hibernate_schema_2">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="QRTZ_TRIGGERS_RESPONSE"/>
+            </not>
+        </preConditions>
+        <createTable tableName="QRTZ_TRIGGERS_RESPONSE">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="createdBy" type="TINYBLOB"/>
+            <column name="createdDate" type="datetime"/>
+            <column name="isDeleted" type="BIT(1)"/>
+            <column name="lastModifiedBy" type="TINYBLOB"/>
+            <column name="lastModifiedDate" type="datetime"/>
+            <column name="version" type="BIGINT"/>
+            <column name="fireTime" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="jobKey" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="responseBody" type="LONGTEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="responseCode" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="responseHeader" type="LONGTEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="triggerKey" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="jobGroup_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="triggerGroup_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    
+    <changeSet author="vishnu_aggarwal" id="hibernate_schema_3">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="TOKEN"/>
+            </not>
+        </preConditions>
+        <createTable tableName="TOKEN">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="createdBy" type="TINYBLOB"/>
+            <column name="createdDate" type="datetime"/>
+            <column name="isDeleted" type="BIT(1)"/>
+            <column name="lastModifiedBy" type="TINYBLOB"/>
+            <column name="lastModifiedDate" type="datetime"/>
+            <column name="version" type="BIGINT"/>
+            <column name="expirationDate" type="datetime"/>
+            <column name="issueId" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="issuedDate" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="token" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    
+    <changeSet author="vishnu_aggarwal" id="hibernate_schema_4">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="USER"/>
+            </not>
+        </preConditions>
+        <createTable tableName="USER">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="createdBy" type="TINYBLOB"/>
+            <column name="createdDate" type="datetime"/>
+            <column name="isDeleted" type="BIT(1)"/>
+            <column name="lastModifiedBy" type="TINYBLOB"/>
+            <column name="lastModifiedDate" type="datetime"/>
+            <column name="version" type="BIGINT"/>
+            <column name="accountEnabled" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="accountExpired" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="accountLocked" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="credentialsExpired" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="firstName" type="VARCHAR(255)"/>
+            <column name="lastName" type="VARCHAR(255)"/>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="username" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    
+    <changeSet author="vishnu_aggarwal" id="hibernate_schema_5">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="USER_AUTHORITY"/>
+            </not>
+        </preConditions>
+        <createTable tableName="USER_AUTHORITY">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="createdBy" type="TINYBLOB"/>
+            <column name="createdDate" type="datetime"/>
+            <column name="isDeleted" type="BIT(1)"/>
+            <column name="lastModifiedBy" type="TINYBLOB"/>
+            <column name="lastModifiedDate" type="datetime"/>
+            <column name="version" type="BIGINT"/>
+            <column name="status" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="authorityId" type="BIGINT"/>
+            <column name="userId" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    
+    <changeSet author="vishnu_aggarwal" id="hibernate_schema_6">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="USER_TOKEN"/>
+            </not>
+        </preConditions>
+        <createTable tableName="USER_TOKEN">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="createdBy" type="TINYBLOB"/>
+            <column name="createdDate" type="datetime"/>
+            <column name="isDeleted" type="BIT(1)"/>
+            <column name="lastModifiedBy" type="TINYBLOB"/>
+            <column name="lastModifiedDate" type="datetime"/>
+            <column name="version" type="BIGINT"/>
+            <column name="status" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tokenId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="userId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    
+    <changeSet author="vishnu_aggarwal" id="hibernate_schema_7">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="hibernate_sequence"/>
+            </not>
+        </preConditions>
+        <createTable tableName="hibernate_sequence">
+            <column name="next_val" type="BIGINT" defaultValue="0" defaultOnNull="0" defaultValueNumeric="0"/>
+        </createTable>
+    </changeSet>
+    
+    <changeSet author="vishnu_aggarwal" id="hibernate_schema_8">
+        <preConditions onFail="HALT">
+            <and>
+                <tableExists tableName="USER_TOKEN"/>
+                <columnExists tableName="USER_TOKEN" columnName="tokenId"/>
+            </and>
+        </preConditions>
+        <createIndex indexName="FK339iawr0pbby80gs39b09v0d8" tableName="USER_TOKEN">
+            <column name="tokenId"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="vishnu_aggarwal" id="hibernate_schema_9">
+        <preConditions onFail="HALT">
+            <and>
+                <tableExists tableName="QRTZ_TRIGGERS_RESPONSE"/>
+                <columnExists tableName="QRTZ_TRIGGERS_RESPONSE" columnName="triggerGroup_id"/>
+            </and>
+        </preConditions>
+        <createIndex indexName="FKbip28p8qh15w2fyd4lehcg298" tableName="QRTZ_TRIGGERS_RESPONSE">
+            <column name="triggerGroup_id"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="vishnu_aggarwal" id="hibernate_schema_10">
+        <preConditions onFail="HALT">
+            <and>
+                <tableExists tableName="USER_AUTHORITY"/>
+                <columnExists tableName="USER_AUTHORITY" columnName="authorityId"/>
+            </and>
+        </preConditions>
+        <createIndex indexName="FKea00uwk6khgqpmakfm5liwdc0" tableName="USER_AUTHORITY">
+            <column name="authorityId"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="vishnu_aggarwal" id="hibernate_schema_11">
+        <preConditions onFail="HALT">
+            <and>
+                <tableExists tableName="USER_TOKEN"/>
+                <columnExists tableName="USER_TOKEN" columnName="userId"/>
+            </and>
+        </preConditions>
+        <createIndex indexName="FKg47wkgn5hp67i9emp519iejep" tableName="USER_TOKEN">
+            <column name="userId"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="vishnu_aggarwal" id="hibernate_schema_12">
+        <preConditions onFail="HALT">
+            <and>
+                <tableExists tableName="USER_AUTHORITY"/>
+                <columnExists tableName="USER_AUTHORITY" columnName="userId"/>
+            </and>
+        </preConditions>
+        <createIndex indexName="FKgvefv903icv0i0jto0p1em2xb" tableName="USER_AUTHORITY">
+            <column name="userId"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="vishnu_aggarwal" id="hibernate_schema_13">
+        <preConditions onFail="HALT">
+            <and>
+                <tableExists tableName="QRTZ_TRIGGERS_RESPONSE"/>
+                <columnExists tableName="QRTZ_TRIGGERS_RESPONSE" columnName="jobGroup_id"/>
+            </and>
+        </preConditions>
+        <createIndex indexName="FKmpts7cv6q45gt642l61qpxe5l" tableName="QRTZ_TRIGGERS_RESPONSE">
+            <column name="jobGroup_id"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="vishnu_aggarwal" id="hibernate_schema_14">
+        <preConditions onFail="HALT">
+            <and>
+                <tableExists tableName="USER_TOKEN"/>
+                <tableExists tableName="TOKEN"/>
+                <columnExists tableName="USER_TOKEN" columnName="tokenId"/>
+                <columnExists tableName="TOKEN" columnName="id"/>
+            </and>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="tokenId" baseTableName="USER_TOKEN" constraintName="FK339iawr0pbby80gs39b09v0d8" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="TOKEN" validate="true"/>
+    </changeSet>
+    
+    <changeSet author="vishnu_aggarwal" id="hibernate_schema_15">
+        <preConditions onFail="HALT">
+            <and>
+                <tableExists tableName="QRTZ_TRIGGERS_RESPONSE"/>
+                <tableExists tableName="USER"/>
+                <columnExists tableName="QRTZ_TRIGGERS_RESPONSE" columnName="triggerGroup_id"/>
+                <columnExists tableName="USER" columnName="id"/>
+            </and>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="triggerGroup_id" baseTableName="QRTZ_TRIGGERS_RESPONSE" constraintName="FKbip28p8qh15w2fyd4lehcg298" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="USER" validate="true"/>
+    </changeSet>
+    
+    <changeSet author="vishnu_aggarwal" id="hibernate_schema_16">
+        <preConditions onFail="HALT">
+            <and>
+                <tableExists tableName="USER_AUTHORITY"/>
+                <tableExists tableName="AUTHORITY"/>
+                <columnExists tableName="USER_AUTHORITY" columnName="authorityId"/>
+                <columnExists tableName="AUTHORITY" columnName="id"/>
+            </and>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="authorityId" baseTableName="USER_AUTHORITY" constraintName="FKea00uwk6khgqpmakfm5liwdc0" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="AUTHORITY" validate="true"/>
+    </changeSet>
+    
+    <changeSet author="vishnu_aggarwal" id="hibernate_schema_17">
+        <preConditions onFail="HALT">
+            <and>
+                <tableExists tableName="USER_TOKEN"/>
+                <tableExists tableName="USER"/>
+                <columnExists tableName="USER_TOKEN" columnName="userId"/>
+                <columnExists tableName="USER" columnName="id"/>
+            </and>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="userId" baseTableName="USER_TOKEN" constraintName="FKg47wkgn5hp67i9emp519iejep" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="USER" validate="true"/>
+    </changeSet>
+    
+    <changeSet author="vishnu_aggarwal" id="hibernate_schema_18">
+        <preConditions onFail="HALT">
+            <and>
+                <tableExists tableName="USER_AUTHORITY"/>
+                <tableExists tableName="USER"/>
+                <columnExists tableName="USER_AUTHORITY" columnName="userId"/>
+                <columnExists tableName="USER" columnName="id"/>
+            </and>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="userId" baseTableName="USER_AUTHORITY" constraintName="FKgvefv903icv0i0jto0p1em2xb" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="USER" validate="true"/>
+    </changeSet>
+    
+    <changeSet author="vishnu_aggarwal" id="hibernate_schema_19">
+        <preConditions onFail="HALT">
+            <and>
+                <tableExists tableName="QRTZ_TRIGGERS_RESPONSE"/>
+                <tableExists tableName="USER"/>
+                <columnExists tableName="QRTZ_TRIGGERS_RESPONSE" columnName="jobGroup_id"/>
+                <columnExists tableName="USER" columnName="id"/>
+            </and>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="jobGroup_id" baseTableName="QRTZ_TRIGGERS_RESPONSE" constraintName="FKmpts7cv6q45gt642l61qpxe5l" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="USER" validate="true"/>
+    </changeSet>
+
+    <changeSet id="hibernate_schema_20" author="vishnu_aggarwal">
+        <preConditions onFail="HALT">
+            <and>
+                <tableExists tableName="hibernate_sequence"/>
+                <columnExists tableName="hibernate_sequence" columnName="next_val"/>
+            </and>
+        </preConditions>
+        <insert tableName="hibernate_sequence">
+            <column name="next_val" value="0"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

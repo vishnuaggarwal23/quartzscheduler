@@ -2,6 +2,7 @@ package com.vishnu.aggarwal.core.co;
 
 import com.vishnu.aggarwal.core.dto.KeyGroupDescriptionDTO;
 import com.vishnu.aggarwal.core.enums.ScheduleType;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import java.util.TimeZone;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class TriggerDetailsCO {
     private KeyGroupDescriptionDTO details;
     private Date startTime;
@@ -23,6 +25,8 @@ public class TriggerDetailsCO {
     private ScheduleType type;
     private String state;
     private Date scheduledDate;
+    private Date createdDate;
+    private Date updatedDate;
 
     public TriggerDetailsCO(KeyGroupDescriptionDTO details, Date startTime, Date nextFireTime, Date previousFireTime, Date endTime, Date finalFireTime, Integer priority, String state) {
         this.details = details;
@@ -38,6 +42,7 @@ public class TriggerDetailsCO {
     @Getter
     @Setter
     @NoArgsConstructor
+    @AllArgsConstructor
     public class SimpleTriggerDetails {
         private Integer countTriggered;
         private Integer repeatCount;
@@ -51,5 +56,13 @@ public class TriggerDetailsCO {
         private String cronExpression;
         private String expressionSummary;
         private TimeZone timeZone;
+    }
+
+    public long getCreatedDateInMillis() {
+        return this.createdDate != null ? this.createdDate.toInstant().toEpochMilli() : 0L;
+    }
+
+    public long getUpdatedDateInMillis() {
+        return this.updatedDate != null ? this.updatedDate.toInstant().toEpochMilli() : 0L;
     }
 }

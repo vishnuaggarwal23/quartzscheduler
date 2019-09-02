@@ -27,6 +27,8 @@ public class ApplicationConstants {
     public static final String REQUEST_URL = "requestURL";
     public static final String REQUEST_TYPE = "requestType";
     public static final String REQUEST_HEADER = "requestHeader";
+    public static final String CREATED_DATE = "createdDate";
+    public static final String UPDATED_DATE = "updatedDate";
     public static final String PARAMETERS = "parameters";
     public static final String KEY = "key";
     public static final String AUTH = "auth";
@@ -92,8 +94,6 @@ public class ApplicationConstants {
     public static final String API = "api";
     public static final String WEB = "web";
     public static final String FORGOT_PASSWORD = "forgotPassword";
-    public static final String CREATE = "create";
-    public static final String VIEW = "view";
     public static final String UTF8 = "UTF-8";
     public static final String UTC = "UTC";
     public static final String FRAGMENT = "fragment";

@@ -28,11 +28,11 @@ spring:
         naming:
           implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
         hbm2ddl:
-          auto: update
+          auto: none
     database: mysql
     generate-ddl: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
       naming:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
@@ -44,7 +44,7 @@ spring:
     jmxExport: true
     driverClassName: com.mysql.cj.jdbc.Driver
     dialect: com.vishnu.aggarwal.rest.config.MySqlDialect
-    dbCreate: update
+    dbCreate: none
     logSql: true
     testWhileIdle: true
     validationQuery: SELECT 1
@@ -99,6 +99,8 @@ spring:
   data:
     mongodb:
       uri: "${REST_MODULE_MONGO_DATABASE_URL:mongodb://localhost:27017/quartz_job_scheduler}"
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
 #  redis:
 #    host: 127.0.0.1
 #    port: 6379
@@ -124,6 +126,7 @@ logging:
     org.springframework.aop.interceptor.DebugInterceptor: trace
     org.springframework.aop.interceptor.SimpleTraceInterceptor: trace
     com.vishnu.aggarwal.rest.interceptor.MethodLogInterceptor: trace
+    liquibase: info
   file: "${REST_MODULE_LOGGING_FILE_PATH:/home/vishnu/Desktop/quartzscheduler/logs/rest/rest.log}"
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} -- [%X{mdcToken}] -- [%thread] -- %-5level -- %logger{36} --- %msg%n"

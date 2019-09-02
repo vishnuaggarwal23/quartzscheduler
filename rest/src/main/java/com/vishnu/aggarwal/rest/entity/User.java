@@ -53,7 +53,7 @@ public class User extends BaseEntity<Long> implements UserDetails, Serializable 
 
     @NotNull
     @NotEmpty
-    @CustomUniqueUsername
+//    @CustomUniqueUsername
     private String username;
 
     @Email

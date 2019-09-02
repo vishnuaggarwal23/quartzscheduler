@@ -19,14 +19,12 @@ import javax.validation.constraints.NotNull;
 import java.util.*;
 
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.*;
-import static com.vishnu.aggarwal.core.enums.ScheduleType.CRON;
-import static com.vishnu.aggarwal.core.enums.ScheduleType.SIMPLE;
-import static com.vishnu.aggarwal.rest.util.DTOConversion.convertFromJobDetails;
-import static com.vishnu.aggarwal.rest.util.DTOConversion.convertFromUser;
+import static com.vishnu.aggarwal.rest.util.DTOConversion.*;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.lang.Class.forName;
 import static java.lang.String.format;
+import static java.util.Comparator.comparingLong;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.TimeZone.getDefault;
@@ -130,7 +128,7 @@ public class QuartzService extends BaseService {
             final JobDetail jobDetail = quartzScheduler.getJobDetail(jobKey);
             jobDetails.add(convertFromJobDetails(jobDetail, countTriggersOfJob(jobDetail.getKey()), userService.findById(jobKey.getGroup())));
         }
-        return jobDetails;
+        return jobDetails.stream().filter(Objects::nonNull).sorted(comparingLong(JobDetailsCO::getCreatedDateInMillis).reversed().thenComparingLong(JobDetailsCO::getUpdatedDateInMillis).reversed()).collect(toList());
     }
 
     public List<TriggerDetailsCO> fetchTriggerDetailsByJobKeyGroupName(@NotBlank @NotEmpty @NotNull final KeyGroupDescriptionDTO keyGroupDescriptionDTO) throws SchedulerException, IllegalArgumentException, NullPointerException {
@@ -143,16 +141,7 @@ public class QuartzService extends BaseService {
                 .stream()
                 .sorted((Trigger t1, Trigger t2) -> t1.getKey().getName().compareToIgnoreCase(t2.getKey().getName()))
                 .collect(toList())) {
-            TriggerDetailsCO triggerDetail = new TriggerDetailsCO(
-                    new KeyGroupDescriptionDTO(trigger.getKey().getName(), convertFromUser(userService.findById(trigger.getKey().getGroup())), trigger.getDescription()),
-                    trigger.getStartTime(),
-                    trigger.getNextFireTime(),
-                    trigger.getPreviousFireTime(),
-                    trigger.getEndTime(),
-                    trigger.getFinalFireTime(),
-                    trigger.getPriority(),
-                    quartzScheduler.getTriggerState(triggerKey(trigger.getKey().getName(), trigger.getKey().getGroup())).toString());
-            triggerDetails.add(setExtraTriggerDetails(trigger, triggerDetail));
+            triggerDetails.add(convertFromTrigger(trigger, quartzScheduler.getTriggerState(triggerKey(trigger.getKey().getName(), trigger.getKey().getGroup())), userService.findById(trigger.getKey().getGroup())));
         }
         return triggerDetails;
     }
@@ -309,6 +298,14 @@ public class QuartzService extends BaseService {
             default:
                 throw new InvalidRequestException("");
         }
+
+        if (jobCO.getReplace()) {
+            jobDataMap.put(UPDATED_DATE, Long.toString(new Date().toInstant().toEpochMilli()));
+        } else {
+            long currentTimeInMillis = new Date().toInstant().toEpochMilli();
+            jobDataMap.put(CREATED_DATE, Long.toString(currentTimeInMillis));
+            jobDataMap.put(UPDATED_DATE, Long.toString(currentTimeInMillis));
+        }
         return jobDataMap;
     }
 
@@ -343,35 +340,8 @@ public class QuartzService extends BaseService {
         if (isNull(keyGroupDescriptionDTO.getGroup())) {
             keyGroupDescriptionDTO.setGroup(convertFromUser(userService.getCurrentLoggedInUser()));
         }
-
         final Trigger trigger = quartzScheduler.getTrigger(triggerKey(keyGroupDescriptionDTO.getKey(), keyGroupDescriptionDTO.getGroup().getId().toString()));
-        TriggerDetailsCO triggerDetail = new TriggerDetailsCO(
-                new KeyGroupDescriptionDTO(trigger.getKey().getName(), convertFromUser(userService.findById(trigger.getKey().getGroup())), trigger.getDescription()),
-                trigger.getStartTime(),
-                trigger.getNextFireTime(),
-                trigger.getPreviousFireTime(),
-                trigger.getEndTime(),
-                trigger.getFinalFireTime(),
-                trigger.getPriority(),
-                quartzScheduler.getTriggerState(triggerKey(trigger.getKey().getName(), trigger.getKey().getGroup())).toString());
-        return setExtraTriggerDetails(trigger, triggerDetail);
-    }
-
-    private TriggerDetailsCO setExtraTriggerDetails(Trigger trigger, TriggerDetailsCO triggerDetail) {
-        if (trigger instanceof SimpleTrigger) {
-            triggerDetail.setType(SIMPLE);
-            TriggerDetailsCO.SimpleTriggerDetails simpleTriggerDetails = triggerDetail.new SimpleTriggerDetails();
-            simpleTriggerDetails.setCountTriggered(((SimpleTrigger) trigger).getTimesTriggered());
-            simpleTriggerDetails.setRepeatCount(((SimpleTrigger) trigger).getRepeatCount());
-            simpleTriggerDetails.setRepeatInterval(((SimpleTrigger) trigger).getRepeatInterval());
-        } else if (trigger instanceof CronTrigger) {
-            triggerDetail.setType(CRON);
-            TriggerDetailsCO.CronTriggerDetails cronTriggerDetails = triggerDetail.new CronTriggerDetails();
-            cronTriggerDetails.setCronExpression(((CronTrigger) trigger).getCronExpression());
-            cronTriggerDetails.setExpressionSummary(((CronTrigger) trigger).getExpressionSummary());
-            cronTriggerDetails.setTimeZone(((CronTrigger) trigger).getTimeZone());
-        }
-        return triggerDetail;
+        return convertFromTrigger(trigger, quartzScheduler.getTriggerState(triggerKey(trigger.getKey().getName(), trigger.getKey().getGroup())), userService.findById(trigger.getKey().getGroup()));
     }
 
     public List<KeyGroupDescriptionDTO> jobKeysAutocomplete(@NotBlank @NotEmpty @NotNull final String searchText) throws SchedulerException {

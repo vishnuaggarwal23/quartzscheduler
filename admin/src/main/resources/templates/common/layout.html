@@ -134,18 +134,11 @@
 
                         <li class="heading"><h3 class="uppercase">Jobs</h3></li>
                         <li class="nav-item">
-                            <a href="javascript:" class="nav-link nav-toggle">
+                            <a class="nav-link nav-toggle"
+                               th:href="@{${T(com.vishnu.aggarwal.core.constants.ThymeleafUrlMapping).createJobWebUri()}}">
                                 <i class="icon-diamond"></i>
                                 <span class="title">Create</span>
-                                <span class="arrow "></span>
                             </a>
-                            <ul class="sub-menu">
-                                <li class="nav-item">
-                                    <a class="nav-link"
-                                       th:href="@{${T(com.vishnu.aggarwal.core.constants.ThymeleafUrlMapping).createJobWebUri()}}"><i
-                                            class="icon-bar-chart"></i>API Job</a>
-                                </li>
-                            </ul>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link nav-toggle"

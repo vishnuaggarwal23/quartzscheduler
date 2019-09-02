@@ -10,4 +10,10 @@ public class Action {
     public static final String PAUSE = "PAUSE";
     public static final String list = "list";
     public static final String LIST = "LIST";
+    public static final String view = "view";
+    public static final String VIEW = "VIEW";
+    public static final String create = "create";
+    public static final String CREATE = "CREATE";
+    public static final String delete = "delete";
+    public static final String DELETE = "DELETE";
 }
