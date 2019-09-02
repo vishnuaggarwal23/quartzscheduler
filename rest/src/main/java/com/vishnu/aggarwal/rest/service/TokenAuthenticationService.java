@@ -34,13 +34,12 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
 
-import static com.vishnu.aggarwal.core.constants.ApplicationConstants.CUSTOM_REQUEST_ID;
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.X_AUTH_TOKEN;
 import static com.vishnu.aggarwal.core.enums.Status.ACTIVE;
 import static java.lang.String.valueOf;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
+import static org.apache.commons.lang3.exception.ExceptionUtils.getRootCause;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
@@ -83,7 +82,7 @@ public class TokenAuthenticationService extends BaseService implements com.vishn
                 throw new AuthenticationCredentialsNotFoundException("");
             }
 
-            log.info("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Attempting Authentication for [Username : " + login.getUsername() + "] and [Password : " + login.getPassword() + "]");
+            log.info("Attempting Authentication for [Username : " + login.getUsername() + "] and [Password : " + login.getPassword() + "]");
 
             final UsernamePasswordAuthenticationToken authenticatedUser = (UsernamePasswordAuthenticationToken) authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login.getUsername(), login.getPassword()));
             if (isNull(authenticatedUser) || !authenticatedUser.isAuthenticated()) {
@@ -99,16 +98,13 @@ public class TokenAuthenticationService extends BaseService implements com.vishn
             usernamePasswordAuthenticationToken.setDetails(addAuthentication(request, usernamePasswordAuthenticationToken).getToken());
             return usernamePasswordAuthenticationToken;
         } catch (IOException e) {
-            log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] User authentication failed.");
-            log.error(getStackTrace(e));
+            log.error("Exception occurred", getRootCause(e));
             throw new InternalAuthenticationServiceException(e.getMessage(), e);
         } catch (AuthenticationException e) {
-            log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] User authentication failed.");
-            log.error(getStackTrace(e));
+            log.error("Exception occurred", getRootCause(e));
             throw e;
         } catch (Exception e) {
-            log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] User authentication failed.");
-            log.error(getStackTrace(e));
+            log.error("Exception occurred", getRootCause(e));
             throw new InternalAuthenticationServiceException(e.getMessage(), e);
         }
     }
@@ -125,7 +121,7 @@ public class TokenAuthenticationService extends BaseService implements com.vishn
                 throw new JwtException("");
             }
 
-            log.info("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] JWT token " + xAuthToken + " is found to be valid.");
+            log.info("JWT token " + xAuthToken + " is found to be valid.");
 
             final User user = tokenHandlerService.parseToken(xAuthToken);
             if (isNull(user)) {
@@ -136,19 +132,16 @@ public class TokenAuthenticationService extends BaseService implements com.vishn
 
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities());
             usernamePasswordAuthenticationToken.setDetails(tokenService.findByToken(xAuthToken));
-            log.info("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] User " + user + " authenticated for JWT token " + xAuthToken);
+            log.info("User " + user + " authenticated for JWT token " + xAuthToken);
             return usernamePasswordAuthenticationToken;
         } catch (JwtException e) {
-            log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while getting authentication");
-            log.error(getStackTrace(e));
+            log.error("Exception occurred", getRootCause(e));
             throw new InternalAuthenticationServiceException(e.getMessage(), e);
         } catch (AuthenticationException e) {
-            log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while getting authentication");
-            log.error(getStackTrace(e));
+            log.error("Exception occurred", getRootCause(e));
             throw e;
         } catch (Exception e) {
-            log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while getting authentication");
-            log.error(getStackTrace(e));
+            log.error("Exception occurred", getRootCause(e));
             throw new InternalAuthenticationServiceException(e.getMessage(), e);
         }
     }
@@ -179,7 +172,7 @@ public class TokenAuthenticationService extends BaseService implements com.vishn
             if (isEmpty(tokenMap)) {
                 throw new EmptyJwtTokenException("");
             }
-            log.info("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] JWT Token " + tokenMap.get("key") + " generated for user " + user);
+            log.info("JWT Token " + tokenMap.get("key") + " generated for user " + user);
 
             Token token = tokenService.findByToken(valueOf(tokenMap.get("key")));
             if (isNull(token)) {
@@ -212,16 +205,13 @@ public class TokenAuthenticationService extends BaseService implements com.vishn
 
             return userToken;
         } catch (JwtException e) {
-            log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while adding authentication to user");
-            log.error(getStackTrace(e));
+            log.error("Exception occurred", getRootCause(e));
             throw new InternalAuthenticationServiceException(e.getMessage(), e);
         } catch (AuthenticationException e) {
-            log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while adding authentication to user");
-            log.error(getStackTrace(e));
+            log.error("Exception occurred", getRootCause(e));
             throw e;
         } catch (Exception e) {
-            log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while adding authentication to user");
-            log.error(getStackTrace(e));
+            log.error("Exception occurred", getRootCause(e));
             throw new InternalAuthenticationServiceException(e.getMessage(), e);
         }
     }
@@ -254,12 +244,10 @@ public class TokenAuthenticationService extends BaseService implements com.vishn
             }
             return true;
         } catch (AuthenticationException e) {
-            log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while invalidating all authentication token objects for user ");
-            log.error(getStackTrace(e));
+            log.error("Exception occurred", getRootCause(e));
             throw e;
         } catch (Exception e) {
-            log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while invalidating all authentication token objects for user ");
-            log.error(getStackTrace(e));
+            log.error("Exception occurred", getRootCause(e));
             throw new InternalAuthenticationServiceException(e.getMessage(), e);
         }
     }

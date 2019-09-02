@@ -32,7 +32,7 @@ import static com.vishnu.aggarwal.core.util.TypeTokenUtils.getHashMapOfStringAnd
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
+import static org.apache.commons.lang3.exception.ExceptionUtils.getRootCause;
 import static org.springframework.web.util.WebUtils.getCookie;
 
 @Component
@@ -97,8 +97,7 @@ public class LoginInterceptor implements HandlerInterceptor {
             }
             throw new RuntimeException("");
         } catch (Exception e) {
-            log.error("[Request ID " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while authenticating user");
-            log.error(getStackTrace(e));
+            log.error("Exception occurred", getRootCause(e));
         }
         return true;
     }

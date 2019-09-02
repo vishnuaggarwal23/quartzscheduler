@@ -4,11 +4,15 @@ package com.vishnu.aggarwal.core.util;
 Created by vishnu on 24/4/18 12:19 PM
 */
 
+import lombok.NoArgsConstructor;
+
 import java.util.Calendar;
 import java.util.Date;
 
 import static java.util.Calendar.*;
+import static lombok.AccessLevel.PRIVATE;
 
+@NoArgsConstructor(access = PRIVATE)
 public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     public static Date clearTime(Date date) {
         return getStart(date);

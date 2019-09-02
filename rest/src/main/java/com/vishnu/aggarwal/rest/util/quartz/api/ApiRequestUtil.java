@@ -28,7 +28,7 @@ import static com.vishnu.aggarwal.core.constants.ApplicationConstants.REQUEST_UR
 import static java.lang.Long.valueOf;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toMap;
-import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
+import static org.apache.commons.lang3.exception.ExceptionUtils.getRootCause;
 
 @CommonsLog
 abstract class ApiRequestUtil implements Job {
@@ -57,7 +57,7 @@ abstract class ApiRequestUtil implements Job {
         try {
             return new ObjectMapper().writeValueAsString(response);
         } catch (JsonProcessingException e) {
-            log.error(getStackTrace(e));
+            log.error("Exception occurred", getRootCause(e));
             return null;
         }
     }

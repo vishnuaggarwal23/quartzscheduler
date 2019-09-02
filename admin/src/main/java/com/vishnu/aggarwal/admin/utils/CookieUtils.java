@@ -4,6 +4,7 @@ package com.vishnu.aggarwal.admin.utils;
 Created by vishnu on 27/8/19 12:17 PM
 */
 
+import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 
 import javax.servlet.http.Cookie;
@@ -12,10 +13,12 @@ import java.util.Optional;
 
 import static java.lang.Boolean.FALSE;
 import static java.util.Objects.isNull;
+import static lombok.AccessLevel.PRIVATE;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.springframework.web.util.WebUtils.getCookie;
 
+@NoArgsConstructor(access = PRIVATE)
 public class CookieUtils {
 
     public static Cookie create(final String name, final String value, @Nullable final String path, @Nullable Boolean httpOnly, int maxAge, @Nullable String domain) {

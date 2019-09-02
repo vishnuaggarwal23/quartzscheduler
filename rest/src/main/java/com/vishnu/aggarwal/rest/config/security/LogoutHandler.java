@@ -14,11 +14,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import static com.vishnu.aggarwal.core.constants.ApplicationConstants.CUSTOM_REQUEST_ID;
 import static java.lang.Boolean.FALSE;
 import static java.util.Objects.nonNull;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
-import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
+import static org.apache.commons.lang3.exception.ExceptionUtils.getRootCause;
 import static org.springframework.security.core.context.SecurityContextHolder.clearContext;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
@@ -43,12 +42,10 @@ public class LogoutHandler implements org.springframework.security.web.authentic
                 throw new RuntimeException("");
             }
         } catch (AuthenticationException e) {
-            log.error("[Request Interceptor Id : " + request.getAttribute(CUSTOM_REQUEST_ID) + " ] Error while logging out user");
-            log.error(getStackTrace(e));
+            log.error("Exception occurred", getRootCause(e));
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         } catch (Exception e) {
-            log.error("[Request Interceptor Id : " + request.getAttribute(CUSTOM_REQUEST_ID) + " ] Error while logging out user");
-            log.error(getStackTrace(e));
+            log.error("Exception occurred", getRootCause(e));
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
     }

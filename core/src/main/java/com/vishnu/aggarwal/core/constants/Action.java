@@ -1,8 +1,13 @@
 package com.vishnu.aggarwal.core.constants;
 
+import lombok.NoArgsConstructor;
+
+import static lombok.AccessLevel.PRIVATE;
+
 /*
 Created by vishnu on 12/8/19 4:12 PM
 */
+@NoArgsConstructor(access = PRIVATE)
 public class Action {
     public static final String resume = "resume";
     public static final String RESUME = "RESUME";

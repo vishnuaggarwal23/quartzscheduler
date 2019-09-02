@@ -10,16 +10,16 @@ import com.vishnu.aggarwal.core.co.QuartzDetailsCO;
 import com.vishnu.aggarwal.core.co.TriggerDetailsCO;
 import com.vishnu.aggarwal.core.dto.*;
 import com.vishnu.aggarwal.core.vo.DataTableVO;
+import lombok.NoArgsConstructor;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 
+import static lombok.AccessLevel.PRIVATE;
+
+@NoArgsConstructor(access = PRIVATE)
 public class TypeTokenUtils {
-
-    private TypeTokenUtils() {
-    }
-
     public static Type getHashMapOfStringAndErrorResponseDTO() {
         return new TypeToken<HashMap<String, ErrorResponseDTO>>() {
         }.getType();

@@ -39,8 +39,8 @@ logging:
     com.vishnu.aggarwal.rest.interceptor.MethodLogInterceptor: trace
   file: "${ADMIN_MODULE_LOGGING_FILE_PATH:/home/vishnu/Desktop/quartzscheduler/logs/admin/admin.log}"
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} -- [%X{mdcToken}] -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} -- [%X{mdcToken}] -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss} -- [User Token : %X{X-AUTH-TOKEN}] -- [Custom Request ID : %X{customRequestId}] -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} -- [User Token : %X{X-AUTH-TOKEN}] -- [Custom Request ID : %X{customRequestId}] -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
     dateformat: "yyyy-MMM-dd HH:mm:ss"
     level: "%5p"
 rest:

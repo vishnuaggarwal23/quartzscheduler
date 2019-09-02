@@ -35,7 +35,7 @@ import static java.util.Arrays.stream;
 import static java.util.Objects.nonNull;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
-import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
+import static org.apache.commons.lang3.exception.ExceptionUtils.getRootCause;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.security.core.context.SecurityContextHolder.clearContext;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
@@ -99,6 +99,7 @@ public class AuthenticationFilter extends GenericFilterBean {
 
                             ((HttpServletResponse) response).setStatus(SC_OK);
                             response.getWriter().write(gson.toJson(responseMap, getHashMapOfStringAndUserAuthenticationDTO()));
+                            response.getWriter().flush();
                         } else {
                             chain.doFilter(httpServletRequest, response);
                         }
@@ -108,20 +109,16 @@ public class AuthenticationFilter extends GenericFilterBean {
                 }
             }
         } catch (AuthenticationException e) {
-            handleException(request, (HttpServletResponse) response, httpServletRequest, e);
-//            throw new IOException(e.getMessage(), e);
+            handleException((HttpServletResponse) response, httpServletRequest, e);
         } catch (IOException | ServletException e) {
-            handleException(request, (HttpServletResponse) response, httpServletRequest, e);
-//            throw e;
+            handleException((HttpServletResponse) response, httpServletRequest, e);
         } catch (Exception e) {
-            handleException(request, (HttpServletResponse) response, httpServletRequest, e);
-//            throw new IOException(e.getMessage(), e);
+            handleException((HttpServletResponse) response, httpServletRequest, e);
         }
     }
 
-    private void handleException(ServletRequest request, HttpServletResponse response, HttpServletRequest httpServletRequest, Exception e) throws IOException {
-        log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while checking authentication.");
-        log.error(getStackTrace(e));
+    private void handleException(HttpServletResponse response, HttpServletRequest httpServletRequest, Exception e) throws IOException {
+        log.error("Exception occurred", getRootCause(e));
         HttpSession session = httpServletRequest.getSession(FALSE);
         if (nonNull(session)) {
             session.invalidate();
@@ -131,7 +128,7 @@ public class AuthenticationFilter extends GenericFilterBean {
 
         HashMap<String, ErrorResponseDTO> responseMap = new HashMap<String, ErrorResponseDTO>();
         responseMap.put(HASHMAP_ERROR_KEY, new ErrorResponseDTO(
-                request.getAttribute(CUSTOM_REQUEST_ID),
+                null,
                 new Date(),
                 baseMessageResolver.getMessage(e.getMessage(), e.getMessage()),
                 null
@@ -140,6 +137,6 @@ public class AuthenticationFilter extends GenericFilterBean {
         response.setCharacterEncoding(UTF8);
         response.setContentType(APPLICATION_JSON_UTF8_VALUE);
         response.setStatus(SC_UNAUTHORIZED);
-//        response.sendError(SC_UNAUTHORIZED, baseMessageResolver.getMessage(e.getMessage(), e.getMessage()));
+        response.getWriter().flush();
     }
 }

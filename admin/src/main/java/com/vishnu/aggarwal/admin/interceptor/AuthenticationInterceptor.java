@@ -34,7 +34,7 @@ import static java.util.Objects.nonNull;
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
+import static org.apache.commons.lang3.exception.ExceptionUtils.getRootCause;
 import static org.springframework.web.util.WebUtils.getCookie;
 
 /*
@@ -113,8 +113,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     }
 
     private boolean handleException(final HttpServletRequest request, HttpServletResponse response, final Exception e, final Integer httpStatueCode, final String redirectUri) throws IOException {
-        log.error("[Request ID " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while authenticating user");
-        log.error(getStackTrace(e));
+        log.error("Exception occurred", getRootCause(e));
         response.setStatus(httpStatueCode);
         response.sendRedirect(request.getContextPath() + redirectUri);
         return false;

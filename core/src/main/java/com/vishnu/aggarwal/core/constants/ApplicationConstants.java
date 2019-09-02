@@ -1,15 +1,18 @@
 package com.vishnu.aggarwal.core.constants;
 
 import com.vishnu.aggarwal.core.constants.UrlMapping.Admin;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static lombok.AccessLevel.PRIVATE;
 
 /*
 Created by vishnu on 30/3/18 11:00 AM
 */
+@NoArgsConstructor(access = PRIVATE)
 public class ApplicationConstants {
     public static final String URL_PREFIX = "/**";
     public static final String URL_SUFFIX = "**/";

@@ -19,7 +19,7 @@ import java.util.HashMap;
 
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.*;
 import static com.vishnu.aggarwal.core.util.TypeTokenUtils.getHashMapOfStringAndErrorResponseDTO;
-import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
+import static org.apache.commons.lang3.exception.ExceptionUtils.getRootCause;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
@@ -42,13 +42,12 @@ public class AccessDeniedHandler implements org.springframework.security.web.acc
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException {
         HashMap<String, ErrorResponseDTO> responseMap = new HashMap<String, ErrorResponseDTO>();
-        responseMap.put(HASHMAP_ERROR_KEY, new ErrorResponseDTO(request.getAttribute(CUSTOM_REQUEST_ID), new Date(), baseMessageResolver.getMessage(accessDeniedException.getMessage()), null));
+        responseMap.put(HASHMAP_ERROR_KEY, new ErrorResponseDTO(null, new Date(), baseMessageResolver.getMessage(accessDeniedException.getMessage()), null));
         response.getWriter().write(gson.toJson(responseMap, getHashMapOfStringAndErrorResponseDTO()));
         response.setCharacterEncoding(UTF8);
         response.setContentType(APPLICATION_JSON_UTF8_VALUE);
         response.setStatus(FORBIDDEN.value());
-        log.error("[Request Interceptor Id : " + request.getAttribute(CUSTOM_REQUEST_ID) + "] " + accessDeniedException.getMessage());
-        log.error(getStackTrace(accessDeniedException));
+        log.error("Exception occurred", getRootCause(accessDeniedException));
 //        response.sendError(FORBIDDEN.value(), baseMessageResolver.getMessage(accessDeniedException.getMessage(), accessDeniedException.getMessage()));
     }
 }

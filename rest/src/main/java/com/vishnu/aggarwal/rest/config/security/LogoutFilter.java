@@ -22,10 +22,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.vishnu.aggarwal.core.constants.ApplicationConstants.CUSTOM_REQUEST_ID;
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.X_AUTH_TOKEN;
 import static java.util.Optional.ofNullable;
-import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
+import static org.apache.commons.lang3.exception.ExceptionUtils.getRootCause;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 @CommonsLog
@@ -68,16 +67,13 @@ public class LogoutFilter extends org.springframework.security.web.authenticatio
             }
             chain.doFilter(request, response);
         } catch (AuthenticationException e) {
-            log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while logging out");
-            log.error(getStackTrace(e));
+            log.error("Exception occurred", getRootCause(e));
             throw new IOException(e.getMessage(), e);
         } catch (IOException | ServletException e) {
-            log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while logging out");
-            log.error(getStackTrace(e));
+            log.error("Exception occurred", getRootCause(e));
             throw e;
         } catch (Exception e) {
-            log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while logging out");
-            log.error(getStackTrace(e));
+            log.error("Exception occurred", getRootCause(e));
             throw new IOException(e.getMessage(), e);
         }
     }

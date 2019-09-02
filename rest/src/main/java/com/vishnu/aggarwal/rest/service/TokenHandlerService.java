@@ -19,19 +19,17 @@ import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.vishnu.aggarwal.core.constants.ApplicationConstants.CUSTOM_REQUEST_ID;
 import static io.jsonwebtoken.Jwts.*;
 import static io.jsonwebtoken.SignatureAlgorithm.HS512;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
+import static org.apache.commons.lang3.exception.ExceptionUtils.getRootCause;
 
 @Service
 @CommonsLog
@@ -41,7 +39,6 @@ public class TokenHandlerService extends BaseService implements com.vishnu.aggar
     private final UserService userService;
     private final UserTokenService userTokenService;
     private final UserDetailsChecker accountStatusUserDetailsCheck;
-    private final HttpServletRequest httpServletRequest;
     @Value("${jwt.secret}")
     private String SECRET;
     @Value("${jwt.expirationTime:''}")
@@ -51,18 +48,16 @@ public class TokenHandlerService extends BaseService implements com.vishnu.aggar
     public TokenHandlerService(
             UserService userService,
             UserTokenService userTokenService,
-            UserDetailsChecker accountStatusUserDetailsCheck,
-            HttpServletRequest httpServletRequest) {
+            UserDetailsChecker accountStatusUserDetailsCheck) {
         this.userService = userService;
         this.userTokenService = userTokenService;
         this.accountStatusUserDetailsCheck = accountStatusUserDetailsCheck;
-        this.httpServletRequest = httpServletRequest;
     }
 
     @Cacheable(value = "parseTokenToGetUser", key = "#token", unless = "#result == null")
     public User parseToken(final String token) throws JwtException {
         try {
-            log.info("[Request Interceptor Id : " + httpServletRequest.getAttribute(CUSTOM_REQUEST_ID) + "] Parsing X-AUTH-TOKEN " + token);
+            log.info("Parsing X-AUTH-TOKEN " + token);
             final User userFromUsername = userService.findByUsername(getClaim(token).getSubject());
             if (!userTokenService.findByToken(token).getUser().equals(userFromUsername)) {
                 throw new JwtException("");
@@ -70,16 +65,13 @@ public class TokenHandlerService extends BaseService implements com.vishnu.aggar
             accountStatusUserDetailsCheck.check(userFromUsername);
             return userFromUsername;
         } catch (AuthenticationException e) {
-            log.error("[Request Interceptor Id : " + httpServletRequest.getAttribute(CUSTOM_REQUEST_ID) + "] Error while fetching user name from X-AUTH-TOKEN " + token);
-            log.error(getStackTrace(e));
+            log.error("Exception occurred", getRootCause(e));
             throw new JwtException(e.getMessage(), e);
         } catch (JwtException e) {
-            log.error("[Request Interceptor Id : " + httpServletRequest.getAttribute(CUSTOM_REQUEST_ID) + "] Error while fetching user name from X-AUTH-TOKEN " + token);
-            log.error(getStackTrace(e));
+            log.error("Exception occurred", getRootCause(e));
             throw e;
         } catch (Exception e) {
-            log.error("[Request Interceptor Id : " + httpServletRequest.getAttribute(CUSTOM_REQUEST_ID) + "] Error while fetching user name from X-AUTH-TOKEN " + token);
-            log.error(getStackTrace(e));
+            log.error("Exception occurred", getRootCause(e));
             throw new JwtException(e.getMessage(), e);
         }
     }
@@ -134,16 +126,13 @@ public class TokenHandlerService extends BaseService implements com.vishnu.aggar
             final Date tokenExpirationDate = getClaim(token).getExpiration();
             return !nonNull(tokenExpirationDate) || tokenExpirationDate.after(new Date(currentTimeMillis()));
         } catch (AuthenticationException e) {
-            log.error("[Request Interceptor Id : " + httpServletRequest.getAttribute(CUSTOM_REQUEST_ID) + "] Error while checking validity of JWT Token " + token);
-            log.error(getStackTrace(e));
+            log.error("Exception occurred", getRootCause(e));
             throw new JwtException(e.getMessage(), e);
         } catch (JwtException e) {
-            log.error("[Request Interceptor Id : " + httpServletRequest.getAttribute(CUSTOM_REQUEST_ID) + "] Error while checking validity of JWT Token " + token);
-            log.error(getStackTrace(e));
+            log.error("Exception occurred", getRootCause(e));
             throw e;
         } catch (Exception e) {
-            log.error("[Request Interceptor Id : " + httpServletRequest.getAttribute(CUSTOM_REQUEST_ID) + "] Error while checking validity of JWT Token " + token);
-            log.error(getStackTrace(e));
+            log.error("Exception occurred", getRootCause(e));
             throw new JwtException(e.getMessage(), e);
         }
     }

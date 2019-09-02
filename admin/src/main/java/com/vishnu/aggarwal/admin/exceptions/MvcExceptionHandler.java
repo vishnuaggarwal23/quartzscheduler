@@ -22,11 +22,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 
-import static com.vishnu.aggarwal.core.constants.ApplicationConstants.CUSTOM_REQUEST_ID;
 import static java.util.Objects.nonNull;
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
-import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
+import static org.apache.commons.lang3.exception.ExceptionUtils.getRootCause;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @ControllerAdvice(basePackages = {"com.vishnu.aggarwal.admin.controller.web"})
@@ -47,8 +46,7 @@ public class MvcExceptionHandler extends DefaultHandlerExceptionResolver {
         response.setStatus(SC_NOT_FOUND);
 
         if (log.isErrorEnabled()) {
-            log.error("[Request Interceptor Id : " + request.getAttribute(CUSTOM_REQUEST_ID) + "] " + ex.getMessage());
-            log.error(getStackTrace(ex));
+            log.error("Exception occurred", getRootCause(ex));
         }
 
         return new ModelAndView("error/404");
@@ -57,9 +55,8 @@ public class MvcExceptionHandler extends DefaultHandlerExceptionResolver {
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(INTERNAL_SERVER_ERROR)
     public final ModelAndView handleRuntimeException(RuntimeException exception, WebRequest webRequest) {
-        HttpServletRequest httpServletRequest = httpServletRequest(webRequest).orElse(null);
-        Object customInterceptorId = nonNull(httpServletRequest) ? httpServletRequest.getAttribute(CUSTOM_REQUEST_ID) : null;
         String exceptionMessage = exception.getMessage();
+        HttpServletRequest httpServletRequest = httpServletRequest(webRequest).orElse(null);
         if (nonNull(httpServletRequest)) {
             httpServletRequest.setAttribute("javax.servlet.error.exception", exception);
         }
@@ -70,8 +67,7 @@ public class MvcExceptionHandler extends DefaultHandlerExceptionResolver {
         }
 
         if (log.isErrorEnabled()) {
-            log.error("[Request Interceptor Id : " + customInterceptorId + "] " + exceptionMessage);
-            log.error(getStackTrace(exception));
+            log.error("Exception occurred", getRootCause(exception));
         }
 
         return new ModelAndView("error/500");

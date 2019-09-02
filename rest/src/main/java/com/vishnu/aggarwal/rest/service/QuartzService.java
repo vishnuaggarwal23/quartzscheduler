@@ -32,7 +32,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.apache.commons.lang3.exception.ExceptionUtils.printRootCauseStackTrace;
+import static org.apache.commons.lang3.exception.ExceptionUtils.getRootCause;
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.JobKey.jobKey;
@@ -354,7 +354,7 @@ public class QuartzService extends BaseService {
                                 new KeyGroupDescriptionDTO(jobKey.getName(), convertFromUser(userService.findById(jobKey.getGroup())), quartzScheduler.getJobDetail(jobKey).getDescription()) :
                                 null;
                     } catch (SchedulerException e) {
-                        printRootCauseStackTrace(e);
+                        log.error("Exception occurred", getRootCause(e));
                         return null;
                     }
                 })

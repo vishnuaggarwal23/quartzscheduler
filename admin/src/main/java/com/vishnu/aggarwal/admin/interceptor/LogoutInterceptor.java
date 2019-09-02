@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.vishnu.aggarwal.core.constants.ApplicationConstants.CUSTOM_REQUEST_ID;
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.X_AUTH_TOKEN;
 import static com.vishnu.aggarwal.core.util.TypeTokenUtils.getHashMapOfStringAndErrorResponseDTO;
 import static com.vishnu.aggarwal.core.util.TypeTokenUtils.getHashMapOfStringAndUserAuthenticationDTO;
@@ -33,7 +32,7 @@ import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
+import static org.apache.commons.lang3.exception.ExceptionUtils.getRootCause;
 import static org.springframework.web.util.WebUtils.getCookie;
 
 @Component
@@ -104,8 +103,7 @@ public class LogoutInterceptor implements HandlerInterceptor {
     }
 
     private boolean handleException(final HttpServletRequest request, HttpServletResponse response, final Exception e, final Integer httpStatueCode, final String redirectUri) throws IOException {
-        log.error("[Request ID " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Error while authenticating user");
-        log.error(getStackTrace(e));
+        log.error("Exception occurred", getRootCause(e));
         response.setStatus(httpStatueCode);
         response.sendRedirect(request.getContextPath() + redirectUri);
         return false;

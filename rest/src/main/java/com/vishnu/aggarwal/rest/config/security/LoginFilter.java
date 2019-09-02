@@ -9,6 +9,7 @@ import com.vishnu.aggarwal.rest.entity.User;
 import com.vishnu.aggarwal.rest.interfaces.TokenAuthenticationService;
 import com.vishnu.aggarwal.rest.interfaces.UserService;
 import lombok.extern.apachecommons.CommonsLog;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -31,6 +32,7 @@ import static java.lang.Boolean.FALSE;
 import static java.util.Objects.nonNull;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
+import static org.apache.commons.lang3.exception.ExceptionUtils.getRootCause;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.security.core.context.SecurityContextHolder.clearContext;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
@@ -66,7 +68,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        log.info("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Attempting User Authentication");
+        log.info("Attempting User Authentication");
         return tokenAuthenticationService.getAuthentication(request, response, authenticationManager);
     }
 
@@ -87,7 +89,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setContentType(APPLICATION_JSON_UTF8_VALUE);
         response.setStatus(SC_OK);
         response.addHeader(X_AUTH_TOKEN, xAuthToken);
-        log.info("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Successful Authentication");
+        log.info("Successful Authentication");
     }
 
     @Override
@@ -103,12 +105,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setContentType(APPLICATION_JSON_UTF8_VALUE);
         HashMap<String, ErrorResponseDTO> responseMap = new HashMap<String, ErrorResponseDTO>();
         responseMap.put(HASHMAP_ERROR_KEY, new ErrorResponseDTO(
-                request.getAttribute(CUSTOM_REQUEST_ID),
+                null,
                 new Date(),
                 baseMessageResolver.getMessage(failed.getMessage(), failed.getMessage()),
                 null
         ));
         response.getWriter().write(gson.toJson(responseMap, getHashMapOfStringAndErrorResponseDTO()));
-        log.error("[Request Interceptor Id " + request.getAttribute(CUSTOM_REQUEST_ID) + "] Unsuccessful Authentication");
+        log.error("Exception occurred", getRootCause(failed));
     }
 }

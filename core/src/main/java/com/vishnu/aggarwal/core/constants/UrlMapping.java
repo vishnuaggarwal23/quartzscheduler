@@ -7,8 +7,6 @@ Created by vishnu on 30/3/18 9:35 AM
 import lombok.NoArgsConstructor;
 
 import static com.vishnu.aggarwal.core.constants.Action.*;
-import static com.vishnu.aggarwal.core.constants.Action.CREATE;
-import static com.vishnu.aggarwal.core.constants.Action.VIEW;
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.*;
 import static lombok.AccessLevel.PRIVATE;
 
@@ -23,11 +21,11 @@ public class UrlMapping {
             @NoArgsConstructor(access = PRIVATE)
             public static class Quartz {
                 public static final String BASE_URI = BACKSLASH + QUARTZ;
-                public static final String CREATE_JOB = BACKSLASH + JOB + BACKSLASH + CREATE;
-                public static final String CREATE_JOB_FRAGMENT = BACKSLASH + FRAGMENT + BACKSLASH + JOB + BACKSLASH + CREATE;
-                public static final String CREATE_TRIGGER = BACKSLASH + TRIGGER + BACKSLASH + CREATE;
-                public static final String CREATE_TRIGGER_FRAGMENT = BACKSLASH + FRAGMENT + BACKSLASH + TRIGGER + BACKSLASH + CREATE;
-                public static final String VIEW_JOB = BACKSLASH + JOB + BACKSLASH + VIEW;
+                public static final String CREATE_JOB = BACKSLASH + JOB + BACKSLASH + create;
+                public static final String CREATE_JOB_FRAGMENT = BACKSLASH + FRAGMENT + BACKSLASH + JOB + BACKSLASH + create;
+                public static final String CREATE_TRIGGER = BACKSLASH + TRIGGER + BACKSLASH + create;
+                public static final String CREATE_TRIGGER_FRAGMENT = BACKSLASH + FRAGMENT + BACKSLASH + TRIGGER + BACKSLASH + create;
+                public static final String VIEW_JOB = BACKSLASH + JOB + BACKSLASH + view;
                 public static final String LIST_JOBS = BACKSLASH + JOB + BACKSLASH + list;
             }
 

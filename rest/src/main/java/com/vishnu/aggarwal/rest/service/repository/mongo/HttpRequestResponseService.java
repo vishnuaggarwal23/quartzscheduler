@@ -23,7 +23,7 @@ import java.util.Map;
 
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.CUSTOM_REQUEST_ID;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
+import static org.apache.commons.lang3.exception.ExceptionUtils.getRootCause;
 import static org.springframework.web.util.WebUtils.*;
 
 @Service
@@ -65,8 +65,7 @@ public class HttpRequestResponseService {
         try {
             httpRequest.setPayload(getRequestDataPayload(httpServletRequestToLog));
         } catch (IOException e) {
-            log.error("**************** Error while fetching Request Payload for [Request Id ] " + httpServletRequestToLog.getAttribute(CUSTOM_REQUEST_ID).toString() + " ***************");
-            log.error(getStackTrace(e));
+            log.error("Exception occurred", getRootCause(e));
         }
 
         httpResponse.setStatus(httpServletResponseToLog.getStatus());
@@ -78,8 +77,7 @@ public class HttpRequestResponseService {
         try {
             httpResponse.setPayload(getResponseDataPayload(httpServletResponseToLog));
         } catch (IOException e) {
-            log.error("**************** Error while fetching Response Payload for [Request Id ] " + httpServletRequestToLog.getAttribute(CUSTOM_REQUEST_ID).toString() + " ***************");
-            log.error(getStackTrace(e));
+            log.error("Exception occurred", getRootCause(e));
         }
 
         httpRequestResponse.setHttpRequest(httpRequest);

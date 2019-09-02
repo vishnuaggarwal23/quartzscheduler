@@ -40,12 +40,11 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.vishnu.aggarwal.core.constants.ApplicationConstants.CUSTOM_REQUEST_ID;
 import static com.vishnu.aggarwal.core.constants.ApplicationConstants.HASHMAP_ERROR_KEY;
 import static com.vishnu.aggarwal.core.util.TypeTokenUtils.getHashMapOfStringAndErrorResponseDTO;
 import static java.util.Collections.singletonList;
 import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
+import static org.apache.commons.lang3.exception.ExceptionUtils.getRootCause;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -184,12 +183,10 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     private ResponseEntity<Object> getObjectResponseEntity(final Exception ex, final HttpHeaders headers, final HttpStatus status, final WebRequest request, @Nullable final List<Object> details, @Nullable Object jsonToReturn) {
         HttpServletRequest httpServletRequest = httpServletRequest(request).orElse(null);
-        Object customInterceptorId = nonNull(httpServletRequest) ? httpServletRequest.getAttribute(CUSTOM_REQUEST_ID) : null;
         String exceptionMessage = ex.getMessage();
 
         if (log.isErrorEnabled()) {
-            log.error("[Request Interceptor Id : " + customInterceptorId + "] " + exceptionMessage);
-            log.error(getStackTrace(ex));
+            log.error("Exception occurred", getRootCause(ex));
         }
 
         if (nonNull(jsonToReturn) && jsonToReturn instanceof JsonObject) {
@@ -197,7 +194,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         }
 
         HashMap<String, ErrorResponseDTO> response = new HashMap<String, ErrorResponseDTO>();
-        response.put(HASHMAP_ERROR_KEY, new ErrorResponseDTO(customInterceptorId, new Date(), baseMessageResolver.getMessage(exceptionMessage), details));
+        response.put(HASHMAP_ERROR_KEY, new ErrorResponseDTO(null, new Date(), baseMessageResolver.getMessage(exceptionMessage), details));
         return new ResponseEntity<Object>(gson.toJson(response, getHashMapOfStringAndErrorResponseDTO()), headers, status);
     }
 
