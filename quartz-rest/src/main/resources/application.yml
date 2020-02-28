@@ -1,0 +1,188 @@
+server:
+  port: "${REST_MODULE_SERVER_PORT:7070}"
+  servlet:
+    context-path: "${REST_MODULE_CONTEXT_PATH:/rest/api}"
+bootstrap:
+  enabled: "${REST_MODULE_BOOTSTRAP_ENABLED:true}"
+cache:
+  clear:
+    enabled: "${REST_MODULE_CACHE_CLEAR_ENABLED:true}"
+spring:
+  session:
+    store-type: jdbc
+  jpa:
+    properties:
+      hibernate:
+        generate_statistics: true
+#        cache:
+#          use_second_level_cache: true
+#          use_query_cache: true
+        jdbc:
+          time_zone: "UTC"
+        dialect: MySqlDialect
+        show_sql: true
+        format_sql: true
+        sql: debug
+        type: debug
+        use_sql_comments: true
+        naming:
+          implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
+        hbm2ddl:
+          auto: update
+    database: mysql
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: true
+    database-platform: mysql
+  datasource:
+    url: "${REST_MODULE_JDBC_DATABASE_URL:jdbc:mysql://localhost:3306/quartz_job_scheduler?useSSL=false&autoReconnect=true&useUnicode=yes&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&serverTimezone=UTC&useLegacyDatetimeCode=false&user=root&password=igdefault}"
+    pooled: true
+    jmxExport: true
+    driverClassName: com.mysql.cj.jdbc.Driver
+    dialect: MySqlDialect
+    dbCreate: update
+    logSql: true
+    testWhileIdle: true
+    validationQuery: SELECT 1
+    properties:
+      jmxEnabled: true
+      initialSize: 10
+      maxActive: "${REST_MODULE_JDBC_MAX_ACTIVE:75}"
+      minIdle: 10
+      maxWait: 10000
+      timeBetweenEvictionRunsMillis: 5000
+      minEvictableIdleTimeMillis: 60000
+      validationQuery: SELECT 1
+      validationQueryTimeout: 3
+      validationInterval: 3000
+      testOnBorrow: true
+      testWhileIdle: true
+      testOnReturn: false
+      abandonWhenPercentageFull: 100
+      removeAbandoned: true
+      logAbandoned: false
+      dbProperties:
+        autoReconnect: true
+        zeroDateTimeBehavior: convertToNull
+        dontTrackOpenResources: true
+        holdResultsOpenOverStatementClose: false
+        useServerPrepStmts: false
+        cacheServerConfiguration: true
+        cacheResultSetMetadata: true
+        metadataCacheSize: 100
+        maintainTimeStats: false
+        enableQueryTimeouts: false
+        noDatetimeStringSync: true
+    platform: mysql
+    initialization-mode: embedded
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      connection-timeout: 50000
+      minimum-idle: 10
+      maximum-pool-size: 15
+      idle-timeout: 10000
+  devtools:
+    livereload:
+      enabled: true
+    restart:
+      enabled: true
+      log-condition-evaluation-delta: true
+  output:
+    ansi:
+      enabled: always
+  banner:
+    charset: UTF-8
+  data:
+    mongodb:
+      uri: "${REST_MODULE_MONGO_DATABASE_URL:mongodb://localhost:27017/quartz_job_scheduler}"
+#  redis:
+#    host: 127.0.0.1
+#    port: 6379
+#  cache:
+#    type: redis
+#    redis:
+#      cache-null-values: false
+#    cache-names: isUniqueTriggerKey,isUniqueJobKey,parseTokenToGetUser,isUsernameUnique,findAuthorityByName,fetchJobTriggerResponseDTOs,findAllExpiredTokens,findTokenByToken,findUserAuthorityByUserAndAuthority,findUserById,findUserByUsername,findAllUserTokens,findUserTokenByToken,findUserTokenByUserAndStatus
+logging:
+  level:
+    root: info
+    org.quartz: info
+    org.springframework.web: info
+    org.springframework.security: debug
+    org.hibernate.tool.hbm2ddl: info
+    org.hibernate.sql: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
+    org.hibernate.type: debug
+    org.hibernate.stat: debug
+    com.vishnu.aggarwal: info
+    org.springframework.cache: trace
+    org.springframework.aop.interceptor.PerformanceMonitorInterceptor: trace
+    org.springframework.aop.interceptor.DebugInterceptor: trace
+    org.springframework.aop.interceptor.SimpleTraceInterceptor: trace
+    com.vishnu.aggarwal.quartz.rest.interceptor.MethodLogInterceptor: trace
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} -- [%X{mdcToken}] -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} -- [%X{mdcToken}] -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
+    dateformat: "yyyy-MMM-dd HH:mm:ss"
+    level: "%5p"
+  file:
+    path: "${REST_MODULE_LOGGING_FILE_PATH:/home/vishnu/Desktop/quartzscheduler/logs/rest}"
+    name: "rest.log"
+management:
+  health:
+    db:
+      enabled: true
+    defaults:
+      enabled: true
+    diskspace:
+      enabled: true
+    redis:
+      enabled: true
+    rabbit:
+      enabled: true
+    mail:
+      enabled: true
+    mongo:
+      enabled: true
+  info:
+    build:
+      enabled: true
+    git:
+      enabled: true
+      mode: full
+    defaults:
+      enabled: true
+    env:
+      enabled: true
+  trace:
+    http:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    info:
+      enabled: true
+jwt:
+  secret: "${REST_MODULE_JWT_SECRET_KEY:MyJwtSecretStringKeyToBeUsedInSpringSecurityRest}"
+  expirationTime: "${REST_MODULE_JWT_EXPIRATION_TIME:100000000}"
+javamelody:
+  enabled: true
+  advisor-auto-proxy-creator-enabled: false
+  scheduled-monitoring-enabled: true
+  management-endpoint-monitoring-enabled: true
+  init-parameters:
+    log: true
+    disabled: false
+    url-exclude-pattern: /static/.*
+    sql-transform-pattern: \\d+
+    http-transform-pattern: \\d+
+    system-actions-enabled: true
+    quartz-default-listener-disabled: true
+    displayed-counters: http,sql,error,log,spring,jsp
+    monitoring-path: /system/monitor

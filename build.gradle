@@ -13,7 +13,7 @@ class BuildInfoTask extends DefaultTask {
     }
 }
 
-allprojects { Project project ->
+configure(allprojects) { Project project ->
     buildscript {
         repositories {
             mavenLocal()
@@ -47,23 +47,25 @@ allprojects { Project project ->
         distributionType = Wrapper.DistributionType.ALL
     }
 
-    configurations.all {
-        resolutionStrategy {
-            eachDependency { DependencyResolveDetails details ->
-                if (details.requested.group.equals("org.springframework.boot")) {
-                    if (!details.requested.name.equals("spring-boot-starter-mobile")) {
-                        details.useVersion("$springBootVersion")
+    configurations {
+        all {
+            resolutionStrategy {
+                eachDependency { DependencyResolveDetails details ->
+                    if (details.requested.group.equals("org.springframework.boot")) {
+                        if (!details.requested.name.equals("spring-boot-starter-mobile")) {
+                            details.useVersion("$springBootVersion")
+                        }
                     }
-                }
-                if (details.requested.group.equals("org.springframework.security")) {
-                    details.useVersion("$springSecurityVersion")
-                }
-                if (details.requested.group.equals("org.springframework")) {
-                    details.useVersion("$springVersion")
-                }
+                    if (details.requested.group.equals("org.springframework.security")) {
+                        details.useVersion("$springSecurityVersion")
+                    }
+                    if (details.requested.group.equals("org.springframework")) {
+                        details.useVersion("$springVersion")
+                    }
 //                if (details.requested.group.equals("com.zaxxer") && details.requested.name.startsWith("HikariCP")) {
 //                    details.use
 //                }
+                }
             }
         }
     }

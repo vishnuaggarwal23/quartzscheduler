@@ -1,0 +1,56 @@
+import static java.lang.System.getProperties
+
+apply plugin: 'war'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+version = restModuleProjectVersion
+mainClassName = "${projectGroup}.${restModuleProjectName}.main.Rest"
+
+war {
+    dependsOn("buildInfoTask")
+    mustRunAfter("buildInfoTask")
+    enabled = true
+    baseName = restModuleProjectBaseName
+    archivesBaseName = restModuleProjectBaseName
+    version = restModuleProjectVersion
+    exclude('application-dev.yml', 'banner.txt')
+}
+
+['jar', 'bootJar', 'bootWar'].each { String task ->
+    tasks.findByName(task).setEnabled(false)
+}
+
+bootRun {
+    sourceResources sourceSets.main
+    systemProperties properties as Map<String, ?>
+    jvmArgs = [
+            "-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5006",
+    ]
+}
+
+dependencies {
+    compile project(path: ":${coreModuleProjectName}")
+    compile group: 'org.quartz-scheduler', name: 'quartz', version: '2.3.1', {
+        exclude module: "HikariCP-java7"
+    }
+    compile group: 'com.cronutils', name: 'cron-utils', version: '7.0.1'
+//    compile group: 'org.liquibase', name: 'liquibase-core', version: '3.5.5'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: "${springBootVersion}"
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: "${springBootVersion}"
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: "${springBootVersion}"
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-mongodb', version: "${springBootVersion}"
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: "${springBootVersion}"
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: "${springBootVersion}"
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: "${springBootVersion}"
+    compile group: 'org.springframework', name: 'spring-context-support', version: "${springVersion}"
+    compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.0'
+    compile group: 'com.mchange', name: 'c3p0', version: '0.9.5.2'
+    compile group: 'com.auth0', name: 'java-jwt', version: '3.8.1'
+    compile group: 'com.opencsv', name: 'opencsv', version: '4.6'
+    compile group: 'org.apache.poi', name: 'poi', version: '4.1.0'
+    compile group: 'org.apache.commons', name: 'commons-csv', version: '1.7'
+    runtime group: 'mysql', name: 'mysql-connector-java', version: '6.0.6'
+    testCompile group: 'org.springframework.security', name: 'spring-security-test', version: "${springSecurityVersion}"
+    compile group: 'org.aspectj', name: 'aspectjweaver', version: '1.9.4'
+}

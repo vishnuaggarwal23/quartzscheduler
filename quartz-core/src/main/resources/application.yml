@@ -1,0 +1,20 @@
+logging:
+  level:
+    root: info
+    org.springframework: info
+    org.springframework.web: info
+    com.vishnu.aggarwal: info
+  file:
+    name: "core.log"
+    path: "${CORE_MODULE_LOGGING_FILE_PATH:/home/vishnu/Desktop/quartzscheduler/logs/core/}"
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} -- [%thread] -- %-5level -- %logger{36} --- %msg%n"
+    dateformat: "yyyy-MMM-dd HH:mm:ss"
+    level: "%5p"
+spring:
+  banner:
+    charset: UTF-8
+  output:
+    ansi:
+      enabled: detect

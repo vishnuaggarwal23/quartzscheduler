@@ -24,6 +24,6 @@ function clearPreBuildArtifacts(){
     esac
 }
 
-clearPreBuildArtifacts rest
-clearPreBuildArtifacts admin
-clearPreBuildArtifacts core
+clearPreBuildArtifacts quartz-rest
+clearPreBuildArtifacts quartz-admin-thymeleaf
+clearPreBuildArtifacts quartz-core
