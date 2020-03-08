@@ -13,3 +13,6 @@ application-*.yml
 build
 out
 *_buildInfoFile.properties
+*.iml
+*.ipr
+*.iws
