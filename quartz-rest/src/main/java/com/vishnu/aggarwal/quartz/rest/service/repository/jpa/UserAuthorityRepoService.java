@@ -14,6 +14,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.NotNull;
+
 import static java.lang.Boolean.FALSE;
 
 /*
@@ -33,13 +35,13 @@ public class UserAuthorityRepoService extends BaseRepoService<UserAuthority, Lon
     private final UserAuthorityRepository userAuthorityRepository;
 
     @Autowired
-    public UserAuthorityRepoService(UserAuthorityRepository userAuthorityRepository) {
+    public UserAuthorityRepoService(@NotNull final UserAuthorityRepository userAuthorityRepository) {
         this.userAuthorityRepository = userAuthorityRepository;
     }
 
     @Override
     protected Class<UserAuthority> getEntityClass() {
-        return null;
+        return UserAuthority.class;
     }
 
     @Override
@@ -56,7 +58,7 @@ public class UserAuthorityRepoService extends BaseRepoService<UserAuthority, Lon
             }
     )
     @SuppressWarnings("unchecked")
-    public UserAuthority save(UserAuthority userAuthority) {
+    public UserAuthority save(@NotNull final UserAuthority userAuthority) {
         return userAuthorityRepository.save(userAuthority);
     }
 
@@ -68,7 +70,12 @@ public class UserAuthorityRepoService extends BaseRepoService<UserAuthority, Lon
      * @return the user authority
      */
     @Cacheable(value = "findUserAuthorityByUserAndAuthority", key = "#user.toString() + #authority.toString()", unless = "#result == null")
-    public UserAuthority findByUserAndAuthority(User user, Authority authority) {
+    public UserAuthority findByUserAndAuthority(@NotNull final User user, @NotNull final Authority authority) {
         return userAuthorityRepository.findByUserAndAuthorityAndIsDeleted(user, authority, FALSE);
+    }
+
+    @Cacheable(value = "countUserAuthorityByUserAndAuthority", key = "#user.toString() + #authority.toString()", unless = "#result == null")
+    public int countByUserAndAuthority(@NotNull final User user, @NotNull final Authority authority) {
+        return userAuthorityRepository.countByUserAndAuthorityAndIsDeleted(user, authority, FALSE);
     }
 }

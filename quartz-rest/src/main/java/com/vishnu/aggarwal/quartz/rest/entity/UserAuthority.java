@@ -1,9 +1,7 @@
 package com.vishnu.aggarwal.quartz.rest.entity;
 
 import com.vishnu.aggarwal.quartz.core.enums.Status;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -25,6 +23,8 @@ Created by vishnu on 20/4/18 10:39 AM
 @Getter
 @Setter
 @ToString(of = {"id", "user", "authority", "status"})
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserAuthority extends BaseEntity<Long> implements Serializable {
     private static final long serialVersionUID = -4720986982733184274L;
 
@@ -43,4 +43,10 @@ public class UserAuthority extends BaseEntity<Long> implements Serializable {
     @NotNull
     @Enumerated(STRING)
     private Status status;
+
+    public UserAuthority(@NotNull User user, @NotNull Authority authority, @NotNull Status status) {
+        this.user = user;
+        this.authority = authority;
+        this.status = status;
+    }
 }

@@ -24,14 +24,14 @@ public class ValidationService {
      */
     private final QuartzDAOService quartzDAOService;
 
-    private final UserService userService;
+    private final UserServiceImpl userServiceImpl;
 
     @Autowired
     public ValidationService(
             QuartzDAOService quartzDAOService,
-            UserService userService) {
+            UserServiceImpl userServiceImpl) {
         this.quartzDAOService = quartzDAOService;
-        this.userService = userService;
+        this.userServiceImpl = userServiceImpl;
     }
 
     /**
@@ -41,7 +41,7 @@ public class ValidationService {
      * @return the boolean
      */
     public Boolean isJobKeyUnique(String keyName) throws HibernateException {
-        return quartzDAOService.isUniqueJobKey(keyName, userService.getCurrentLoggedInUser().getId().toString());
+        return quartzDAOService.isUniqueJobKey(keyName, userServiceImpl.getCurrentLoggedInUser().getId().toString());
     }
 
     /**
@@ -51,6 +51,6 @@ public class ValidationService {
      * @return the boolean
      */
     public Boolean isTriggerKeyUnique(String keyName) {
-        return quartzDAOService.isUniqueTriggerKey(keyName, userService.getCurrentLoggedInUser().getId().toString());
+        return quartzDAOService.isUniqueTriggerKey(keyName, userServiceImpl.getCurrentLoggedInUser().getId().toString());
     }
 }

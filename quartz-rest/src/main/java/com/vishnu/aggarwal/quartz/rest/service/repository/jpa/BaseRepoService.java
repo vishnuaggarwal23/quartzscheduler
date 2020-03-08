@@ -16,6 +16,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 import static java.lang.Boolean.TRUE;
@@ -129,7 +130,7 @@ public abstract class BaseRepoService<T, ID extends Serializable> extends BaseSe
      * @param dataTableCO     the data table co
      * @return the criteria order
      */
-    private Order getCriteriaOrder(CriteriaBuilder criteriaBuilder, DataTableCO dataTableCO) {
+    private Order getCriteriaOrder(CriteriaBuilder criteriaBuilder, @NotNull final DataTableCO dataTableCO) {
         if (dataTableCO.getOrderBy().equalsIgnoreCase("desc")) {
             return criteriaBuilder.desc(getRoot(getBaseCriteriaSelectImpl()).get(isEmpty(dataTableCO.getSortBy()) ? "id" : dataTableCO.getSortBy()));
         } else {
@@ -158,8 +159,8 @@ public abstract class BaseRepoService<T, ID extends Serializable> extends BaseSe
      * @return the object
      * @throws NoResultException the no result exception
      */
-    @Transactional
-    Object selectQuery(CriteriaQuery<T> criteriaQuery, Boolean isDistinct, Boolean isSingleResultExpected, DataTableCO dataTableCO) {
+    @Transactional(readOnly = true)
+    Object selectQuery(CriteriaQuery<T> criteriaQuery, final boolean isDistinct, final boolean isSingleResultExpected, final DataTableCO dataTableCO) {
         criteriaQuery.distinct(isDistinct);
         if (nonNull(dataTableCO)) {
             criteriaQuery.orderBy(getCriteriaOrder(getCriteriaBuilder(), dataTableCO));
@@ -202,12 +203,12 @@ public abstract class BaseRepoService<T, ID extends Serializable> extends BaseSe
      * @param id the id
      * @return the t
      */
-    @Transactional
+    @Transactional(readOnly = true)
     T findOne(ID id) {
         return getJpaRepository().findById(id).orElse(null);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     T getOne(ID id) {
         return getJpaRepository().getOne(id);
     }

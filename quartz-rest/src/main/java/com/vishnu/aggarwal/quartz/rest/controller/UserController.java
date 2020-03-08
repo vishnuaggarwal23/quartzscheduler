@@ -2,7 +2,7 @@ package com.vishnu.aggarwal.quartz.rest.controller;
 
 import com.vishnu.aggarwal.quartz.core.controller.BaseController;
 import com.vishnu.aggarwal.quartz.core.dto.UserDTO;
-import com.vishnu.aggarwal.quartz.rest.service.UserService;
+import com.vishnu.aggarwal.quartz.rest.service.UserServiceImpl;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,6 @@ import static com.vishnu.aggarwal.quartz.core.constants.UrlMapping.Rest.User.CUR
 import static com.vishnu.aggarwal.quartz.core.util.TypeTokenUtils.getHashMapOfStringAndUserDTO;
 import static com.vishnu.aggarwal.quartz.rest.util.DTOConversion.convertFromUser;
 import static org.springframework.http.HttpStatus.ACCEPTED;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
@@ -39,16 +38,16 @@ public class UserController extends BaseController {
     /**
      * The User service.
      */
-    private final UserService userService;
+    private final UserServiceImpl userServiceImpl;
 
     /**
      * Instantiates a new User controller.
      *
-     * @param userService the user service
+     * @param userServiceImpl the user service
      */
     @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public UserController(UserServiceImpl userServiceImpl) {
+        this.userServiceImpl = userServiceImpl;
     }
 
     /**
@@ -60,7 +59,7 @@ public class UserController extends BaseController {
     @ResponseStatus(ACCEPTED)
     public ResponseEntity<String> getCurrentLoggedInUser() {
         HashMap<String, UserDTO> response = new HashMap<String, UserDTO>();
-        response.put(HASHMAP_USER_KEY, convertFromUser(userService.getCurrentLoggedInUser()));
+        response.put(HASHMAP_USER_KEY, convertFromUser(userServiceImpl.getCurrentLoggedInUser()));
         return new ResponseEntity<String>(gson().toJson(response, getHashMapOfStringAndUserDTO()), ACCEPTED);
 
     }

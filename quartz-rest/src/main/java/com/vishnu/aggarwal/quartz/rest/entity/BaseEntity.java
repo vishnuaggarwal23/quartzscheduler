@@ -4,9 +4,7 @@ package com.vishnu.aggarwal.quartz.rest.entity;
 Created by vishnu on 1/3/18 1:23 PM
 */
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -33,6 +31,8 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 @MappedSuperclass
 @ToString
 @EntityListeners(AuditingEntityListener.class)
+@NoArgsConstructor
+@AllArgsConstructor
 public abstract class BaseEntity<ID> implements Serializable {
 
     private static final long serialVersionUID = -2248190721476487645L;

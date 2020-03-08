@@ -14,6 +14,8 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import javax.validation.constraints.NotNull;
+
 import static com.vishnu.aggarwal.quartz.core.constants.ApplicationConstants.*;
 import static com.vishnu.aggarwal.quartz.core.constants.RoleType.ROLE_ADMIN;
 import static com.vishnu.aggarwal.quartz.core.constants.RoleType.ROLE_USER;
@@ -115,24 +117,18 @@ public class ApplicationReadyEventHandlerService extends com.vishnu.aggarwal.qua
     }
 
     private void createUserAuthorities() {
-        User adminUser = userRepoService.findByUsername(ADMIN_USER_USERNAME);
+        final User adminUser = userRepoService.findByUsername(ADMIN_USER_USERNAME);
         if (nonNull(adminUser)) {
             createUserAuthority(adminUser, authorityRepoService.findByName(ROLE_ADMIN));
             createUserAuthority(adminUser, authorityRepoService.findByName(ROLE_USER));
         }
     }
 
-    private void createUserAuthority(final User user, final Authority authority) {
-        if (nonNull(authority)) {
-            UserAuthority userAuthority = userAuthorityRepoService.findByUserAndAuthority(user, authority);
-            if (isNull(userAuthority)) {
-                log.info("[Application Bootstrap] Creating User Authority for [User " + user + "] and [Authority " + authority + "]");
-                userAuthority = new UserAuthority();
-                userAuthority.setUser(user);
-                userAuthority.setAuthority(authority);
-                userAuthority.setStatus(ACTIVE);
-                userAuthorityRepoService.save(userAuthority);
-            }
+    private void createUserAuthority(@NotNull final User user, @NotNull final Authority authority) {
+        userAuthorityRepoService.countByUserAndAuthority(user, authority);
+        if (userAuthorityRepoService.countByUserAndAuthority(user, authority) != 0) {
+            log.info("[Application Bootstrap] Creating User Authority for [User " + user + "] and [Authority " + authority + "]");
+            userAuthorityRepoService.save(new UserAuthority(user, authority, ACTIVE));
         }
     }
 }

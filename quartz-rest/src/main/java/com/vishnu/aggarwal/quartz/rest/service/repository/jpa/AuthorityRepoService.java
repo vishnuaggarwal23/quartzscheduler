@@ -38,7 +38,7 @@ public class AuthorityRepoService extends BaseRepoService<Authority, Long> {
 
     @Override
     protected Class<Authority> getEntityClass() {
-        return null;
+        return Authority.class;
     }
 
     @Override

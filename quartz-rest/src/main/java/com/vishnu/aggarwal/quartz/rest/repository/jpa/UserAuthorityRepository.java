@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.NotNull;
+
 /*
 Created by vishnu on 6/3/18 10:37 AM
 */
@@ -25,5 +27,6 @@ public interface UserAuthorityRepository extends JpaRepository<UserAuthority, Lo
      * @param isDeleted the is deleted
      * @return the user authority
      */
-    UserAuthority findByUserAndAuthorityAndIsDeleted(User user, Authority authority, Boolean isDeleted);
+    UserAuthority findByUserAndAuthorityAndIsDeleted(@NotNull final  User user, @NotNull final Authority authority, final boolean isDeleted);
+    int countByUserAndAuthorityAndIsDeleted(@NotNull final  User user, @NotNull final Authority authority, final boolean isDeleted);
 }

@@ -2,7 +2,6 @@ package com.vishnu.aggarwal.quartz.core.dto;
 
 import com.vishnu.aggarwal.quartz.core.co.DataTableCO;
 import com.vishnu.aggarwal.quartz.core.validation.interfaces.*;
-import com.vishnu.aggarwal.quartz.core.validation.interfaces.*;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
@@ -126,4 +125,23 @@ public class KeyGroupDescriptionDTO extends DataTableCO {
             }
     )
     private String description;
+
+
+    public KeyGroupDescriptionDTO(String key, UserDTO group) {
+        this.key = key;
+        this.group = group;
+        this.description = null;
+    }
+
+    public KeyGroupDescriptionDTO(KeyGroupDescriptionDTO keyGroupDescriptionDTO) {
+        this.key = keyGroupDescriptionDTO.getKey();
+        this.group = keyGroupDescriptionDTO.getGroup();
+        this.description = keyGroupDescriptionDTO.getDescription();
+    }
+
+    public KeyGroupDescriptionDTO(String key) {
+        this.key = key;
+        this.group = null;
+        this.description = null;
+    }
 }

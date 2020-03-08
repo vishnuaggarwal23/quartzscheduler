@@ -23,6 +23,7 @@ import static com.vishnu.aggarwal.quartz.core.constants.ApplicationConstants.SEA
 import static com.vishnu.aggarwal.quartz.core.constants.ApplicationConstants.X_AUTH_TOKEN;
 import static com.vishnu.aggarwal.quartz.core.constants.UrlMapping.Admin.Api.BASE_URI;
 import static com.vishnu.aggarwal.quartz.core.constants.UrlMapping.Admin.Api.Quartz.*;
+import static java.util.Objects.requireNonNull;
 import static org.springframework.http.HttpStatus.ACCEPTED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -67,7 +68,7 @@ public class QuartzController extends BaseController {
     @ResponseBody
     @ResponseStatus(ACCEPTED)
     public ResponseEntity<String> createUnscheduledApiJob(@RequestBody final QuartzDTO quartzDTO, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        return quartzService.createUnscheduledApiJob(quartzDTO, getCookie(httpServletRequest, X_AUTH_TOKEN));
+        return quartzService.createUnscheduledApiJob(quartzDTO, requireNonNull(getCookie(httpServletRequest, X_AUTH_TOKEN)));
     }
 
     /**

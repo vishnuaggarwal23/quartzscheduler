@@ -1,8 +1,6 @@
 package com.vishnu.aggarwal.quartz.rest.entity;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -21,6 +19,8 @@ import static javax.persistence.FetchType.EAGER;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class JobTriggerResponse extends BaseEntity<Long> implements Serializable {
 
     private static final long serialVersionUID = -2248190721476487645L;
@@ -48,7 +48,7 @@ public class JobTriggerResponse extends BaseEntity<Long> implements Serializable
     private User jobGroup;
 
     @NotNull
-    private Integer responseCode;
+    private int responseCode;
 
     @NotNull
     @Column(length = Integer.MAX_VALUE, columnDefinition = "LONGTEXT")
@@ -62,5 +62,17 @@ public class JobTriggerResponse extends BaseEntity<Long> implements Serializable
 
     @NotNull
     private Date fireTime;
+
+    public JobTriggerResponse(String triggerKey, User triggerGroup, String jobKey, User jobGroup, int responseCode, String responseHeader, String responseBody, Date fireTime) {
+        super();
+        this.triggerKey = triggerKey;
+        this.triggerGroup = triggerGroup;
+        this.jobKey = jobKey;
+        this.jobGroup = jobGroup;
+        this.responseCode = responseCode;
+        this.responseHeader = responseHeader;
+        this.responseBody = responseBody;
+        this.fireTime = fireTime;
+    }
 
 }

@@ -8,6 +8,7 @@ Created by vishnu on 9/3/18 11:06 AM
 import com.vishnu.aggarwal.quartz.core.dto.KeyGroupDescriptionDTO;
 import com.vishnu.aggarwal.quartz.core.dto.QuartzDTO;
 import com.vishnu.aggarwal.quartz.core.service.BaseService;
+import lombok.NonNull;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,12 +16,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
 import javax.servlet.http.Cookie;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.vishnu.aggarwal.quartz.core.constants.ApplicationConstants.JOB_KEY;
 import static com.vishnu.aggarwal.quartz.core.constants.ApplicationConstants.SEARCH_TEXT;
 import static com.vishnu.aggarwal.quartz.core.enums.RestApiEndPoint.*;
+import static java.util.Collections.singletonMap;
 
 
 /**
@@ -44,7 +48,7 @@ public class QuartzService extends BaseService {
      * @param restService the rest service
      */
     @Autowired
-    public QuartzService(RestService restService) {
+    public QuartzService(@NonNull final RestService restService) {
         this.restService = restService;
     }
 
@@ -57,7 +61,7 @@ public class QuartzService extends BaseService {
      * @return the rest response vo
      * @throws RestClientException the rest client exception
      */
-    public ResponseEntity<String> createUnscheduledApiJob(QuartzDTO quartzDTO, Cookie cookie) throws RestClientException {
+    final public ResponseEntity<String> createUnscheduledApiJob(@NonNull final QuartzDTO quartzDTO, @NonNull final Cookie cookie) throws RestClientException {
         return restService.getResponseFromBackendService(quartzDTO, cookie.getValue(), CREATE_API_JOB.getApiEndPoint(), CREATE_API_JOB.getHttpMethod(), null, null);
     }
 
@@ -69,7 +73,7 @@ public class QuartzService extends BaseService {
      * @return the response entity
      * @throws RestClientException the rest client exception
      */
-    public ResponseEntity<String> createScheduledApiSimpleTriggeredJob(QuartzDTO quartzDTO, Cookie cookie) throws RestClientException {
+    final public ResponseEntity<String> createScheduledApiSimpleTriggeredJob(@NonNull final QuartzDTO quartzDTO, @NonNull final Cookie cookie) throws RestClientException {
         return restService.getResponseFromBackendService(quartzDTO, cookie.getValue(), CREATE_API_JOB_SCHEDULED_SIMPLE.getApiEndPoint(), CREATE_API_JOB_SCHEDULED_SIMPLE.getHttpMethod(), null, null);
     }
 
@@ -81,7 +85,7 @@ public class QuartzService extends BaseService {
      * @return the response entity
      * @throws RestClientException the rest client exception
      */
-    public ResponseEntity<String> createScheduledApiCronTriggeredJob(QuartzDTO quartzDTO, Cookie cookie) throws RestClientException {
+    final public ResponseEntity<String> createScheduledApiCronTriggeredJob(@NonNull final QuartzDTO quartzDTO, @NonNull final Cookie cookie) throws RestClientException {
         return restService.getResponseFromBackendService(quartzDTO, cookie.getValue(), CREATE_API_JOB_SCHEDULED_CRON.getApiEndPoint(), CREATE_API_JOB_SCHEDULED_CRON.getHttpMethod(), null, null);
     }
 
@@ -93,7 +97,7 @@ public class QuartzService extends BaseService {
      * @return the rest response vo
      * @throws RestClientException the rest client exception
      */
-    public ResponseEntity<String> updateExistingJob(QuartzDTO quartzDTO, Cookie cookie) throws RestClientException {
+    final public ResponseEntity<String> updateExistingJob(@NonNull final QuartzDTO quartzDTO, @NonNull final Cookie cookie) throws RestClientException {
         return restService.getResponseFromBackendService(quartzDTO, cookie.getValue(), UPDATE_API_JOB.getApiEndPoint(), UPDATE_API_JOB.getHttpMethod(), null, null);
     }
 
@@ -105,7 +109,7 @@ public class QuartzService extends BaseService {
      * @return the rest response vo
      * @throws RestClientException the rest client exception
      */
-    public ResponseEntity<String> createNewSimpleTriggerForJob(QuartzDTO quartzDTO, Cookie cookie) throws RestClientException {
+    final public ResponseEntity<String> createNewSimpleTriggerForJob(@NonNull final QuartzDTO quartzDTO, @NonNull final Cookie cookie) throws RestClientException {
         return restService.getResponseFromBackendService(quartzDTO, cookie.getValue(), CREATE_SIMPLE_TRIGGER.getApiEndPoint(), CREATE_SIMPLE_TRIGGER.getHttpMethod(), null, null);
     }
 
@@ -117,7 +121,7 @@ public class QuartzService extends BaseService {
      * @return the response entity
      * @throws RestClientException the rest client exception
      */
-    public ResponseEntity<String> createNewCronTriggerForJob(QuartzDTO quartzDTO, Cookie cookie) throws RestClientException {
+    final public ResponseEntity<String> createNewCronTriggerForJob(@NonNull final QuartzDTO quartzDTO, @NonNull final Cookie cookie) throws RestClientException {
         return restService.getResponseFromBackendService(quartzDTO, cookie.getValue(), CREATE_CRON_TRIGGER.getApiEndPoint(), CREATE_CRON_TRIGGER.getHttpMethod(), null, null);
     }
 
@@ -129,7 +133,7 @@ public class QuartzService extends BaseService {
      * @return the rest response vo
      * @throws RestClientException the rest client exception
      */
-    public ResponseEntity<String> updateExistingSimpleTrigger(QuartzDTO quartzDTO, Cookie cookie) throws RestClientException {
+    final public ResponseEntity<String> updateExistingSimpleTrigger(@NonNull final QuartzDTO quartzDTO, @NonNull final Cookie cookie) throws RestClientException {
         return restService.getResponseFromBackendService(quartzDTO, cookie.getValue(), UPDATE_SIMPLE_TRIGGER.getApiEndPoint(), UPDATE_SIMPLE_TRIGGER.getHttpMethod(), null, null);
     }
 
@@ -141,7 +145,7 @@ public class QuartzService extends BaseService {
      * @return the response entity
      * @throws RestClientException the rest client exception
      */
-    public ResponseEntity<String> updateExistingCronTrigger(QuartzDTO quartzDTO, Cookie cookie) throws RestClientException {
+    final public ResponseEntity<String> updateExistingCronTrigger(@NonNull final QuartzDTO quartzDTO, @NonNull final Cookie cookie) throws RestClientException {
         return restService.getResponseFromBackendService(quartzDTO, cookie.getValue(), UPDATE_CRON_TRIGGER.getApiEndPoint(), UPDATE_CRON_TRIGGER.getHttpMethod(), null, null);
     }
 
@@ -152,7 +156,7 @@ public class QuartzService extends BaseService {
      * @return the data table vo
      * @throws RestClientException the rest client exception
      */
-    public ResponseEntity<String> fetchJobsByJobGroupName(Cookie cookie) throws RestClientException {
+    final public ResponseEntity<String> fetchJobsByJobGroupName(@NonNull final Cookie cookie) throws RestClientException {
         return restService.getResponseFromBackendService(null, cookie.getValue(), FETCH_JOBS_OF_CURRENT_USER_GROUP.getApiEndPoint(), FETCH_JOBS_OF_CURRENT_USER_GROUP.getHttpMethod(), null, null);
     }
 
@@ -165,7 +169,7 @@ public class QuartzService extends BaseService {
      * @return the data table vo
      * @throws RestClientException the rest client exception
      */
-    public ResponseEntity<String> fetchTriggersByJobKeyNameAndJobGroupName(final String jobKeyName, Cookie cookie) throws RestClientException {
+    final public ResponseEntity<String> fetchTriggersByJobKeyNameAndJobGroupName(final String jobKeyName, @NonNull final Cookie cookie) throws RestClientException {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(JOB_KEY, jobKeyName);
         return restService.getResponseFromBackendService(null, cookie.getValue(), FETCH_TRIGGERS_BY_JOB_KEY_AND_CURRENT_USER_GROUP.getApiEndPoint(), FETCH_TRIGGERS_BY_JOB_KEY_AND_CURRENT_USER_GROUP.getHttpMethod(), params, params);
@@ -179,7 +183,7 @@ public class QuartzService extends BaseService {
      * @return the data table vo
      * @throws RestClientException the rest client exception
      */
-    public ResponseEntity<String> fetchQuartzDetailsForJobGroupName(Cookie cookie) throws RestClientException {
+    final public ResponseEntity<String> fetchQuartzDetailsForJobGroupName(@NonNull final Cookie cookie) throws RestClientException {
         return restService.getResponseFromBackendService(null, cookie.getValue(), FETCH_QUARTZ_DETAILS_BY_CURRENT_USER_GROUP.getApiEndPoint(), FETCH_QUARTZ_DETAILS_BY_CURRENT_USER_GROUP.getHttpMethod(), null, null);
     }
 
@@ -192,7 +196,7 @@ public class QuartzService extends BaseService {
      * @return the rest response vo
      * @throws RestClientException the rest client exception
      */
-    public ResponseEntity<String> resumeJobs(KeyGroupDescriptionDTO keyGroupDescriptionDTO, Cookie cookie) throws RestClientException {
+    final public ResponseEntity<String> resumeJobs(@NonNull final KeyGroupDescriptionDTO keyGroupDescriptionDTO, @NonNull final Cookie cookie) throws RestClientException {
         return restService.getResponseFromBackendService(keyGroupDescriptionDTO, cookie.getValue(), RESUME_JOBS.getApiEndPoint(), RESUME_JOBS.getHttpMethod(), null, null);
     }
 
@@ -205,7 +209,7 @@ public class QuartzService extends BaseService {
      * @return the rest response vo
      * @throws RestClientException the rest client exception
      */
-    public ResponseEntity<String> pauseJobs(KeyGroupDescriptionDTO keyGroupDescriptionDTO, Cookie cookie) throws RestClientException {
+    final public ResponseEntity<String> pauseJobs(@NonNull final KeyGroupDescriptionDTO keyGroupDescriptionDTO, @NonNull final Cookie cookie) throws RestClientException {
         return restService.getResponseFromBackendService(keyGroupDescriptionDTO, cookie.getValue(), PAUSE_JOBS.getApiEndPoint(), PAUSE_JOBS.getHttpMethod(), null, null);
     }
 
@@ -218,7 +222,7 @@ public class QuartzService extends BaseService {
      * @return the rest response vo
      * @throws RestClientException the rest client exception
      */
-    public ResponseEntity<String> resumeTriggers(KeyGroupDescriptionDTO keyGroupDescriptionDTO, Cookie cookie) throws RestClientException {
+    final public ResponseEntity<String> resumeTriggers(@NonNull final KeyGroupDescriptionDTO keyGroupDescriptionDTO, @NonNull final Cookie cookie) throws RestClientException {
         return restService.getResponseFromBackendService(keyGroupDescriptionDTO, cookie.getValue(), RESUME_TRIGGERS.getApiEndPoint(), RESUME_TRIGGERS.getHttpMethod(), null, null);
     }
 
@@ -231,7 +235,7 @@ public class QuartzService extends BaseService {
      * @return the rest response vo
      * @throws RestClientException the rest client exception
      */
-    public ResponseEntity<String> pauseTriggers(KeyGroupDescriptionDTO keyGroupDescriptionDTO, Cookie cookie) throws RestClientException {
+    final public ResponseEntity<String> pauseTriggers(@NonNull final KeyGroupDescriptionDTO keyGroupDescriptionDTO, @NonNull final Cookie cookie) throws RestClientException {
         return restService.getResponseFromBackendService(keyGroupDescriptionDTO, cookie.getValue(), PAUSE_TRIGGERS.getApiEndPoint(), PAUSE_TRIGGERS.getHttpMethod(), null, null);
     }
 
@@ -244,7 +248,7 @@ public class QuartzService extends BaseService {
      * @return the rest response vo
      * @throws RestClientException the rest client exception
      */
-    public ResponseEntity<String> deleteJobs(KeyGroupDescriptionDTO keyGroupDescriptionDTO, Cookie cookie) throws RestClientException {
+    final public ResponseEntity<String> deleteJobs(@NonNull final KeyGroupDescriptionDTO keyGroupDescriptionDTO, @NonNull final Cookie cookie) throws RestClientException {
         return restService.getResponseFromBackendService(keyGroupDescriptionDTO, cookie.getValue(), DELETE_JOBS.getApiEndPoint(), DELETE_JOBS.getHttpMethod(), null, null);
     }
 
@@ -257,13 +261,12 @@ public class QuartzService extends BaseService {
      * @return the rest response vo
      * @throws RestClientException the rest client exception
      */
-    public ResponseEntity<String> deleteTriggers(KeyGroupDescriptionDTO keyGroupDescriptionDTO, Cookie cookie) throws RestClientException {
+    final public ResponseEntity<String> deleteTriggers(@NonNull final KeyGroupDescriptionDTO keyGroupDescriptionDTO, @NonNull final Cookie cookie) throws RestClientException {
         return restService.getResponseFromBackendService(keyGroupDescriptionDTO, cookie.getValue(), DELETE_TRIGGERS.getApiEndPoint(), DELETE_TRIGGERS.getHttpMethod(), null, null);
     }
 
-    public ResponseEntity<String> jobKeysAutocomplete(String searchText, Cookie cookie) {
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put(SEARCH_TEXT, searchText);
+    final public ResponseEntity<String> jobKeysAutocomplete(@NonNull @NotEmpty @NotBlank final String searchText, @NonNull final Cookie cookie) {
+        Map<String, Object> params = singletonMap(SEARCH_TEXT, searchText);
         return restService.getResponseFromBackendService(null, cookie.getValue(), JOB_KEYS_AUTOCOMPLETE.getApiEndPoint(), JOB_KEYS_AUTOCOMPLETE.getHttpMethod(), params, params);
     }
 }

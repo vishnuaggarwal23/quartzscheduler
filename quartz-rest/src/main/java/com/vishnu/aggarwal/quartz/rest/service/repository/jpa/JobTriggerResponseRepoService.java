@@ -5,6 +5,7 @@ import com.vishnu.aggarwal.quartz.rest.entity.JobTriggerResponse;
 import com.vishnu.aggarwal.quartz.rest.entity.User;
 import com.vishnu.aggarwal.quartz.rest.interfaces.UserService;
 import com.vishnu.aggarwal.quartz.rest.repository.jpa.JobTriggerResponseRepository;
+import lombok.NonNull;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -48,8 +49,8 @@ public class JobTriggerResponseRepoService extends BaseRepoService<JobTriggerRes
      */
     @Autowired
     public JobTriggerResponseRepoService(
-            JobTriggerResponseRepository jobTriggerResponseRepository,
-            UserService userService) {
+            @NonNull final JobTriggerResponseRepository jobTriggerResponseRepository,
+            @NonNull final UserService userService) {
         this.jobTriggerResponseRepository = jobTriggerResponseRepository;
         this.userService = userService;
     }
@@ -71,20 +72,8 @@ public class JobTriggerResponseRepoService extends BaseRepoService<JobTriggerRes
      * @return the job trigger response
      */
     @CacheEvict(value = "fetchJobTriggerResponseDTOs", allEntries = true, beforeInvocation = true)
-    public JobTriggerResponse save(JobTriggerResponseDTO jobTriggerResponseDTO) {
-        if (nonNull(jobTriggerResponseDTO)) {
-            JobTriggerResponse jobTriggerResponse = new JobTriggerResponse();
-            jobTriggerResponse.setTriggerKey(jobTriggerResponseDTO.getTriggerKey());
-            jobTriggerResponse.setTriggerGroup(userService.findById(jobTriggerResponseDTO.getTriggerGroup().getId()));
-            jobTriggerResponse.setJobKey(jobTriggerResponseDTO.getJobKey());
-            jobTriggerResponse.setJobGroup(userService.findById(jobTriggerResponseDTO.getJobGroup().getId()));
-            jobTriggerResponse.setResponseCode(jobTriggerResponseDTO.getResponseCode());
-            jobTriggerResponse.setResponseHeader(jobTriggerResponseDTO.getResponseHeader());
-            jobTriggerResponse.setResponseBody(valueOf(jobTriggerResponseDTO.getResponseBody()));
-            jobTriggerResponse.setFireTime(jobTriggerResponseDTO.getFireTime());
-            return super.save(jobTriggerResponse);
-        }
-        return null;
+    public JobTriggerResponse save(@NonNull final JobTriggerResponseDTO jobTriggerResponseDTO) {
+        return super.save(new JobTriggerResponse(jobTriggerResponseDTO.getTriggerKey(), userService.findById(jobTriggerResponseDTO.getTriggerGroup().getId()), jobTriggerResponseDTO.getJobKey(), userService.findById(jobTriggerResponseDTO.getJobGroup().getId()), jobTriggerResponseDTO.getResponseCode(), jobTriggerResponseDTO.getResponseHeader(), valueOf(jobTriggerResponseDTO.getResponseBody()), jobTriggerResponseDTO.getFireTime()));
     }
 
     /**
@@ -96,7 +85,7 @@ public class JobTriggerResponseRepoService extends BaseRepoService<JobTriggerRes
      */
     @Cacheable(value = "fetchJobTriggerResponseDTOs", key = "#jobTriggerResponseDTO.toString()", unless = "#result == null")
     @SuppressWarnings("unchecked")
-    public List<JobTriggerResponseDTO> fetch(JobTriggerResponseDTO jobTriggerResponseDTO) throws NoResultException {
+    public List<JobTriggerResponseDTO> fetch(@NonNull final JobTriggerResponseDTO jobTriggerResponseDTO) throws NoResultException {
         CriteriaQuery<JobTriggerResponse> criteriaQuery = getBaseCriteriaSelectImpl();
         CriteriaBuilder criteriaBuilder = getCriteriaBuilder();
         Root<JobTriggerResponse> jobTriggerResponseRoot = getRoot(criteriaQuery);
@@ -106,7 +95,7 @@ public class JobTriggerResponseRepoService extends BaseRepoService<JobTriggerRes
         return (List<JobTriggerResponseDTO>) selectQuery(criteriaQuery, TRUE, FALSE, jobTriggerResponseDTO);
     }
 
-    private Predicate getRestrictionQuery(final JobTriggerResponseDTO jobTriggerResponseDTO, CriteriaBuilder criteriaBuilder, final Root<JobTriggerResponse> root, final Join<JobTriggerResponse, User> jobGroupJoin, final Join<JobTriggerResponse, User> triggerGroupJoin) {
+    private Predicate getRestrictionQuery(@NonNull final JobTriggerResponseDTO jobTriggerResponseDTO, @NonNull CriteriaBuilder criteriaBuilder, @NonNull final Root<JobTriggerResponse> root, @NonNull final Join<JobTriggerResponse, User> jobGroupJoin, @NonNull final Join<JobTriggerResponse, User> triggerGroupJoin) {
         if (isNotBlank(jobTriggerResponseDTO.getJobKey()) && isNotBlank(jobTriggerResponseDTO.getTriggerKey())) {
             return criteriaBuilder.and(
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("jobName")), jobTriggerResponseDTO.getJobKey().toLowerCase()),

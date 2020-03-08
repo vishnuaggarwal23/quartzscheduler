@@ -5,6 +5,7 @@ Created by vishnu on 6/3/18 10:33 AM
 */
 
 import com.vishnu.aggarwal.quartz.core.service.BaseService;
+import com.vishnu.aggarwal.quartz.rest.interfaces.UserService;
 import com.vishnu.aggarwal.quartz.rest.service.repository.jpa.UserRepoService;
 import com.vishnu.aggarwal.quartz.rest.entity.User;
 import lombok.extern.apachecommons.CommonsLog;
@@ -27,7 +28,7 @@ import static org.springframework.security.core.context.SecurityContextHolder.ge
 @Service
 @CommonsLog
 @Transactional
-public class UserService extends BaseService implements com.vishnu.aggarwal.quartz.rest.interfaces.UserService {
+public class UserServiceImpl extends BaseService implements UserService {
 
     /**
      * The User repo service.
@@ -40,7 +41,7 @@ public class UserService extends BaseService implements com.vishnu.aggarwal.quar
      * @param userRepoService the user repo service
      */
     @Autowired
-    public UserService(UserRepoService userRepoService) {
+    public UserServiceImpl(UserRepoService userRepoService) {
         this.userRepoService = userRepoService;
     }
 
