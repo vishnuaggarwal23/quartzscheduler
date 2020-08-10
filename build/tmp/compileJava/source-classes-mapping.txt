@@ -1,4 +1,0 @@
-wrapper/quartz/scheduler/Application.java
- wrapper.quartz.scheduler.Application
-wrapper/quartz/scheduler/package-info.java
- wrapper.quartz.scheduler.package-info
