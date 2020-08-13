@@ -4,7 +4,7 @@
     <changeSet id="spring-session-init" author="spring-session">
         <sqlFile path="org/springframework/session/jdbc/schema-mysql.sql"
                  relativeToChangelogFile="false"
-                 splitStatements="false"
-                 stripComments="false"/>
+                 splitStatements="true"
+                 stripComments="true"/>
     </changeSet>
 </databaseChangeLog>

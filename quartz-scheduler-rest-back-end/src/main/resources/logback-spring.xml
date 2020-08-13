@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<configuration scan="true" scanPeriod="5 seconds">
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
     <logger name="wrapper.quartz.scheduler" level="ALL" additivity="false">
         <appender-ref ref="CONSOLE"/>
     </logger>
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
 </configuration>
