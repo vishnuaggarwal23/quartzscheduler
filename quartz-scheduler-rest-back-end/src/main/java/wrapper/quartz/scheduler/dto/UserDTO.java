@@ -3,7 +3,7 @@ package wrapper.quartz.scheduler.dto;
 import lombok.*;
 import org.springframework.util.Assert;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * The type User dto.
@@ -26,7 +26,8 @@ public class UserDTO {
     private Boolean deleted = false;
     private String firstName;
     private String lastName;
-    private List<AuthorityDTO> roles;
+    private Set<AuthorityDTO> roles;
+    private GroupDTO group;
 
     /**
      * Instantiates a new User dto.

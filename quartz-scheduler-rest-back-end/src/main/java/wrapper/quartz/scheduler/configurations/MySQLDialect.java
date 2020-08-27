@@ -10,7 +10,7 @@ import org.hibernate.dialect.MySQLStorageEngine;
 public class MySQLDialect extends MySQL8Dialect {
     @Override
     public String getTableTypeString() {
-        return " ENGINE=InnoDB TYPE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";
+        return " ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";
     }
 
     @Override
