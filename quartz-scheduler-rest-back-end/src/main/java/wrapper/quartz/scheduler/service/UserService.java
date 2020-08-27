@@ -1,6 +1,15 @@
 package wrapper.quartz.scheduler.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.authentication.AccountStatusException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsChecker;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import wrapper.quartz.scheduler.entity.jpa.Authority;
@@ -11,6 +20,7 @@ import wrapper.quartz.scheduler.repository.jpa.QuartzGroupRepositoryService;
 import wrapper.quartz.scheduler.repository.jpa.UserRepositoryService;
 
 import javax.persistence.PersistenceException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -19,12 +29,13 @@ import java.util.List;
  */
 @Service
 @Slf4j
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final UserRepositoryService userRepositoryService;
     private final QuartzGroupRepositoryService quartzGroupRepositoryService;
     private final AuthorityRepositoryService authorityRepositoryService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final UserDetailsChecker userDetailsChecker;
 
     /**
      * Instantiates a new User service.
@@ -33,12 +44,14 @@ public class UserService {
      * @param quartzGroupRepositoryService the group repository service
      * @param authorityRepositoryService   the authority repository service
      * @param bCryptPasswordEncoder        the b crypt password encoder
+     * @param userDetailsChecker           the user details checker
      */
-    public UserService(UserRepositoryService userRepositoryService, QuartzGroupRepositoryService quartzGroupRepositoryService, AuthorityRepositoryService authorityRepositoryService, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserService(UserRepositoryService userRepositoryService, QuartzGroupRepositoryService quartzGroupRepositoryService, AuthorityRepositoryService authorityRepositoryService, BCryptPasswordEncoder bCryptPasswordEncoder, UserDetailsChecker userDetailsChecker) {
         this.userRepositoryService = userRepositoryService;
         this.quartzGroupRepositoryService = quartzGroupRepositoryService;
         this.authorityRepositoryService = authorityRepositoryService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.userDetailsChecker = userDetailsChecker;
     }
 
     /**
@@ -96,9 +109,7 @@ public class UserService {
      * @throws PersistenceException     the persistence exception
      */
     public void assignAuthorities(Long userId, Long... authorityIds) throws IllegalArgumentException, PersistenceException {
-        User user = userRepositoryService.findById(userId);
-        List<Authority> authorities = authorityRepositoryService.findAll(authorityIds);
-        assignAuthorities(user, authorities);
+        assignAuthorities(userId, Arrays.asList(authorityIds));
     }
 
     /**
@@ -126,5 +137,44 @@ public class UserService {
     public void assignAuthorities(User user, Collection<Authority> authorities) throws IllegalArgumentException, PersistenceException {
         user.getAuthorities().addAll(authorities);
         userRepositoryService.save(user);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, AccountStatusException {
+        if (StringUtils.isBlank(username)) {
+            throw new UsernameNotFoundException("No username is passed");
+        }
+        User user = userRepositoryService.findByUsernameEqualsOrEmailEqualsAndDeleted(username, username, false);
+        if (user == null) {
+            throw new UsernameNotFoundException("No user found for " + username);
+        }
+        if (CollectionUtils.isEmpty(user.getAuthorities())) {
+            throw new UsernameNotFoundException("User has no authorities assigned.");
+        }
+        userDetailsChecker.check(user);
+        return user;
+    }
+
+    /**
+     * Gets current logged in.
+     *
+     * @return the current logged in
+     * @throws UsernameNotFoundException the username not found exception
+     * @throws AccountStatusException    the account status exception
+     */
+    public User getCurrentLoggedIn() throws UsernameNotFoundException, AccountStatusException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new UsernameNotFoundException("No authentication found in Security Context");
+        }
+        if (authentication.getPrincipal() == null || !(authentication.getPrincipal() instanceof String)) {
+            throw new UsernameNotFoundException("No principal found in Security Context");
+        }
+        if (CollectionUtils.isEmpty(authentication.getAuthorities())) {
+            throw new UsernameNotFoundException("User has no authorities assigned.");
+        }
+        User user = userRepositoryService.findByUsernameEqualsOrEmailEqualsAndDeleted(((String) authentication.getPrincipal()), ((String) authentication.getPrincipal()), false);
+        userDetailsChecker.check(user);
+        return user;
     }
 }

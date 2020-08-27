@@ -1,16 +1,22 @@
 package wrapper.quartz.scheduler.configurations;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import wrapper.quartz.scheduler.entity.jpa.User;
+import wrapper.quartz.scheduler.service.UserService;
+import wrapper.quartz.scheduler.util.LoggerUtility;
 
 import java.time.ZoneId;
 import java.util.List;
@@ -21,7 +27,21 @@ import java.util.TimeZone;
  * The type Application configuration.
  */
 @Configuration
+@Slf4j
 public class ApplicationConfiguration extends WebMvcConfigurationSupport {
+
+    private final UserService userService;
+
+    /**
+     * Instantiates a new Application configuration.
+     *
+     * @param userService the user service
+     */
+    public ApplicationConfiguration(UserService userService) {
+        super();
+        this.userService = userService;
+    }
+
     /**
      * B crypt password encoder b crypt password encoder.
      *
@@ -71,7 +91,16 @@ public class ApplicationConfiguration extends WebMvcConfigurationSupport {
      */
     @Bean
     @Primary
-    public AuditorAware<?> auditorAware() {
-        return (AuditorAware<Object>) Optional::empty;
+    public AuditorAware<User> auditorAware() {
+        return () -> {
+            User user;
+            try {
+                user = userService.getCurrentLoggedIn();
+            } catch (UsernameNotFoundException | AccountStatusException e) {
+                LoggerUtility.error(log, e.getMessage());
+                user = null;
+            }
+            return Optional.ofNullable(user);
+        };
     }
 }

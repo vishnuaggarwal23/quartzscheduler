@@ -19,4 +19,15 @@ interface UserRepository extends EntityRepository<User, Long> {
      */
     @Transactional(readOnly = true)
     User findByUsernameEqualsAndEmailEqualsAndDeleted(String username, String email, boolean deleted);
+
+    /**
+     * Find by username equals or email equals and deleted user.
+     *
+     * @param username the username
+     * @param email    the email
+     * @param deleted  the deleted
+     * @return the user
+     */
+    @Transactional(readOnly = true)
+    User findByUsernameEqualsOrEmailEqualsAndDeleted(String username, String email, boolean deleted);
 }

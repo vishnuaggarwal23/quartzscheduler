@@ -58,21 +58,25 @@ public class User extends BaseEntity<Long> implements UserDetails {
     private Set<Authority> authorities;
 
     @Override
+    @Transient
     public boolean isAccountNonExpired() {
         return !this.accountExpired;
     }
 
     @Override
+    @Transient
     public boolean isAccountNonLocked() {
         return !this.accountLocked;
     }
 
     @Override
+    @Transient
     public boolean isCredentialsNonExpired() {
         return !this.credentialsExpired;
     }
 
     @Override
+    @Transient
     public boolean isEnabled() {
         return !this.accountEnabled;
     }
