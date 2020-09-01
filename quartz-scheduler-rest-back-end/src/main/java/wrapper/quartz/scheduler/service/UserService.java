@@ -3,9 +3,9 @@ package wrapper.quartz.scheduler.service;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AccountStatusException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,6 +18,7 @@ import wrapper.quartz.scheduler.entity.jpa.User;
 import wrapper.quartz.scheduler.repository.jpa.AuthorityRepositoryService;
 import wrapper.quartz.scheduler.repository.jpa.QuartzGroupRepositoryService;
 import wrapper.quartz.scheduler.repository.jpa.UserRepositoryService;
+import wrapper.quartz.scheduler.util.SecurityUtility;
 
 import javax.persistence.PersistenceException;
 import java.util.Arrays;
@@ -141,17 +142,30 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, AccountStatusException {
-        if (StringUtils.isBlank(username)) {
+        User user = loadUserByUsernameOrEmail(username, username);
+        userDetailsChecker.check(user);
+        return user;
+    }
+
+    /**
+     * Load user by username or email user.
+     *
+     * @param username the username
+     * @param email    the email
+     * @return the user
+     * @throws UsernameNotFoundException the username not found exception
+     */
+    public User loadUserByUsernameOrEmail(String username, String email) throws UsernameNotFoundException {
+        if (StringUtils.isAnyBlank(username, email)) {
             throw new UsernameNotFoundException("No username is passed");
         }
-        User user = userRepositoryService.findByUsernameEqualsOrEmailEqualsAndDeleted(username, username, false);
+        User user = userRepositoryService.findByUsernameEqualsOrEmailEqualsAndDeleted(username, email, false);
         if (user == null) {
             throw new UsernameNotFoundException("No user found for " + username);
         }
         if (CollectionUtils.isEmpty(user.getAuthorities())) {
             throw new UsernameNotFoundException("User has no authorities assigned.");
         }
-        userDetailsChecker.check(user);
         return user;
     }
 
@@ -159,21 +173,13 @@ public class UserService implements UserDetailsService {
      * Gets current logged in.
      *
      * @return the current logged in
-     * @throws UsernameNotFoundException the username not found exception
-     * @throws AccountStatusException    the account status exception
+     * @throws UsernameNotFoundException                  the username not found exception
+     * @throws AccountStatusException                     the account status exception
+     * @throws AuthenticationCredentialsNotFoundException the authentication credentials not found exception
+     * @throws AccessDeniedException                      the access denied exception
      */
-    public User getCurrentLoggedIn() throws UsernameNotFoundException, AccountStatusException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new UsernameNotFoundException("No authentication found in Security Context");
-        }
-        if (authentication.getPrincipal() == null || !(authentication.getPrincipal() instanceof String)) {
-            throw new UsernameNotFoundException("No principal found in Security Context");
-        }
-        if (CollectionUtils.isEmpty(authentication.getAuthorities())) {
-            throw new UsernameNotFoundException("User has no authorities assigned.");
-        }
-        User user = userRepositoryService.findByUsernameEqualsOrEmailEqualsAndDeleted(((String) authentication.getPrincipal()), ((String) authentication.getPrincipal()), false);
+    public User getCurrentLoggedIn() throws UsernameNotFoundException, AccountStatusException, AuthenticationCredentialsNotFoundException, AccessDeniedException {
+        User user = userRepositoryService.findByUsernameEqualsOrEmailEqualsAndDeleted(SecurityUtility.getPrincipal(), SecurityUtility.getPrincipal(), false);
         userDetailsChecker.check(user);
         return user;
     }

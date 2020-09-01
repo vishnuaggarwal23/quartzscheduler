@@ -80,4 +80,9 @@ public class User extends BaseEntity<Long> implements UserDetails {
     public boolean isEnabled() {
         return !this.accountEnabled;
     }
+
+    @Transient
+    public String getFullName() {
+        return String.format("%s %s %s", this.firstName, this.middleName, this.lastName);
+    }
 }

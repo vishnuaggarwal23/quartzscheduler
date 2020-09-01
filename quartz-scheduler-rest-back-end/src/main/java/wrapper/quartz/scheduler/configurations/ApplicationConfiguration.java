@@ -8,8 +8,10 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -96,7 +98,7 @@ public class ApplicationConfiguration extends WebMvcConfigurationSupport {
             User user;
             try {
                 user = userService.getCurrentLoggedIn();
-            } catch (UsernameNotFoundException | AccountStatusException e) {
+            } catch (UsernameNotFoundException | AccountStatusException | AuthenticationCredentialsNotFoundException | AccessDeniedException e) {
                 LoggerUtility.error(log, e.getMessage());
                 user = null;
             }
