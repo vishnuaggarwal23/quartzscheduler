@@ -32,16 +32,13 @@ import java.util.TimeZone;
 @Slf4j
 public class ApplicationConfiguration extends WebMvcConfigurationSupport {
 
-    private final UserService userService;
+    private UserService userService;
 
-    /**
-     * Instantiates a new Application configuration.
-     *
-     * @param userService the user service
-     */
-    public ApplicationConfiguration(UserService userService) {
-        super();
-        this.userService = userService;
+    public UserService getUserService() {
+        if (userService == null) {
+            userService = getApplicationContext().getBean("userService", UserService.class);
+        }
+        return userService;
     }
 
     /**
@@ -97,7 +94,7 @@ public class ApplicationConfiguration extends WebMvcConfigurationSupport {
         return () -> {
             User user;
             try {
-                user = userService.getCurrentLoggedIn();
+                user = getUserService().getCurrentLoggedIn();
             } catch (UsernameNotFoundException | AccountStatusException | AuthenticationCredentialsNotFoundException | AccessDeniedException e) {
                 LoggerUtility.error(log, e.getMessage());
                 user = null;

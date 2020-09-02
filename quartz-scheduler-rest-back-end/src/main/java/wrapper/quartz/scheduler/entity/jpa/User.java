@@ -51,10 +51,12 @@ public class User extends BaseEntity<Long> implements UserDetails {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private QuartzGroup quartzGroup;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Set<Authority> authorities;
 
     @Override

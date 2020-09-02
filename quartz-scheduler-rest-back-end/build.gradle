@@ -102,6 +102,9 @@ dependencies {
     implementation group: 'org.jetbrains', name: 'annotations', version: '19.0.0'
     implementation group: 'com.google.errorprone', name: 'error_prone_annotations', version: '2.4.0'
 
+    implementation group: 'io.springfox', name: 'springfox-swagger2', version: '3.0.0'
+    implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '3.0.0'
+
     idea {
         module {
             inheritOutputDirs = false

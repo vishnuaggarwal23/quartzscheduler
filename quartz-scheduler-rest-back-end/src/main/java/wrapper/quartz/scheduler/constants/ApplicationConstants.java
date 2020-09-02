@@ -26,6 +26,8 @@ public interface ApplicationConstants {
          * The constant X_AUTH_TOKEN.
          */
         String X_AUTH_TOKEN = "X-AUTH-TOKEN";
+        String ACCESS_TOKEN = "X-ACCESS-TOKEN";
+        String REFRESH_TOKEN = "X-REFRESH-TOKEN";
     }
 
     /**

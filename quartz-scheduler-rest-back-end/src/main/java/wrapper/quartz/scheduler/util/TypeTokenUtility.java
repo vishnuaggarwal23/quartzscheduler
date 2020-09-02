@@ -28,4 +28,9 @@ public final class TypeTokenUtility {
         return new TypeToken<Map<String, Map<String, String>>>() {
         }.getType();
     }
+
+    public static Type mapOfStringAndObject() {
+        return new TypeToken<Map<String, Object>>() {
+        }.getType();
+    }
 }

@@ -2,10 +2,8 @@ package wrapper.quartz.scheduler.configurations;
 
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.MapUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
@@ -25,6 +23,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import wrapper.quartz.scheduler.constants.ApplicationConstants;
+import wrapper.quartz.scheduler.dto.SecurityAuthenticationToken;
+import wrapper.quartz.scheduler.entity.jpa.User;
 import wrapper.quartz.scheduler.enums.AuthorityEnum;
 import wrapper.quartz.scheduler.filters.LoginFilter;
 import wrapper.quartz.scheduler.filters.ValidationFilter;
@@ -36,12 +36,16 @@ import wrapper.quartz.scheduler.util.TypeTokenUtility;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebSecurity(debug = true)
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 @EnableGlobalAuthentication
+@Slf4j
 public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserService userService;
@@ -60,7 +64,7 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
         this.userService = userService;
         this.jwtService = jwtService;
         this.authenticationEventPublisher = authenticationEventPublisher;
-        this.authenticationSuccessHandler = new AuthenticationSuccessHandler(gson);
+        this.authenticationSuccessHandler = new AuthenticationSuccessHandler(gson, userService);
         this.authenticationFailureHandler = new AuthenticationFailureHandler();
     }
 
@@ -80,7 +84,11 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 "/**/webjars/**/",
                 "/**/webjar/**/",
                 "/**/system/monitor/**/",
-                "/**/actuator/**/"
+                "/**/actuator/**/",
+                "/**/swagger-resources/**",
+                "/**/swagger-ui/**",
+                "/**/v2/api-docs/**",
+                "/error"
         };
         web.ignoring().antMatchers(urlPatterns).mvcMatchers(urlPatterns);
     }
@@ -95,6 +103,7 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .exceptionHandling()
                 .authenticationEntryPoint((request, response, authException) -> {
+                    LoggerUtility.error(log, authException);
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     response.setCharacterEncoding("UTF-8");
                     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -103,6 +112,7 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     response.flushBuffer();
                 })
                 .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    LoggerUtility.error(log, accessDeniedException);
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                     response.setCharacterEncoding("UTF-8");
                     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -131,7 +141,7 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .anonymous()
                 .disable()
                 .addFilter(new LoginFilter(
-                        new AntPathRequestMatcher("/api/v1/login", HttpMethod.POST.name()),
+                        new AntPathRequestMatcher("/**/api/v1/login", HttpMethod.POST.name()),
                         authenticationManagerBean(),
                         userService,
                         jwtService,
@@ -139,22 +149,24 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
                         authenticationFailureHandler))
                 .addFilterBefore(new ValidationFilter(
                         userService,
-                        new AntPathRequestMatcher("/api/v1/login"),
-                        new AntPathRequestMatcher("/api/v1/validation"),
+                        new AntPathRequestMatcher("/**/api/v1/login"),
+                        new AntPathRequestMatcher("/**/api/v1/validation"),
                         jwtService,
                         authenticationSuccessHandler,
                         authenticationEventPublisher), LogoutFilter.class)
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS)
                 .permitAll()
-                .antMatchers("/api/v1/quartz/job/**")
+                .antMatchers("/**/api/v1/quartz/job/**")
                 .hasAnyRole(AuthorityEnum.ROLE_JOB.name())
-                .antMatchers("/api/v1/quartz/trigger/**")
+                .antMatchers("/**/api/v1/quartz/trigger/**")
                 .hasAnyRole(AuthorityEnum.ROLE_TRIGGER.name())
-                .antMatchers("/api/v1/user/**")
+                .antMatchers("/**/api/v1/user/**")
                 .hasAnyRole(AuthorityEnum.ROLE_APPLICATION_USER.name(), AuthorityEnum.ROLE_GROUP_ADMIN.name(), AuthorityEnum.ROLE_APPLICATION_ADMIN.name())
-                .antMatchers("/api/v1/group/**")
+                .antMatchers("/**/api/v1/group/**")
                 .hasAnyRole(AuthorityEnum.ROLE_GROUP_ADMIN.name(), AuthorityEnum.ROLE_GROUP_USER.name(), AuthorityEnum.ROLE_APPLICATION_ADMIN.name())
+                .antMatchers("/error", "/**/swagger-ui/**", "/**/v2/api-docs/**", "/**/swagger-resources/**")
+                .permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -172,20 +184,46 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
 class AuthenticationSuccessHandler implements org.springframework.security.web.authentication.AuthenticationSuccessHandler {
 
     private final Gson gson;
+    private final UserService userService;
 
-    AuthenticationSuccessHandler(Gson gson) {
+    AuthenticationSuccessHandler(Gson gson, UserService userService) {
         this.gson = gson;
+        this.userService = userService;
     }
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
-        Map<String, Object> tokenResponse = gson.fromJson(authentication.getDetails().toString(), TypeTokenUtility.mapOfStringAndMapOfStringAndObject());
+        SecurityAuthenticationToken securityAuthenticationToken = (SecurityAuthenticationToken) authentication;
+        User user = userService.loadUserByUsernameOrEmail(securityAuthenticationToken.getPrincipal(), securityAuthenticationToken.getPrincipal());
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("id", user.getId());
+        responseBody.put("username", user.getUsername());
+        responseBody.put("email", user.getEmail());
+        Map<String, Object> groupBody = new HashMap<>();
+        groupBody.put("id", user.getQuartzGroup().getId());
+        groupBody.put("name", user.getQuartzGroup().getName());
+        responseBody.put("group", groupBody);
+        responseBody.put("authorities", user
+                .getAuthorities()
+                .stream()
+                .filter(Objects::nonNull)
+                .map(it -> {
+                    Map<String, Object> authorityBody = new HashMap<>();
+                    authorityBody.put("id", it.getId());
+                    authorityBody.put("authority", it.getAuthority());
+                    return authorityBody;
+                })
+                .collect(Collectors.toSet()));
+        responseBody.put("accessToken", securityAuthenticationToken.getAccessToken());
+        responseBody.put("refreshToken", securityAuthenticationToken.getRefreshToken());
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
         response.setCharacterEncoding("UTF-8");
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_OK);
-        response.addHeader(HttpHeaders.AUTHORIZATION, MapUtils.getString(tokenResponse, "token"));
-        response.addHeader(ApplicationConstants.SecurityConstants.X_AUTH_TOKEN, MapUtils.getString(tokenResponse, "token"));
+        response.addHeader(ApplicationConstants.SecurityConstants.ACCESS_TOKEN, securityAuthenticationToken.getAccessToken());
+        response.addHeader(ApplicationConstants.SecurityConstants.REFRESH_TOKEN, securityAuthenticationToken.getRefreshToken());
+        response.getWriter().write(gson.toJson(responseBody, TypeTokenUtility.mapOfStringAndObject()));
         response.getWriter().flush();
         response.getWriter().close();
         response.flushBuffer();
@@ -194,16 +232,15 @@ class AuthenticationSuccessHandler implements org.springframework.security.web.a
 
 @Slf4j
 class AuthenticationFailureHandler implements org.springframework.security.web.authentication.AuthenticationFailureHandler {
-
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {
+        LoggerUtility.error(log, exception);
         request.getSession().invalidate();
         SecurityContextHolder.getContext().setAuthentication(null);
         SecurityContextHolder.clearContext();
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setCharacterEncoding("UTF-8");
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        LoggerUtility.error(log, exception);
         response.getWriter().flush();
         response.getWriter().close();
         response.flushBuffer();

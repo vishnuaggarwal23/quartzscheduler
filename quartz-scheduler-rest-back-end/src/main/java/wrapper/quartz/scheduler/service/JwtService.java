@@ -77,7 +77,6 @@ public class JwtService {
         return Jwts
                 .parser()
                 .setSigningKey(TextCodec.BASE64.encode(SECRET))
-                .setSigningKeyResolver(new SigningKeyResolverAdapter())
                 .setCompressionCodecResolver(new DefaultCompressionCodecResolver())
                 .parseClaimsJws(token);
     }
